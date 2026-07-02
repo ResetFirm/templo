@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Templo — Un viaje iniciático</title>
+  <meta name="description" content="Prototipo v1: un viaje iniciático gamificado a través de los tres grados de la Masonería Simbólica." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='72' font-size='64' text-anchor='middle' fill='%23d4af37'%3E%E2%97%AC%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="stars" aria-hidden="true"></div>
+
+  <!-- HUD -->
+  <header id="hud" class="hud hidden">
+    <div class="hud-left">
+      <span class="hud-symbol" aria-hidden="true">◬</span>
+      <span id="hud-name">Buscador</span>
+    </div>
+    <div class="hud-center">
+      <span id="hud-grade" class="hud-grade">Profano</span>
+    </div>
+    <div class="hud-right">
+      <span class="hud-light" title="Luz acumulada">☀ <span id="hud-light">0</span></span>
+      <button id="btn-journal" class="hud-btn" title="Diario del Iniciado">✎ Diario</button>
+      <button id="btn-reset" class="hud-btn" title="Reiniciar el viaje">⟲</button>
+    </div>
+  </header>
+
+  <!-- Escenas -->
+  <main id="scene-root"></main>
+
+  <!-- Modal de reto -->
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card" id="modal-card"></div>
+  </div>
+
+  <!-- Diario -->
+  <div id="journal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card journal-card">
+      <h2 class="modal-title">Diario del Iniciado</h2>
+      <p class="journal-hint">Aquí se conservan tus reflexiones. Son tu piedra tallada.</p>
+      <div id="journal-entries"></div>
+      <button class="btn btn-ghost" id="journal-close">Cerrar</button>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
