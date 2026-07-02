@@ -1,25 +1,37 @@
 /* ============================================================
-   EL TEMPLO — Motor del viaje (v1)
-   Máquina de escenas: portal → vestíbulo → cámara de reflexión
-   → salas de grado (puertas/retos) → ceremonias → luz final.
-   Progreso persistido en localStorage.
+   EL TEMPLO — Motor del viaje (v2)
+   Máquina de escenas:
+     umbral (acceso secreto) → filtro (5 pruebas del aspirante)
+     → veredicto (Índice de Compromiso + Expediente)
+     → cámara de reflexión → salas de grado → ceremonias → luz.
+   Progreso y métricas persistidos en localStorage.
    ============================================================ */
 
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "templo.v1";
+  const STORAGE_KEY = "templo.v2";
   const D = TEMPLE_DATA;
 
   /* ---------- Estado ---------- */
 
   const defaultState = () => ({
-    scene: "portal",          // portal | vestibulo | camara | hall | ceremony | finale
+    scene: "umbral",          // umbral | filtro | veredicto | camara | hall | ceremony | finale
     name: "",
-    gradeIndex: 0,            // índice en D.grades mientras scene = hall/ceremony
+    gradeIndex: 0,
     opened: {},               // { doorId: true }
+    sealed: {},               // { pruebaId: true }
     light: 0,
     journal: [],              // { at, title, text }
+    voices: [],               // ids de Voces del Oriente reveladas
+    propuesta: null,          // { proposal, talents, beneficiaries, commitment }
+    metrics: {
+      filtroStart: null,
+      filtroEnd: null,
+      retries: {},            // { pruebaId: n }
+      holdReleases: 0
+    },
+    score: null,
     startedAt: null
   });
 
@@ -28,7 +40,12 @@
   function load() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return Object.assign(defaultState(), JSON.parse(raw));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const st = Object.assign(defaultState(), parsed);
+        st.metrics = Object.assign(defaultState().metrics, parsed.metrics || {});
+        return st;
+      }
     } catch (e) { /* estado corrupto: se reinicia */ }
     return defaultState();
   }
@@ -65,6 +82,11 @@
     return keys.some((k) => norm.includes(normalize(k)));
   }
 
+  function addRetry(pruebaId) {
+    state.metrics.retries[pruebaId] = (state.metrics.retries[pruebaId] || 0) + 1;
+    save();
+  }
+
   function addLight(points) {
     state.light += points;
     save();
@@ -72,28 +94,34 @@
     const badge = $("#hud-light");
     if (badge) {
       badge.parentElement.classList.remove("pulse");
-      void badge.parentElement.offsetWidth; // reinicia la animación
+      void badge.parentElement.offsetWidth;
       badge.parentElement.classList.add("pulse");
     }
   }
 
-  function currentGrade() {
-    return D.grades[state.gradeIndex];
-  }
+  function currentGrade() { return D.grades[state.gradeIndex]; }
 
   function gradeTitle() {
-    if (state.scene === "portal" || state.scene === "vestibulo" || state.scene === "camara") return "Profano";
+    if (state.scene === "umbral") return "";
+    if (state.scene === "filtro" || state.scene === "veredicto") return "Aspirante";
+    if (state.scene === "camara") return "Aspirante aceptado";
     if (state.scene === "finale") return "Maestro ∴";
     return currentGrade().name;
   }
 
   function updateHUD() {
     const hud = $("#hud");
-    if (state.scene === "portal") { hud.classList.add("hidden"); return; }
+    if (state.scene === "umbral") { hud.classList.add("hidden"); return; }
     hud.classList.remove("hidden");
     $("#hud-name").textContent = state.name || "Buscador";
     $("#hud-grade").textContent = gradeTitle();
     $("#hud-light").textContent = state.light;
+  }
+
+  function escapeHTML(str) {
+    const d = document.createElement("div");
+    d.textContent = str;
+    return d.innerHTML;
   }
 
   /* ---------- Render de escenas ---------- */
@@ -102,8 +130,9 @@
     root.innerHTML = "";
     updateHUD();
     switch (state.scene) {
-      case "portal":    return renderPortal();
-      case "vestibulo": return renderVestibulo();
+      case "umbral":    return renderUmbral();
+      case "filtro":    return renderFiltro();
+      case "veredicto": return renderVeredicto();
       case "camara":    return renderCamara();
       case "hall":      return renderHall();
       case "ceremony":  return renderCeremony();
@@ -118,68 +147,667 @@
     window.scrollTo(0, 0);
   }
 
-  function narrative(lines) {
+  function narrative(lines, fast) {
     const box = el("div", "narrative");
     lines.forEach((line, i) => {
       const p = el("p", "narrative-line", line);
-      p.style.animationDelay = (0.35 * i) + "s";
+      p.style.animationDelay = (fast ? 0.12 : 0.35) * i + "s";
       box.appendChild(p);
     });
     return box;
   }
 
-  /* --- Portal de entrada --- */
+  /* ============================================================
+     EL UMBRAL — acceso secreto, discreto, hay que descubrirlo
+     ============================================================ */
 
-  function renderPortal() {
-    const scene = el("section", "scene scene-portal");
-    scene.appendChild(el("div", "portal-symbol", symbolSquareCompass()));
-    scene.appendChild(el("h1", "title-main", D.intro.title));
-    scene.appendChild(narrative(D.intro.lines));
+  function renderUmbral() {
+    const scene = el("section", "scene scene-umbral");
+    const whisper = el("p", "umbral-whisper", D.umbral.whisper);
+    scene.appendChild(whisper);
 
-    const btn = el("button", "btn btn-gold btn-big", D.intro.cta);
-    btn.addEventListener("click", () => {
-      knockEffect(() => go(state.name ? "hall" : "vestibulo"));
+    const door = el("div", "umbral-door");
+    door.setAttribute("role", "button");
+    door.setAttribute("tabindex", "0");
+    door.setAttribute("aria-label", "Una puerta apenas visible. Llama tres veces.");
+    const glow = el("div", "umbral-glow");
+    door.appendChild(glow);
+    scene.appendChild(door);
+
+    const linesBox = el("div", "umbral-lines hidden");
+    D.umbral.lines.forEach((l) => linesBox.appendChild(el("p", "narrative-line-static", l)));
+    scene.appendChild(linesBox);
+
+    const hint = el("p", "umbral-hint hidden", D.umbral.hint);
+    scene.appendChild(hint);
+
+    const dots = el("div", "knock-dots umbral-dots hidden", "○ ○ ○");
+    scene.appendChild(dots);
+
+    // La puerta se revela con el tiempo o al acercarse
+    let revealed = false;
+    const reveal = () => {
+      if (revealed) return;
+      revealed = true;
+      door.classList.add("revealed");
+      linesBox.classList.remove("hidden");
+      setTimeout(() => { hint.classList.remove("hidden"); dots.classList.remove("hidden"); }, 1800);
+    };
+    setTimeout(reveal, 4500);
+    door.addEventListener("mouseenter", reveal);
+    door.addEventListener("touchstart", reveal, { passive: true });
+
+    let knocks = 0;
+    const doKnock = () => {
+      reveal();
+      if (knocks >= 3) return;
+      knocks++;
+      door.classList.remove("knocked");
+      void door.offsetWidth;
+      door.classList.add("knocked");
+      dots.textContent = "●".repeat(knocks) + (knocks < 3 ? " " + "○ ".repeat(3 - knocks).trim() : "");
+      if (knocks === 3) setTimeout(() => umbralQuestion(scene), 700);
+    };
+    door.addEventListener("click", doKnock);
+    door.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); doKnock(); } });
+
+    root.appendChild(scene);
+  }
+
+  function umbralQuestion(scene) {
+    scene.querySelectorAll(".umbral-hint, .umbral-dots").forEach((n) => n.classList.add("hidden"));
+    const box = el("div", "umbral-question");
+    box.appendChild(el("p", "prompt", D.umbral.question));
+    const opts = el("div", "options");
+    const reply = el("p", "teaching hidden", "");
+
+    D.umbral.answers.forEach((a) => {
+      const btn = el("button", "btn btn-option", a.label);
+      btn.addEventListener("click", () => {
+        reply.classList.remove("hidden");
+        reply.textContent = a.reply;
+        if (a.accept) {
+          opts.querySelectorAll("button").forEach((b) => (b.disabled = true));
+          btn.classList.add("chosen");
+          const enter = el("button", "btn btn-gold btn-big", "Entrar a la Cámara de Pruebas");
+          enter.addEventListener("click", () => {
+            state.startedAt = state.startedAt || Date.now();
+            state.metrics.filtroStart = state.metrics.filtroStart || Date.now();
+            save();
+            go("filtro");
+          });
+          box.appendChild(enter);
+        } else {
+          btn.classList.add("rejected");
+          btn.disabled = true;
+        }
+      });
+      opts.appendChild(btn);
     });
-    scene.appendChild(btn);
 
-    if (state.name) {
-      const note = el("p", "muted small", "Se reconoce tu paso anterior, " + escapeHTML(state.name) + ". La puerta recuerda.");
-      scene.appendChild(note);
+    box.appendChild(opts);
+    box.appendChild(reply);
+    scene.appendChild(box);
+    box.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  /* ============================================================
+     EL FILTRO — cinco sellos, cinco pruebas
+     ============================================================ */
+
+  function renderFiltro() {
+    const scene = el("section", "scene scene-filtro");
+    scene.appendChild(el("h1", "title-main", D.filtro.title));
+    scene.appendChild(narrative(D.filtro.intro));
+
+    const path = el("div", "seals");
+    D.filtro.pruebas.forEach((prueba, i) => {
+      const sealed = !!state.sealed[prueba.id];
+      const locked = i > 0 && !state.sealed[D.filtro.pruebas[i - 1].id];
+      path.appendChild(sealCard(prueba, i + 1, sealed, locked));
+    });
+    scene.appendChild(path);
+
+    const allSealed = D.filtro.pruebas.every((p) => state.sealed[p.id]);
+    if (allSealed) {
+      const btn = el("button", "btn btn-gold btn-big", "Presentarse al Veredicto");
+      btn.addEventListener("click", () => {
+        if (!state.metrics.filtroEnd) { state.metrics.filtroEnd = Date.now(); }
+        state.score = computeScore();
+        save();
+        go("veredicto");
+      });
+      scene.appendChild(btn);
+    }
+
+    root.appendChild(scene);
+  }
+
+  function sealCard(prueba, num, sealed, locked) {
+    const card = el("div", "seal" + (sealed ? " seal-done" : "") + (locked ? " seal-locked" : ""));
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", locked ? "-1" : "0");
+    card.appendChild(el("div", "seal-ring", sealed ? "✦" : String(num)));
+    card.appendChild(el("div", "seal-title", prueba.title));
+    card.appendChild(el("div", "seal-state", sealed ? "Sello grabado" : locked ? "🔒 Sella el anterior" : "Toca para enfrentar la prueba"));
+    if (!locked && !sealed) {
+      const open = () => openPrueba(prueba);
+      card.addEventListener("click", open);
+      card.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
+    }
+    return card;
+  }
+
+  function openPrueba(prueba) {
+    const card = $("#modal-card");
+    card.innerHTML = "";
+    card.appendChild(el("h2", "modal-title", prueba.title));
+    card.appendChild(narrative(prueba.narrative, true));
+
+    const bodies = {
+      ordenar: ordenarBody,
+      completar: completarBody,
+      unir: unirBody,
+      constancia: constanciaBody,
+      propuesta: propuestaBody
+    };
+    card.appendChild(bodies[prueba.type](prueba));
+
+    const close = el("button", "btn btn-ghost", "Retirarse por ahora");
+    close.addEventListener("click", closeModal);
+    card.appendChild(close);
+
+    $("#modal").classList.remove("hidden");
+  }
+
+  function sealPrueba(prueba, reward) {
+    state.sealed[prueba.id] = true;
+    addLight(reward || 3);
+    save();
+
+    const card = $("#modal-card");
+    card.innerHTML = "";
+    card.appendChild(el("h2", "modal-title gold", "✦ El sello se graba"));
+    if (prueba.teaching) card.appendChild(el("p", "success-text", prueba.teaching));
+    card.appendChild(el("p", "reward", "+" + (reward || 3) + " de Luz"));
+    const btn = el("button", "btn btn-gold", "Continuar");
+    btn.addEventListener("click", () => { closeModal(); render(); });
+    card.appendChild(btn);
+  }
+
+  /* --- Mecánica compartida: arrastrar fichas a ranuras --- */
+  /* Soporta arrastre nativo (escritorio) y tocar-para-colocar (móvil). */
+
+  function chipSlotBoard(pieces, slots, onCheck) {
+    const board = el("div", "board");
+    const pool = el("div", "chip-pool");
+    const slotsBox = el("div", "slots");
+    const feedback = el("p", "feedback", "");
+    const checkBtn = el("button", "btn btn-gold", "Comprobar");
+    checkBtn.disabled = true;
+
+    let selected = null;
+
+    function deselect() {
+      if (selected) selected.classList.remove("chip-selected");
+      selected = null;
+    }
+
+    function updateCheck() {
+      const filled = slotsBox.querySelectorAll(".slot .chip").length;
+      checkBtn.disabled = filled < slots.length;
+    }
+
+    function placeChip(chip, slot) {
+      const occupant = slot.querySelector(".chip");
+      if (occupant) pool.appendChild(occupant);
+      slot.appendChild(chip);
+      slot.classList.remove("slot-wrong");
+      deselect();
+      updateCheck();
+    }
+
+    pieces.forEach((piece) => {
+      const chip = el("div", "chip", '<strong>' + piece.label + "</strong>" + (piece.sub ? '<span class="chip-sub">' + piece.sub + "</span>" : ""));
+      chip.dataset.id = piece.id;
+      chip.draggable = true;
+      chip.setAttribute("role", "button");
+      chip.setAttribute("tabindex", "0");
+      chip.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("text/plain", piece.id);
+        deselect();
+      });
+      const pick = () => {
+        if (selected === chip) { deselect(); return; }
+        deselect();
+        selected = chip;
+        chip.classList.add("chip-selected");
+      };
+      chip.addEventListener("click", pick);
+      chip.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+      pool.appendChild(chip);
+    });
+
+    slots.forEach((slotDef) => {
+      const slot = el("div", "slot");
+      slot.dataset.expect = slotDef.expect;
+      slot.appendChild(el("div", "slot-label", slotDef.label));
+      slot.addEventListener("dragover", (e) => e.preventDefault());
+      slot.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const id = e.dataTransfer.getData("text/plain");
+        const chip = board.querySelector('.chip[data-id="' + id + '"]');
+        if (chip) placeChip(chip, slot);
+      });
+      slot.addEventListener("click", (e) => {
+        if (e.target.closest(".chip")) return; // el clic en la ficha la selecciona
+        if (selected) placeChip(selected, slot);
+        else {
+          const occupant = slot.querySelector(".chip");
+          if (occupant) { pool.appendChild(occupant); updateCheck(); }
+        }
+      });
+      slotsBox.appendChild(slot);
+    });
+
+    // Devolver ficha al banco al tocarla estando colocada y seleccionada dos veces
+    pool.addEventListener("dragover", (e) => e.preventDefault());
+    pool.addEventListener("drop", (e) => {
+      e.preventDefault();
+      const id = e.dataTransfer.getData("text/plain");
+      const chip = board.querySelector('.chip[data-id="' + id + '"]');
+      if (chip) { pool.appendChild(chip); updateCheck(); }
+    });
+
+    checkBtn.addEventListener("click", () => {
+      const placements = Array.from(slotsBox.querySelectorAll(".slot")).map((slot) => ({
+        slot,
+        ok: slot.querySelector(".chip") && slot.querySelector(".chip").dataset.id === slot.dataset.expect
+      }));
+      onCheck(placements, feedback);
+    });
+
+    board.append(pool, slotsBox, checkBtn, feedback);
+    return board;
+  }
+
+  function shuffled(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  /* --- Prueba: ordenar (el Caballete) --- */
+
+  function ordenarBody(prueba) {
+    const wrap = el("div", "challenge");
+    wrap.appendChild(el("p", "board-hint", "Arrastra cada pilar a su lugar — o tócalo y luego toca la ranura."));
+    const slots = prueba.correctOrder.map((id, i) => ({ expect: id, label: prueba.slotLabels[i] }));
+    wrap.appendChild(chipSlotBoard(shuffled(prueba.pieces), slots, (placements, feedback) => {
+      if (placements.every((p) => p.ok)) {
+        sealPrueba(prueba, 4);
+      } else {
+        addRetry(prueba.id);
+        placements.forEach((p) => { if (!p.ok) p.slot.classList.add("slot-wrong"); });
+        feedback.textContent = prueba.failText;
+      }
+    }));
+    return wrap;
+  }
+
+  /* --- Prueba: completar frases --- */
+
+  function completarBody(prueba) {
+    const wrap = el("div", "challenge");
+    const inputs = [];
+
+    prueba.quotes.forEach((q) => {
+      const quoteBox = el("div", "quote-plate");
+      const line = el("p", "quote-line");
+      line.append(document.createTextNode(q.before));
+      const input = el("input", "input input-inline");
+      input.type = "text";
+      input.setAttribute("aria-label", "Palabra que falta");
+      inputs.push({ input, answers: q.answers });
+      line.appendChild(input);
+      line.append(document.createTextNode(q.after));
+      quoteBox.appendChild(line);
+      quoteBox.appendChild(el("p", "quote-author", "— " + q.author));
+      wrap.appendChild(quoteBox);
+    });
+
+    const feedback = el("p", "feedback", "");
+    const btn = el("button", "btn btn-gold", "Devolver las palabras");
+    btn.addEventListener("click", () => {
+      let allOk = true;
+      inputs.forEach(({ input, answers }) => {
+        const ok = matchesAnswer(input.value, answers);
+        input.classList.toggle("shake", !ok);
+        if (!ok) { allOk = false; setTimeout(() => input.classList.remove("shake"), 500); }
+      });
+      if (allOk) sealPrueba(prueba, 3);
+      else { addRetry(prueba.id); feedback.textContent = prueba.failText; }
+    });
+
+    wrap.append(btn, feedback);
+    return wrap;
+  }
+
+  /* --- Prueba: unir símbolos y significados --- */
+
+  function unirBody(prueba) {
+    const wrap = el("div", "challenge");
+    wrap.appendChild(el("p", "board-hint", "Arrastra cada significado bajo su herramienta — o tócalo y luego toca la ranura."));
+    const pieces = shuffled(prueba.pairs.map((p, i) => ({ id: "m" + i, label: p.meaning })));
+    const slots = prueba.pairs.map((p, i) => ({
+      expect: "m" + i,
+      label: '<span class="tool-symbol">' + p.symbol + "</span> " + p.name
+    }));
+    wrap.appendChild(chipSlotBoard(pieces, slots, (placements, feedback) => {
+      if (placements.every((p) => p.ok)) {
+        sealPrueba(prueba, 4);
+      } else {
+        addRetry(prueba.id);
+        placements.forEach((p) => { if (!p.ok) p.slot.classList.add("slot-wrong"); });
+        feedback.textContent = prueba.failText;
+      }
+    }));
+    return wrap;
+  }
+
+  /* --- Prueba: constancia (sostener el cincel) --- */
+
+  function constanciaBody(prueba) {
+    const wrap = el("div", "challenge");
+    const totalMs = prueba.holdSeconds * 1000;
+    let heldMs = 0;
+    let holding = false;
+    let timer = null;
+    let done = false;
+    let shownCarvings = 0;
+
+    const stone = el("div", "stone");
+    const bar = el("div", "hold-bar", '<div class="hold-fill"></div>');
+    const fill = bar.firstChild;
+    const carvingsBox = el("div", "carvings");
+    const chisel = el("button", "btn btn-gold btn-big hold-btn", "🔨 Sostener el cincel");
+    chisel.setAttribute("aria-label", "Mantén presionado " + prueba.holdSeconds + " segundos");
+    const feedback = el("p", "feedback", "");
+
+    function tick() {
+      heldMs += 100;
+      const pct = Math.min(100, (heldMs / totalMs) * 100);
+      fill.style.width = pct + "%";
+      const shouldShow = Math.floor((pct / 100) * prueba.carvings.length);
+      while (shownCarvings < shouldShow && shownCarvings < prueba.carvings.length) {
+        carvingsBox.appendChild(el("p", "carving", prueba.carvings[shownCarvings]));
+        shownCarvings++;
+      }
+      if (heldMs >= totalMs && !done) {
+        done = true;
+        stop();
+        chisel.disabled = true;
+        setTimeout(() => sealPrueba(prueba, 5), 600);
+      }
+    }
+
+    function start(e) {
+      if (done || holding) return;
+      e.preventDefault();
+      if (e.pointerId !== undefined && chisel.setPointerCapture) {
+        try { chisel.setPointerCapture(e.pointerId); } catch (err) { /* sin captura */ }
+      }
+      holding = true;
+      stone.classList.add("carving-now");
+      timer = setInterval(tick, 100);
+    }
+
+    function stop() {
+      if (!holding && !done) return;
+      if (holding && !done && heldMs > 0) {
+        state.metrics.holdReleases++;
+        save();
+        feedback.textContent = "Soltaste el cincel. La piedra lo recuerda… pero te deja continuar donde ibas.";
+      }
+      holding = false;
+      stone.classList.remove("carving-now");
+      if (timer) { clearInterval(timer); timer = null; }
+    }
+
+    chisel.addEventListener("pointerdown", start);
+    chisel.addEventListener("pointerup", stop);
+    chisel.addEventListener("pointerleave", stop);
+    chisel.addEventListener("pointercancel", stop);
+    chisel.addEventListener("contextmenu", (e) => e.preventDefault());
+
+    wrap.append(stone, bar, carvingsBox, chisel, feedback);
+    return wrap;
+  }
+
+  /* --- Prueba: la Propuesta del Aspirante --- */
+
+  function propuestaBody(prueba) {
+    const f = prueba.fields;
+    const wrap = el("div", "challenge propuesta-form");
+
+    function field(label) {
+      const box = el("div", "field");
+      box.appendChild(el("label", "field-label", label));
+      return box;
+    }
+
+    const nameBox = field(f.name.label);
+    const nameInput = el("input", "input full");
+    nameInput.type = "text";
+    nameInput.maxLength = 40;
+    nameInput.placeholder = f.name.placeholder;
+    nameInput.value = state.name || "";
+    nameBox.appendChild(nameInput);
+
+    const propBox = field(f.proposal.label);
+    const propTa = el("textarea", "textarea");
+    propTa.rows = 6;
+    propTa.placeholder = f.proposal.placeholder;
+    const propCount = el("p", "counter", "0 / " + f.proposal.min);
+    propBox.append(propTa, propCount);
+
+    const talBox = field(f.talents.label);
+    const talTa = el("textarea", "textarea");
+    talTa.rows = 3;
+    talTa.placeholder = f.talents.placeholder;
+    const talCount = el("p", "counter", "0 / " + f.talents.min);
+    talBox.append(talTa, talCount);
+
+    const benBox = field(f.beneficiaries.label);
+    const benInput = el("input", "input full");
+    benInput.type = "text";
+    benInput.placeholder = f.beneficiaries.placeholder;
+    benBox.appendChild(benInput);
+
+    const comBox = field(f.commitment.label);
+    const comSel = el("select", "input full");
+    comSel.appendChild(el("option", null, "Elige tu compromiso…")).value = "";
+    f.commitment.options.forEach((o) => { const op = el("option", null, o); op.value = o; comSel.appendChild(op); });
+    comBox.appendChild(comSel);
+
+    const feedback = el("p", "feedback", "");
+    const btn = el("button", "btn btn-gold btn-big", "Presentar mi obra");
+
+    function validate() {
+      const okName = nameInput.value.trim().length >= 2;
+      const okProp = propTa.value.trim().length >= f.proposal.min;
+      const okTal = talTa.value.trim().length >= f.talents.min;
+      const okBen = benInput.value.trim().length >= 3;
+      const okCom = !!comSel.value;
+      btn.disabled = !(okName && okProp && okTal && okBen && okCom);
+    }
+
+    [nameInput, benInput].forEach((i) => i.addEventListener("input", validate));
+    comSel.addEventListener("change", validate);
+    propTa.addEventListener("input", () => {
+      const len = propTa.value.trim().length;
+      propCount.textContent = len + " / " + f.proposal.min;
+      propCount.classList.toggle("done", len >= f.proposal.min);
+      validate();
+    });
+    talTa.addEventListener("input", () => {
+      const len = talTa.value.trim().length;
+      talCount.textContent = len + " / " + f.talents.min;
+      talCount.classList.toggle("done", len >= f.talents.min);
+      validate();
+    });
+    btn.disabled = true;
+
+    btn.addEventListener("click", () => {
+      state.name = nameInput.value.trim();
+      state.propuesta = {
+        proposal: propTa.value.trim(),
+        talents: talTa.value.trim(),
+        beneficiaries: benInput.value.trim(),
+        commitment: comSel.value
+      };
+      save();
+      sealPrueba(prueba, 5);
+    });
+
+    wrap.append(nameBox, propBox, talBox, benBox, comBox, btn, feedback);
+    return wrap;
+  }
+
+  /* ============================================================
+     EL VEREDICTO — Índice de Compromiso y Expediente
+     ============================================================ */
+
+  function computeScore() {
+    const m = state.metrics;
+    const totalRetries = Object.values(m.retries).reduce((a, b) => a + b, 0);
+    let score = 40;
+    score += Math.max(0, 18 - totalRetries * 4);
+    score += Math.max(0, 14 - m.holdReleases * 3);
+    if (state.propuesta) {
+      score += Math.min(18, Math.floor(state.propuesta.proposal.length / 60));
+      score += Math.min(6, Math.floor(state.propuesta.talents.length / 40));
+      if (state.propuesta.commitment === "3–5 horas") score += 2;
+      if (state.propuesta.commitment === "6 o más horas") score += 4;
+    }
+    return Math.min(100, score);
+  }
+
+  function sealFor(score) {
+    return D.veredicto.seals.find((s) => score >= s.min) || null;
+  }
+
+  function renderVeredicto() {
+    const accepted = state.score >= D.veredicto.threshold;
+    const v = accepted ? D.veredicto.accepted : D.veredicto.rejected;
+    const seal = sealFor(state.score);
+
+    const scene = el("section", "scene scene-veredicto");
+    scene.appendChild(el("h1", "title-main", v.title));
+
+    const gauge = el("div", "gauge");
+    gauge.appendChild(el("div", "gauge-score", String(state.score)));
+    gauge.appendChild(el("div", "gauge-label", "Índice de Compromiso"));
+    if (seal) gauge.appendChild(el("div", "gauge-seal", seal.symbol + " " + seal.name));
+    scene.appendChild(gauge);
+
+    scene.appendChild(narrative(v.lines));
+
+    if (accepted) {
+      const row = el("div", "form-row center");
+      const dl = el("button", "btn btn-gold", "⬇ Descargar mi Expediente");
+      dl.addEventListener("click", downloadExpediente);
+      const send = el("a", "btn", "✉ Enviarlo al Maestro");
+      send.href = "mailto:" + D.lodge.contactEmail + "?subject=" + encodeURIComponent("Expediente del Aspirante — " + state.name);
+      const cont = el("button", "btn btn-gold btn-big", "Descender a la Cámara de Reflexión");
+      cont.addEventListener("click", () => go("camara"));
+      row.append(dl, send);
+      scene.appendChild(row);
+      scene.appendChild(el("p", "muted small", "Descarga tu expediente y hazlo llegar al Venerable Maestro: él decidirá tu iniciación. Puedes continuar el recorrido mientras tanto."));
+      scene.appendChild(cont);
+    } else {
+      const retry = el("button", "btn btn-gold btn-big", "Volver a la Cámara de Pruebas");
+      retry.addEventListener("click", () => {
+        state.sealed = {};
+        state.metrics.retries = {};
+        state.metrics.holdReleases = 0;
+        state.metrics.filtroStart = Date.now();
+        state.metrics.filtroEnd = null;
+        state.score = null;
+        save();
+        go("filtro");
+      });
+      scene.appendChild(retry);
     }
     root.appendChild(scene);
   }
 
-  /* --- Vestíbulo: nombre simbólico --- */
-
-  function renderVestibulo() {
-    const scene = el("section", "scene");
-    scene.appendChild(el("h1", "title-main", D.vestibulo.title));
-    scene.appendChild(narrative(D.vestibulo.lines));
-
-    const form = el("form", "form-row");
-    const input = el("input", "input");
-    input.type = "text";
-    input.maxLength = 40;
-    input.placeholder = D.vestibulo.placeholder;
-    input.setAttribute("aria-label", "Nombre simbólico");
-    const btn = el("button", "btn btn-gold", D.vestibulo.cta);
-    btn.type = "submit";
-    form.append(input, btn);
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const val = input.value.trim();
-      if (!val) { input.classList.add("shake"); setTimeout(() => input.classList.remove("shake"), 500); return; }
-      state.name = val;
-      state.startedAt = state.startedAt || Date.now();
-      save();
-      go("camara");
-    });
-    scene.appendChild(form);
-    root.appendChild(scene);
-    input.focus();
+  function expedienteText() {
+    const m = state.metrics;
+    const totalRetries = Object.values(m.retries).reduce((a, b) => a + b, 0);
+    const durMin = m.filtroEnd && m.filtroStart ? (m.filtroEnd - m.filtroStart) / 60000 : null;
+    const dur = durMin === null ? "?" : durMin < 1 ? "menos de 1" : String(Math.round(durMin));
+    const seal = sealFor(state.score);
+    const p = state.propuesta || {};
+    const lines = [
+      "══════════════════════════════════════════",
+      "  " + D.lodge.name.toUpperCase() + " · EXPEDIENTE DEL ASPIRANTE",
+      "══════════════════════════════════════════",
+      "",
+      "Nombre simbólico : " + state.name,
+      "Fecha            : " + new Date().toLocaleString("es"),
+      "Índice de Compromiso : " + state.score + "/100" + (seal ? "  (" + seal.name + ")" : ""),
+      "",
+      "— MÉTRICAS DEL FILTRO —",
+      "Tiempo en pruebas      : ~" + dur + " min",
+      "Reintentos totales     : " + totalRetries,
+      "Prueba de constancia   : " + m.holdReleases + " interrupciones del cincel",
+      "Compromiso declarado   : " + (p.commitment || "—") + " semanales",
+      "",
+      "— LA PROPUESTA (Sello V) —",
+      "Obra / proyecto:",
+      p.proposal || "—",
+      "",
+      "Aporta (talentos, experiencia, recursos):",
+      p.talents || "—",
+      "",
+      "Beneficiarios: " + (p.beneficiaries || "—"),
+      ""
+    ];
+    if (state.journal.length) {
+      lines.push("— DIARIO DEL INICIADO —");
+      state.journal.forEach((e) => {
+        lines.push("· " + e.title + " (" + new Date(e.at).toLocaleDateString("es") + ")", e.text, "");
+      });
+    }
+    if (state.voices.length) {
+      lines.push("— VOCES DEL ORIENTE REVELADAS —");
+      state.voices.forEach((id) => {
+        const v = D.voices[id];
+        if (v) lines.push("· " + v.author + ": «" + v.quote + "»");
+      });
+      lines.push("");
+    }
+    lines.push("Luz acumulada: " + state.light, "", D.lodge.motto, "V.I.T.R.I.O.L.");
+    return lines.join("\n");
   }
 
-  /* --- Cámara de Reflexión --- */
+  function downloadExpediente() {
+    const blob = new Blob([expedienteText()], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "expediente-" + normalize(state.name).replace(/\s+/g, "-") + ".txt";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+
+  /* ============================================================
+     CÁMARA DE REFLEXIÓN
+     ============================================================ */
 
   function renderCamara() {
     const scene = el("section", "scene scene-camara");
@@ -197,7 +825,9 @@
     root.appendChild(scene);
   }
 
-  /* --- Sala de grado con puertas --- */
+  /* ============================================================
+     SALAS DE GRADO Y PUERTAS (retos del Templo)
+     ============================================================ */
 
   function renderHall() {
     const grade = currentGrade();
@@ -257,14 +887,12 @@
 
   function roman(n) { return ["I", "II", "III", "IV", "V"][n - 1] || n; }
 
-  /* --- Retos (modal) --- */
-
   function openChallenge(door) {
     const card = $("#modal-card");
     card.innerHTML = "";
     card.appendChild(el("h2", "modal-title", door.title));
     card.appendChild(el("div", "modal-type", typeLabel(door.type)));
-    card.appendChild(narrative(door.narrative));
+    card.appendChild(narrative(door.narrative, true));
 
     if (door.type === "enigma") card.appendChild(enigmaBody(door));
     if (door.type === "reflexion") card.appendChild(reflexionBody(door));
@@ -321,7 +949,7 @@
     wrap.appendChild(el("p", "prompt", prompt));
     const ta = el("textarea", "textarea");
     ta.rows = 6;
-    ta.placeholder = "Escribe con honestidad; nadie más leerá esto…";
+    ta.placeholder = "Escribe con honestidad; esto formará parte de tu expediente…";
     ta.setAttribute("aria-label", "Espacio de reflexión");
     const counter = el("p", "counter", "0 / " + minChars + " caracteres para sellar");
     const btn = el("button", "btn btn-gold", ctaLabel || "Continuar");
@@ -348,8 +976,7 @@
       btn.addEventListener("click", () => {
         list.querySelectorAll("button").forEach((b) => (b.disabled = true));
         btn.classList.add("chosen");
-        const teach = el("p", "teaching", opt.teaching);
-        wrap.appendChild(teach);
+        wrap.appendChild(el("p", "teaching", opt.teaching));
         const cont = el("button", "btn btn-gold", "Cruzar la puerta");
         cont.addEventListener("click", () => completeDoor(door));
         wrap.appendChild(cont);
@@ -363,6 +990,7 @@
   function completeDoor(door) {
     state.opened[door.id] = true;
     addLight(door.reward || 1);
+    if (door.voice && !state.voices.includes(door.voice)) state.voices.push(door.voice);
     save();
 
     const card = $("#modal-card");
@@ -370,6 +998,16 @@
     card.appendChild(el("h2", "modal-title gold", "✦ La puerta se abre"));
     card.appendChild(el("p", "success-text", door.success));
     card.appendChild(el("p", "reward", "+" + (door.reward || 1) + " de Luz"));
+
+    if (door.voice && D.voices[door.voice]) {
+      const v = D.voices[door.voice];
+      const voice = el("div", "voice-card");
+      voice.appendChild(el("div", "voice-tag", "✧ Voz del Oriente revelada"));
+      voice.appendChild(el("p", "voice-quote", "«" + v.quote + "»"));
+      voice.appendChild(el("p", "voice-author", "— " + v.author + ", " + v.role));
+      card.appendChild(voice);
+    }
+
     const btn = el("button", "btn btn-gold", "Continuar el camino");
     btn.addEventListener("click", () => { closeModal(); render(); });
     card.appendChild(btn);
@@ -379,7 +1017,9 @@
     $("#modal").classList.add("hidden");
   }
 
-  /* --- Ceremonia de paso (tres golpes + juramento) --- */
+  /* ============================================================
+     CEREMONIAS Y FINAL
+     ============================================================ */
 
   function renderCeremony() {
     const grade = currentGrade();
@@ -421,9 +1061,7 @@
       void knockZone.offsetWidth;
       knockZone.classList.add("knocked");
       dots.textContent = "●".repeat(knocks) + (knocks < 3 ? " " + "○ ".repeat(3 - knocks).trim() : "");
-      if (knocks === 3) {
-        setTimeout(() => oathWrap.classList.remove("hidden"), 400);
-      }
+      if (knocks === 3) setTimeout(() => oathWrap.classList.remove("hidden"), 400);
     };
     knockZone.addEventListener("click", doKnock);
     knockZone.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); doKnock(); } });
@@ -432,80 +1070,85 @@
     root.appendChild(scene);
   }
 
-  /* --- Final --- */
-
   function renderFinale() {
     const scene = el("section", "scene scene-finale");
     scene.appendChild(el("div", "portal-symbol big-eye", symbolEye()));
     scene.appendChild(el("h1", "title-main", D.finale.title));
     scene.appendChild(narrative(D.finale.lines.concat([
-      "Luz reunida en el viaje: ☀ " + state.light + "."
+      "Luz reunida en el viaje: ☀ " + state.light + " · Voces reveladas: " + state.voices.length + "/9."
     ])));
     scene.appendChild(el("p", "vitriol", D.finale.signature));
 
     const row = el("div", "form-row center");
-    const journalBtn = el("button", "btn btn-gold", "Abrir mi Diario");
+    const dl = el("button", "btn btn-gold", "⬇ Expediente completo");
+    dl.addEventListener("click", downloadExpediente);
+    const journalBtn = el("button", "btn", "Abrir mi Diario");
     journalBtn.addEventListener("click", openJournal);
     const againBtn = el("button", "btn btn-ghost", "Recorrer el Templo de nuevo");
     againBtn.addEventListener("click", resetJourney);
-    row.append(journalBtn, againBtn);
+    row.append(dl, journalBtn, againBtn);
     scene.appendChild(row);
     root.appendChild(scene);
   }
 
-  /* --- Diario --- */
+  /* ============================================================
+     DIARIO, TABLA DE TRAZAR Y ARRANQUE
+     ============================================================ */
 
   function openJournal() {
     const box = $("#journal-entries");
     box.innerHTML = "";
-    if (!state.journal.length) {
+    if (!state.journal.length && !state.voices.length) {
       box.appendChild(el("p", "muted", "Aún no has sellado ninguna reflexión."));
-    } else {
-      state.journal.forEach((entry) => {
+    }
+    state.journal.forEach((entry) => {
+      const item = el("div", "journal-entry");
+      item.appendChild(el("h3", null, escapeHTML(entry.title)));
+      item.appendChild(el("p", "journal-date", new Date(entry.at).toLocaleString("es")));
+      item.appendChild(el("p", "journal-text", escapeHTML(entry.text)));
+      box.appendChild(item);
+    });
+    if (state.voices.length) {
+      box.appendChild(el("h3", "journal-section", "✧ Voces del Oriente reveladas"));
+      state.voices.forEach((id) => {
+        const v = D.voices[id];
+        if (!v) return;
         const item = el("div", "journal-entry");
-        item.appendChild(el("h3", null, escapeHTML(entry.title)));
-        item.appendChild(el("p", "journal-date", new Date(entry.at).toLocaleString("es")));
-        item.appendChild(el("p", "journal-text", escapeHTML(entry.text)));
+        item.appendChild(el("p", "voice-quote", "«" + v.quote + "»"));
+        item.appendChild(el("p", "voice-author", "— " + v.author + ", " + v.role));
         box.appendChild(item);
       });
     }
     $("#journal").classList.remove("hidden");
   }
 
+  function openTabla() {
+    const c = D.caballete;
+    const box = $("#tabla-content");
+    box.innerHTML = "";
+    box.appendChild(el("h2", "modal-title", c.title));
+    box.appendChild(el("p", "tabla-intro", c.intro));
+
+    const tri = el("div", "tabla-triangle", symbolTriangle());
+    box.appendChild(tri);
+
+    c.pillars.forEach((p, i) => {
+      const pill = el("div", "tabla-pillar");
+      pill.appendChild(el("h3", null, (i + 1) + " · " + p.title + ' <span class="pillar-sub">' + p.sub + "</span>"));
+      pill.appendChild(el("p", null, p.text));
+      box.appendChild(pill);
+    });
+
+    box.appendChild(el("p", "tabla-center", "△ " + c.center));
+    box.appendChild(el("p", "tabla-closing", c.closing));
+    $("#tabla").classList.remove("hidden");
+  }
+
   function resetJourney() {
-    if (!confirm("¿Reiniciar el viaje? Tu Diario y tu Luz volverán a cero.")) return;
+    if (!confirm("¿Reiniciar el viaje? Tu Diario, tu Expediente y tu Luz volverán a cero.")) return;
     state = defaultState();
     save();
     render();
-  }
-
-  /* --- Efectos y símbolos --- */
-
-  function knockEffect(after) {
-    document.body.classList.add("flash");
-    setTimeout(() => {
-      document.body.classList.remove("flash");
-      after();
-    }, 450);
-  }
-
-  function escapeHTML(str) {
-    const d = document.createElement("div");
-    d.textContent = str;
-    return d.innerHTML;
-  }
-
-  function symbolSquareCompass() {
-    return (
-      '<svg viewBox="0 0 120 120" width="110" height="110" aria-hidden="true">' +
-      '<g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">' +
-      '<path d="M60 18 L24 92 M60 18 L96 92" />' +           // compás
-      '<circle cx="60" cy="18" r="5" fill="currentColor" />' +
-      '<path d="M30 66 L60 96 L90 66" />' +                   // escuadra
-      '</g>' +
-      '<text x="60" y="66" text-anchor="middle" font-size="22" fill="currentColor" font-family="Cinzel, serif">G</text>' +
-      "</svg>"
-    );
   }
 
   function symbolEye() {
@@ -516,6 +1159,21 @@
       '<path d="M38 58 Q60 42 82 58 Q60 74 38 58 Z" />' +
       '<circle cx="60" cy="58" r="6" fill="currentColor" />' +
       "</g></svg>"
+    );
+  }
+
+  function symbolTriangle() {
+    return (
+      '<svg viewBox="0 0 200 150" width="220" height="165" aria-hidden="true">' +
+      '<g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">' +
+      '<path d="M100 12 L14 138 L186 138 Z" />' +
+      "</g>" +
+      '<text x="100" y="34" text-anchor="middle" font-size="11" fill="currentColor" font-family="Cinzel, serif">1 ME EDUCO</text>' +
+      '<text x="158" y="132" text-anchor="middle" font-size="11" fill="currentColor" font-family="Cinzel, serif">2 TRABAJO</text>' +
+      '<text x="44" y="132" text-anchor="middle" font-size="11" fill="currentColor" font-family="Cinzel, serif">3 AYUDO</text>' +
+      '<text x="100" y="100" text-anchor="middle" font-size="9" fill="currentColor" font-family="Cinzel, serif" opacity="0.8">IA COMO</text>' +
+      '<text x="100" y="112" text-anchor="middle" font-size="9" fill="currentColor" font-family="Cinzel, serif" opacity="0.8">INFRAESTRUCTURA</text>' +
+      "</svg>"
     );
   }
 
@@ -534,7 +1192,9 @@
   /* ---------- Arranque ---------- */
 
   $("#btn-journal").addEventListener("click", openJournal);
+  $("#btn-tabla").addEventListener("click", openTabla);
   $("#journal-close").addEventListener("click", () => $("#journal").classList.add("hidden"));
+  $("#tabla-close").addEventListener("click", () => $("#tabla").classList.add("hidden"));
   $("#btn-reset").addEventListener("click", resetJourney);
   document.querySelectorAll(".modal-backdrop").forEach((b) =>
     b.addEventListener("click", () => b.parentElement.classList.add("hidden"))

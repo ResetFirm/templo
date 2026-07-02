@@ -462,3 +462,327 @@ body.flash::after {
   .doors { grid-template-columns: 1fr; }
   .door-frame { width: 96px; height: 130px; }
 }
+
+/* ============================================================
+   v2 — Umbral secreto, Filtro del Aspirante, Veredicto, Tabla
+   ============================================================ */
+
+/* ---------- El Umbral ---------- */
+
+.scene-umbral {
+  min-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.umbral-whisper {
+  color: rgba(154, 160, 184, 0.35);
+  font-style: italic;
+  letter-spacing: 0.2em;
+  font-size: 15px;
+  animation: whisperIn 4s ease both;
+}
+@keyframes whisperIn { from { opacity: 0; } }
+
+.umbral-door {
+  width: 130px;
+  height: 190px;
+  margin: 30px 0 10px;
+  border-radius: 65px 65px 0 0;
+  border: 2px solid rgba(212, 175, 55, 0.07);
+  background: rgba(255, 255, 255, 0.01);
+  cursor: pointer;
+  position: relative;
+  transition: border-color 1.4s ease, box-shadow 1.4s ease;
+  outline: none;
+}
+.umbral-door.revealed {
+  border-color: var(--gold-dim);
+  box-shadow: 0 0 60px rgba(212, 175, 55, 0.12), inset 0 -30px 60px rgba(212, 175, 55, 0.05);
+}
+.umbral-door:focus-visible { border-color: var(--gold); }
+.umbral-door.knocked { animation: knock 0.3s ease; }
+.umbral-glow {
+  position: absolute;
+  inset: 40% 30% 0;
+  background: radial-gradient(ellipse at 50% 100%, rgba(212, 175, 55, 0.12), transparent 70%);
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+.umbral-door.revealed .umbral-glow { opacity: 1; }
+
+.umbral-lines { max-width: 520px; }
+.narrative-line-static { margin: 8px 0; font-size: 1.05em; animation: lineIn 1.4s ease both; }
+.umbral-hint {
+  color: var(--gold-soft);
+  font-style: italic;
+  font-family: var(--font-title);
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  animation: lineIn 1.2s ease both;
+}
+.umbral-dots { animation: lineIn 1.2s ease both; }
+.umbral-question { max-width: 560px; margin-top: 22px; animation: sceneIn 0.6s ease both; }
+.btn-option.rejected { border-color: var(--danger); color: var(--muted); }
+
+/* ---------- El Filtro: sellos ---------- */
+
+.seals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 20px;
+  margin: 30px 0 14px;
+}
+.seal {
+  padding: 20px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s, background 0.2s;
+}
+.seal:hover:not(.seal-locked):not(.seal-done),
+.seal:focus-visible:not(.seal-locked):not(.seal-done) {
+  transform: translateY(-4px);
+  border-color: var(--gold-dim);
+  background: rgba(212, 175, 55, 0.05);
+  outline: none;
+}
+.seal-locked { opacity: 0.4; cursor: not-allowed; filter: grayscale(0.6); }
+.seal-done { cursor: default; }
+.seal-ring {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 12px;
+  border: 2px solid var(--gold-dim);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-title);
+  font-size: 26px;
+  color: var(--gold-soft);
+  transition: box-shadow 0.4s ease, border-color 0.4s;
+}
+.seal-done .seal-ring {
+  border-color: var(--gold);
+  box-shadow: 0 0 26px rgba(212, 175, 55, 0.35);
+  color: var(--gold);
+}
+.seal-title { font-family: var(--font-title); font-size: 14px; letter-spacing: 0.05em; min-height: 2.4em; }
+.seal-state { font-size: 13px; color: var(--muted); margin-top: 6px; font-family: var(--font-title); }
+.seal-done .seal-state { color: var(--gold); }
+
+/* ---------- Tablero de fichas y ranuras ---------- */
+
+.board { margin-top: 10px; }
+.board-hint { font-size: 14px; color: var(--muted); font-family: var(--font-title); letter-spacing: 0.04em; }
+.chip-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  min-height: 56px;
+  padding: 10px;
+  border: 1px dashed rgba(154, 160, 184, 0.3);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+}
+.chip {
+  padding: 8px 16px;
+  border: 1px solid var(--gold-dim);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.14), rgba(212, 175, 55, 0.05));
+  cursor: grab;
+  font-family: var(--font-title);
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  color: var(--gold-soft);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+  text-align: center;
+}
+.chip:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(212, 175, 55, 0.2); }
+.chip:active { cursor: grabbing; }
+.chip-selected { outline: 2px solid var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+.chip-sub { display: block; font-family: var(--font-body); font-size: 13px; color: var(--muted); letter-spacing: 0; text-transform: lowercase; }
+
+.slots { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.slot {
+  min-height: 64px;
+  border: 1px dashed var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: flex-start;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  text-align: left;
+}
+.slot:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.04); }
+.slot-label { font-family: var(--font-title); font-size: 13px; color: var(--muted); min-width: 40%; }
+.slot .chip { margin-left: auto; }
+.slot-wrong { border-color: var(--danger); animation: shake 0.4s ease; }
+.tool-symbol { font-size: 22px; color: var(--gold); margin-right: 6px; }
+
+/* ---------- Completar frases ---------- */
+
+.quote-plate {
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.07), transparent);
+  padding: 16px 18px;
+  margin: 14px 0;
+  text-align: left;
+}
+.quote-line { margin: 0 0 6px; font-size: 1.1em; font-style: italic; }
+.quote-author { margin: 0; font-size: 14px; color: var(--muted); font-family: var(--font-title); }
+.input-inline {
+  min-width: 130px;
+  width: 150px;
+  padding: 2px 10px;
+  font-size: 18px;
+  display: inline-block;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* ---------- Constancia ---------- */
+
+.stone {
+  width: 120px;
+  height: 90px;
+  margin: 10px auto;
+  background: linear-gradient(160deg, #3a3f52, #20243a 70%);
+  clip-path: polygon(12% 22%, 88% 10%, 100% 78%, 70% 100%, 8% 92%);
+  transition: filter 0.3s ease;
+}
+.stone.carving-now { filter: drop-shadow(0 0 18px rgba(212, 175, 55, 0.5)); }
+.hold-bar {
+  height: 10px;
+  max-width: 380px;
+  margin: 10px auto;
+  border: 1px solid var(--gold-dim);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.hold-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #e3c766, var(--gold));
+  transition: width 0.1s linear;
+}
+.carvings { min-height: 140px; } /* altura reservada: las líneas no desplazan el botón durante la presión */
+.carving {
+  font-style: italic;
+  color: var(--gold-soft);
+  margin: 4px 0;
+  animation: lineIn 0.8s ease both;
+}
+.hold-btn { touch-action: none; }
+
+/* ---------- Propuesta ---------- */
+
+.propuesta-form { text-align: left; }
+.field { margin: 14px 0; }
+.field-label {
+  display: block;
+  font-family: var(--font-title);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--gold-soft);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.input.full { width: 100%; min-width: 0; }
+select.input { appearance: auto; }
+.propuesta-form .btn-big { display: block; margin: 18px auto 0; }
+
+/* ---------- Veredicto ---------- */
+
+.gauge { margin: 20px auto 6px; }
+.gauge-score {
+  font-family: var(--font-title);
+  font-size: 64px;
+  color: var(--gold);
+  text-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+  line-height: 1;
+}
+.gauge-label {
+  font-family: var(--font-title);
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.gauge-seal {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: var(--font-title);
+  font-size: 15px;
+  color: var(--gold-soft);
+  border: 1px solid var(--gold-dim);
+  border-radius: 999px;
+  padding: 4px 18px;
+}
+a.btn { text-decoration: none; display: inline-flex; align-items: center; }
+
+/* ---------- Voz del Oriente ---------- */
+
+.voice-card {
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.08), transparent);
+  padding: 14px 18px;
+  margin: 16px auto;
+  max-width: 480px;
+}
+.voice-tag {
+  font-family: var(--font-title);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.voice-quote { font-style: italic; font-size: 1.1em; margin: 4px 0; }
+.voice-author { font-size: 14px; color: var(--muted); font-family: var(--font-title); margin: 0; }
+.journal-section {
+  font-family: var(--font-title);
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin: 22px 0 6px;
+  font-size: 15px;
+}
+
+/* ---------- Tabla de Trazar ---------- */
+
+.tabla-card { text-align: center; }
+.tabla-intro { font-style: italic; color: var(--muted); max-width: 520px; margin: 6px auto 10px; }
+.tabla-triangle { color: var(--gold); margin: 6px 0; filter: drop-shadow(0 0 14px rgba(212, 175, 55, 0.25)); }
+.tabla-pillar { text-align: left; border-top: 1px solid var(--gold-dim); padding: 12px 0 2px; }
+.tabla-pillar h3 {
+  font-family: var(--font-title);
+  color: var(--gold-soft);
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  margin: 0 0 4px;
+}
+.pillar-sub { font-family: var(--font-body); font-size: 14px; color: var(--muted); font-weight: 400; }
+.tabla-pillar p { margin: 0 0 8px; }
+.tabla-center {
+  font-family: var(--font-title);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  text-transform: uppercase;
+  border: 1px solid var(--gold-dim);
+  border-radius: 999px;
+  display: inline-block;
+  padding: 6px 20px;
+  margin-top: 14px;
+}
+.tabla-closing { font-style: italic; color: var(--gold-soft); max-width: 520px; margin: 14px auto 0; }

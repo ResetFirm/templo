@@ -25,6 +25,7 @@
     </div>
     <div class="hud-right">
       <span class="hud-light" title="Luz acumulada">☀ <span id="hud-light">0</span></span>
+      <button id="btn-tabla" class="hud-btn" title="Tabla de Trazar — Caballete">△ Tabla</button>
       <button id="btn-journal" class="hud-btn" title="Diario del Iniciado">✎ Diario</button>
       <button id="btn-reset" class="hud-btn" title="Reiniciar el viaje">⟲</button>
     </div>
@@ -47,6 +48,15 @@
       <p class="journal-hint">Aquí se conservan tus reflexiones. Son tu piedra tallada.</p>
       <div id="journal-entries"></div>
       <button class="btn btn-ghost" id="journal-close">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Tabla de Trazar (Caballete) -->
+  <div id="tabla" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card tabla-card">
+      <div id="tabla-content"></div>
+      <button class="btn btn-ghost" id="tabla-close">Cerrar</button>
     </div>
   </div>
 

@@ -1,57 +1,59 @@
-# El Templo — Prototipo v1
+# El Templo — Prototipo v2
 
-Webapp gamificada para una nueva logia masónica: el usuario **ingresa al templo como si entrara a un videojuego** y avanza por los tres grados de la Masonería Azul (Simbólica) — **Aprendiz, Compañero y Maestro** — superando retos de pensamiento y reflexión que abren puertas y guían su desarrollo personal.
+Webapp gamificada para una nueva logia masónica moderna —con **IA como arquitectura**— donde el usuario ingresa al templo como en un **juego de misterio y estrategia para adultos**: un acceso secreto y discreto, un filtro de admisión con pruebas interactivas, y el viaje por los tres grados de la Masonería Azul (Aprendiz, Compañero, Maestro) tallando la propia piedra.
 
 ## El viaje
 
-1. **El Portal** — llamada a la puerta del Templo.
-2. **El Vestíbulo** — el buscador elige su *nombre simbólico*.
-3. **Cámara de Reflexión** — antes de iniciar, escribe su *testamento del profano* (V.I.T.R.I.O.L.).
-4. **Cámara del Norte (Aprendiz ▦)** — trabajo sobre la piedra bruta: 3 puertas.
-5. **Ceremonia de Paso** — tres golpes rituales + juramento.
-6. **Cámara del Mediodía (Compañero ✶)** — la letra G, los cinco sentidos, el salario: 3 puertas.
-7. **Ceremonia de Exaltación** — tres golpes + juramento.
-8. **Cámara del Medio (Maestro ☉)** — la leyenda de Hiram, la acacia, el legado: 3 puertas.
-9. **La Luz** — culminación del viaje y acceso al Diario.
+1. **El Umbral** — acceso místico y discreto: la puerta apenas se ve; hay que descubrirla, llamar tres veces y responder bien a la voz que pregunta *¿quién llama?* (los curiosos y los que buscan poder son rechazados con enseñanza).
+2. **Cámara de Pruebas (El Filtro del Aspirante)** — cinco sellos con mecánicas de juego:
+   - **Sello I — La Tabla del Orden**: *arrastrar y soltar* los pilares del Caballete (ME EDUCO → TRABAJO → AYUDO) en el orden del constructor.
+   - **Sello II — Las Voces del Oriente**: *completar* palabras faltantes en frases de Franklin y Goethe.
+   - **Sello III — La Lectura de los Símbolos**: *unir* significados con las herramientas (escuadra, compás, nivel, plomada).
+   - **Sello IV — La Prueba de la Constancia**: *sostener el cincel* sin soltarlo (mide paciencia; cada interrupción queda registrada).
+   - **Sello V — La Propuesta del Aspirante**: nadie entra con las manos vacías — proyecto/idea de valor, talentos que aporta, beneficiarios y compromiso semanal.
+3. **El Veredicto** — se calcula un **Índice de Compromiso** (0–100) a partir de reintentos, constancia, profundidad de la propuesta y compromiso declarado. Bajo el umbral, el Templo no abre (puede reintentarse). Sobre el umbral: Sello de Bronce / Plata / Oro y **Expediente del Aspirante** descargable para revisión del Maestro.
+4. **Cámara de Reflexión** — testamento del profano (V.I.T.R.I.O.L.).
+5. **Tres grados** alineados al Caballete: Aprendiz (*ME EDUCO*), Compañero (*TRABAJO*), Maestro (*AYUDO*) — 3 puertas por grado (enigmas, dilemas simbólicos, reflexiones) y ceremonias de paso con tres golpes rituales y juramentos del Caballete.
+6. **La Luz** — culminación, Diario y Expediente completo.
 
 ## Mecánicas de juego
 
-- **Puertas secuenciales**: cada puerta se desbloquea al abrir la anterior; cada grado, al completar el anterior.
-- **Tres tipos de reto**:
-  - ⚿ **Enigma** — pregunta simbólica con respuesta (coincidencia flexible, con pistas tras dos intentos).
-  - ✎ **Reflexión** — escritura libre con mínimo de caracteres; se guarda en el *Diario del Iniciado*.
-  - ⚖ **Dilema simbólico** — elección sin respuesta errónea; cada opción entrega una enseñanza distinta.
-- **Luz (☀)** — puntos que se acumulan al superar cada reto.
-- **Diario del Iniciado** — repositorio personal de todas las reflexiones escritas.
-- **Progreso persistente** — guardado en `localStorage`; el Templo "recuerda" al visitante.
+- **Puertas y sellos secuenciales** — nada se abre sin lo anterior.
+- **Luz (☀)** — puntos por cada reto superado.
+- **Voces del Oriente** — coleccionables: cada puerta revela la enseñanza de un masón célebre (Franklin, Goethe, Washington, Voltaire, Bolívar, Mozart, Churchill, Kipling, Fleming).
+- **Tabla de Trazar (△ Tabla en el HUD)** — el Caballete del Aprendiz siempre a mano: ME EDUCO / TRABAJO / AYUDO con la IA como infraestructura al centro.
+- **Diario del Iniciado** — todas las reflexiones escritas.
+- **Expediente del Aspirante** — archivo descargable con métricas, propuesta, diario y voces, pensado para que el Maestro evalúe compromiso y aporte (sin backend en este prototipo).
+- **Progreso persistente** en `localStorage`.
+
+## Evaluación para el Maestro (Índice de Compromiso)
+
+Fórmula transparente sobre 100: base 40 + precisión (menos reintentos) + constancia (menos interrupciones del cincel) + profundidad de la propuesta y talentos + compromiso semanal declarado. Umbral de aceptación: 50.
 
 ## Ejecutar
 
-No requiere build ni dependencias. Basta un servidor estático:
+Sin build ni dependencias:
 
 ```bash
-# opción 1
-npx serve .
-
-# opción 2
+npx serve .        # o
 python3 -m http.server 8080
 ```
 
-Y abrir `http://localhost:8080`. También funciona publicándolo directamente en GitHub Pages.
+Compatible con GitHub Pages.
 
 ## Estructura
 
 ```
-index.html        # shell de la app (HUD, escenas, modales)
-css/styles.css    # estética: noche profunda + oro, puertas, piso ajedrezado
-js/data.js        # contenido ritual: grados, puertas, retos, ceremonias
-js/app.js         # motor: máquina de escenas, retos, luz, diario, persistencia
+index.html        # shell (HUD, escenas, modales: reto, diario, tabla de trazar)
+css/styles.css    # estética noche+oro, puertas, sellos, tablero drag&drop, veredicto
+js/data.js        # contenido: umbral, filtro, caballete, voces, grados, ceremonias
+js/app.js         # motor: escenas, pruebas interactivas, scoring, expediente, diario
 ```
 
-## Ideas para v2
+## Ideas para v3
 
-- Audio ambiental y efectos (golpes, apertura de puertas).
-- Más puertas por grado y retos de tipo "ordenar símbolos" o "trazado de logia".
-- Cuentas de usuario y sincronización del Diario en backend.
-- Modo mentor: un Maestro real revisa las reflexiones del Aprendiz.
-- Ilustraciones/3D del templo (columnas J∴ y B∴, mosaico, oriente).
+- Backend: recepción real de expedientes y panel del Maestro (dashboard de aspirantes).
+- Audio ambiental y narración.
+- Tokenización/insignias verificables por logro (alineado al modelo Artesanos®).
+- Modo mentor IA: acompañamiento socrático durante las reflexiones.
+- Analítica del progreso del iniciado (retención, hábito, constancia) como en un LMS.
