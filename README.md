@@ -1,4 +1,4 @@
-# El Templo · Logia Kaizen — Prototipo v3
+# El Templo · Logia Kaizen — Prototipo v4
 
 Templo digital de una **logia de Masonería Liberal de vanguardia** (libertad absoluta de conciencia, síntesis del Rito Escocés Antiguo y Aceptado y del Rito Francés), diseñado como un **LMS gamificado con estimulación neuronal** — el **Método Kaizen** de Esteban Castillo: neurociencias + academia + mejora continua. El rito es el plan de estudios; el objetivo, guiar el desarrollo del miembro y conectar a millones de masones debidamente probados en la red fraternal más grande del planeta.
 
@@ -24,8 +24,11 @@ Templo digital de una **logia de Masonería Liberal de vanguardia** (libertad ab
 
 ## Estimulación neuronal (Método Kaizen)
 
+- **♫ Armonías del Templo** (HUD) — reproductor de audio **generativo** (Web Audio API, sin archivos ni red): Cámara Barroca (arpegios en re mayor a 72 ppm), Órgano Ritual, **ondas binaurales Alfa 10 Hz y Theta 6 Hz** (con audífonos) y Lluvia (ruido rosa). Volumen y canal persistentes; el canal elegido se reanuda con el primer gesto del usuario.
 - **🧠 Gimnasio Neuronal** (HUD) — repaso por *recuperación activa*: series de 3 preguntas sobre símbolos, rito y caballete, con racha registrada. La técnica de aprendizaje con más evidencia en neurociencia cognitiva.
 - **Notas de neurociencia por módulo** — cada cámara explica qué capacidad entrena (memoria episódica, control ejecutivo, empatía cognitiva, metacognición, efecto protegé).
+- **Inmersión experiencial** — velo de puertas doradas entre cámaras, columnas B∴ y J∴ flanqueando las salas, emblema del grado como marca de agua (escuadra y compás, estrella flamígera, ojo de la providencia), glifos por tipo de reto en cada puerta.
+- **🗺 Plano del Templo** (HUD) — tablero navegable al estilo CLUE: todas las cámaras del Templo en un plano, tu ubicación con punto pulsante, cámaras completadas ✓, bloqueadas 🔒 y navegación tocando las iluminadas.
 - **Gamificación estructural** — Luz (XP), insignias por cámara, coleccionables (9 Voces del Oriente), progreso visible por módulo, desbloqueo secuencial.
 
 ## Herramientas del miembro
@@ -56,7 +59,7 @@ js/data.js        # contenido: umbral, filtro, apertura liberal, 5 cuerpos del r
 js/app.js         # motor: escenas, pruebas, lecciones, scoring, gimnasio, perfil
 ```
 
-## Ideas para v4
+## Ideas para v5
 
 - Backend: cuentas, recepción de expedientes, panel del Maestro y **Red Global real** (directorio de perfiles verificados, mentorías entre grados, triángulos por ciudad).
 - Repaso espaciado con calendario (algoritmo SM-2) y notificaciones.

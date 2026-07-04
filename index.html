@@ -14,6 +14,12 @@
 <body>
   <div id="stars" aria-hidden="true"></div>
 
+  <!-- Velo de transición: las puertas del Templo entre escenas -->
+  <div id="veil" aria-hidden="true">
+    <div class="veil-panel veil-left"></div>
+    <div class="veil-panel veil-right"></div>
+  </div>
+
   <!-- HUD -->
   <header id="hud" class="hud hidden">
     <div class="hud-left">
@@ -25,7 +31,9 @@
     </div>
     <div class="hud-right">
       <span class="hud-light" title="Luz acumulada">☀ <span id="hud-light">0</span></span>
-      <button id="btn-gym" class="hud-btn" title="Gimnasio Neuronal — repaso activo">🧠 Repaso</button>
+      <button id="btn-audio" class="hud-btn" title="Armonías del Templo — audio neuroestimulante">♫</button>
+      <button id="btn-map" class="hud-btn" title="Plano del Templo">🗺</button>
+      <button id="btn-gym" class="hud-btn" title="Gimnasio Neuronal — repaso activo">🧠</button>
       <button id="btn-tabla" class="hud-btn" title="Tabla de Trazar — Caballete">△ Tabla</button>
       <button id="btn-journal" class="hud-btn" title="Diario del Iniciado">✎ Diario</button>
       <button id="btn-reset" class="hud-btn" title="Reiniciar el viaje">⟲</button>

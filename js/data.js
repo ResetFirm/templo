@@ -436,6 +436,22 @@ const TEMPLE_DATA = {
     }
   ],
 
+  /* ---------- Armonías del Templo (audio generativo) ---------- */
+
+  audio: {
+    title: "Armonías del Templo",
+    intro: "El sonido es arquitectura invisible. Elige la atmósfera de tu trabajo: cada canal se genera en vivo, dentro del Templo.",
+    note: "Neurociencia: la música a ~60–80 pulsos por minuto favorece el estado de alerta relajada; los pulsos binaurales (usa audífonos) arrastran suavemente los ritmos corticales — alfa (10 Hz) para serenidad enfocada, theta (6 Hz) para la contemplación profunda del símbolo.",
+    channels: [
+      { id: "off",     name: "Silencio del Templo",   desc: "Trabaja en silencio: el símbolo también suena." },
+      { id: "barroco", name: "Cámara Barroca",        desc: "Arpegios generativos en re mayor, 72 pulsos por minuto — orden, foco y proporción." },
+      { id: "organo",  name: "Órgano Ritual",         desc: "Acordes sostenidos en la nave — solemnidad y presencia." },
+      { id: "alfa",    name: "Ondas Alfa · 10 Hz",    desc: "Pulso binaural de serenidad alerta. Requiere audífonos." },
+      { id: "theta",   name: "Ondas Theta · 6 Hz",    desc: "Pulso binaural para profundizar en el rito y el símbolo. Requiere audífonos." },
+      { id: "lluvia",  name: "Lluvia sobre el Templo", desc: "Ruido rosa filtrado — enmascara el mundo exterior." }
+    ]
+  },
+
   /* ---------- Gimnasio Neuronal (repaso por recuperación activa) ---------- */
 
   gym: {

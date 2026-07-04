@@ -959,3 +959,160 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
 .member-boveda { font-style: italic; color: var(--ink); font-size: 0.9em; margin: 10px 0 0; }
 .member-badges { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 12px 0 4px; }
 .member-stats { font-family: var(--font-title); font-size: 13px; color: var(--gold-soft); margin: 8px 0 0; letter-spacing: 0.06em; }
+
+/* ============================================================
+   v4 — Velo de puertas, inmersión de cámaras, Armonías y Plano
+   ============================================================ */
+
+/* ---------- Velo de transición: puertas del Templo ---------- */
+
+#veil {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  pointer-events: none;
+  overflow: hidden;
+}
+.veil-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 51%;
+  background:
+    linear-gradient(90deg, rgba(212, 175, 55, 0.12) 0%, transparent 12%),
+    linear-gradient(180deg, #171230, #0b0820);
+  border-right: 1px solid var(--gold-dim);
+  transition: transform 0.55s cubic-bezier(0.7, 0, 0.3, 1);
+}
+.veil-left  { left: 0;  transform: translateX(-101%); }
+.veil-right { right: 0; transform: translateX(101%); border-right: none; border-left: 1px solid var(--gold-dim); }
+#veil.closing .veil-left  { transform: translateX(0); }
+#veil.closing .veil-right { transform: translateX(0); }
+
+/* ---------- Cámaras inmersivas: columnas y emblemas ---------- */
+
+.scene-hall { position: relative; }
+
+.pillar {
+  position: absolute;
+  top: 40px;
+  bottom: 130px;
+  width: 52px;
+  display: flex;
+  flex-direction: column;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.pillar-left { left: 4px; }
+.pillar-right { right: 4px; }
+.pillar-capital {
+  height: 26px;
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.5), rgba(212, 175, 55, 0.15));
+  border-radius: 6px 6px 2px 2px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+.pillar-shaft {
+  flex: 1;
+  margin: 0 7px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 5px, transparent 5px 10px),
+    linear-gradient(90deg, #1d1838, #322a55 45%, #1d1838);
+  border-left: 1px solid rgba(212, 175, 55, 0.25);
+  border-right: 1px solid rgba(212, 175, 55, 0.25);
+}
+.pillar-base {
+  height: 20px;
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.35), rgba(212, 175, 55, 0.12));
+  border-radius: 2px 2px 6px 6px;
+}
+.pillar-letter {
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-title);
+  font-size: 20px;
+  color: var(--gold);
+  text-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+}
+
+.hall-watermark {
+  position: absolute;
+  inset: 60px 0 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  opacity: 0.06;
+  pointer-events: none;
+  color: var(--gold);
+}
+.hall-watermark svg { width: min(420px, 80vw); height: auto; }
+
+.hall-emblem {
+  color: var(--gold);
+  filter: drop-shadow(0 0 16px rgba(212, 175, 55, 0.45));
+  margin-bottom: 6px;
+  animation: glow 4s ease-in-out infinite;
+}
+.hall-emblem svg { width: 84px; height: 84px; }
+
+.door-glyph {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 15px;
+  color: rgba(212, 175, 55, 0.7);
+}
+.door-leaf { position: relative; }
+
+@media (max-width: 720px) {
+  .pillar { display: none; }
+}
+
+/* ---------- Armonías del Templo ---------- */
+
+.audio-option strong { display: block; font-family: var(--font-title); letter-spacing: 0.05em; }
+.vol-slider {
+  width: 100%;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
+/* ---------- Plano del Templo ---------- */
+
+.temple-map {
+  width: 100%;
+  max-width: 420px;
+  margin: 8px auto;
+  display: block;
+}
+.map-room rect {
+  fill: rgba(255, 255, 255, 0.03);
+  stroke: rgba(154, 160, 184, 0.35);
+  stroke-width: 1.2;
+  transition: fill 0.2s ease, stroke 0.2s;
+}
+.map-room text {
+  fill: var(--muted);
+  font-family: var(--font-title);
+  font-size: 11.5px;
+  letter-spacing: 0.03em;
+  pointer-events: none;
+}
+.map-open { cursor: pointer; }
+.map-open rect { stroke: var(--gold-dim); fill: rgba(212, 175, 55, 0.06); }
+.map-open text { fill: var(--gold-soft); }
+.map-open:hover rect { fill: rgba(212, 175, 55, 0.16); stroke: var(--gold); }
+.map-done { cursor: pointer; }
+.map-done rect { stroke: rgba(212, 175, 55, 0.5); fill: rgba(212, 175, 55, 0.1); }
+.map-done text { fill: var(--gold); }
+.map-current rect { stroke: var(--gold); stroke-width: 2; fill: rgba(212, 175, 55, 0.14); }
+.map-current text { fill: var(--gold-soft); }
+.map-locked rect { stroke-dasharray: 4 4; }
+.map-locked text { fill: rgba(154, 160, 184, 0.55); }
+.map-you {
+  fill: var(--gold);
+  animation: youPulse 1.6s ease-in-out infinite;
+}
+@keyframes youPulse { 50% { opacity: 0.35; } }

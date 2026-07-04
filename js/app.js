@@ -34,6 +34,7 @@
       holdReleases: 0
     },
     gymBest: 0,               // mejor racha del Gimnasio Neuronal
+    audio: { channel: "off", volume: 0.5 },
     score: null,
     startedAt: null
   });
@@ -47,6 +48,7 @@
         const parsed = JSON.parse(raw);
         const st = Object.assign(defaultState(), parsed);
         st.metrics = Object.assign(defaultState().metrics, parsed.metrics || {});
+        st.audio = Object.assign(defaultState().audio, parsed.audio || {});
         return st;
       }
     } catch (e) { /* estado corrupto: se reinicia */ }
@@ -156,10 +158,334 @@
   }
 
   function go(scene) {
-    state.scene = scene;
-    save();
-    render();
-    window.scrollTo(0, 0);
+    // Las puertas del Templo se cierran y se abren entre cámaras
+    const veil = $("#veil");
+    veil.classList.add("closing");
+    setTimeout(() => {
+      state.scene = scene;
+      save();
+      render();
+      window.scrollTo(0, 0);
+      veil.classList.remove("closing");
+    }, 560);
+  }
+
+  /* ============================================================
+     ARMONÍAS DEL TEMPLO — audio generativo (Web Audio API)
+     Todo se sintetiza en vivo: sin archivos, sin red.
+     ============================================================ */
+
+  const AudioEngine = (function () {
+    let ctx = null, master = null, wet = null;
+    let nodes = [], timers = [];
+    let current = "off";
+
+    function ensure() {
+      if (!ctx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return false;
+        ctx = new AC();
+        master = ctx.createGain();
+        master.gain.value = state.audio.volume;
+        master.connect(ctx.destination);
+        // Eco suave compartido: espacio de "nave de templo"
+        wet = ctx.createDelay(1.0);
+        wet.delayTime.value = 0.31;
+        const fb = ctx.createGain(); fb.gain.value = 0.34;
+        const wetGain = ctx.createGain(); wetGain.gain.value = 0.35;
+        wet.connect(fb); fb.connect(wet);
+        wet.connect(wetGain); wetGain.connect(master);
+      }
+      if (ctx.state === "suspended") ctx.resume();
+      return true;
+    }
+
+    function track(n) { nodes.push(n); return n; }
+    function later(fn, ms) { const t = setTimeout(fn, ms); timers.push(t); return t; }
+
+    function stopAll() {
+      timers.forEach(clearTimeout); timers = [];
+      nodes.forEach((n) => { try { n.stop ? n.stop() : n.disconnect(); } catch (e) { /* ya detenido */ } });
+      nodes = [];
+      current = "off";
+    }
+
+    const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
+
+    function pluck(midi, when, gainVal, pan) {
+      const t = ctx.currentTime + when;
+      const osc = track(ctx.createOscillator());
+      osc.type = "triangle";
+      osc.frequency.value = mtof(midi);
+      const g = track(ctx.createGain());
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(gainVal, t + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+      const p = track(ctx.createStereoPanner ? ctx.createStereoPanner() : ctx.createGain());
+      if (p.pan) p.pan.value = pan || 0;
+      osc.connect(g); g.connect(p); p.connect(master); p.connect(wet);
+      osc.start(t); osc.stop(t + 1.1);
+    }
+
+    function playBarroco() {
+      // Progresión del canon: D A Bm F#m G D G A — arpegios a 72 ppm
+      const prog = [
+        [62, 66, 69], [57, 61, 64], [59, 62, 66], [54, 58, 61],
+        [55, 59, 62], [50, 54, 57], [55, 59, 62], [57, 61, 64]
+      ];
+      let step = 0;
+      const beat = 60 / 72 / 2 * 1000; // corcheas
+      (function loop() {
+        if (current !== "barroco") return;
+        const chord = prog[Math.floor(step / 8) % prog.length];
+        const idx = [0, 1, 2, 1, 0, 1, 2, 1][step % 8];
+        const octave = step % 16 >= 8 ? 12 : 0;
+        pluck(chord[idx] + octave, 0, 0.16, (idx - 1) * 0.4);
+        if (step % 8 === 0) pluck(chord[0] - 24, 0, 0.22, 0); // bajo
+        step++;
+        later(loop, beat);
+      })();
+    }
+
+    function sustained(midis, t0, dur) {
+      midis.forEach((m, i) => {
+        const osc = track(ctx.createOscillator());
+        osc.type = i === 0 ? "sine" : "triangle";
+        osc.frequency.value = mtof(m);
+        const det = track(ctx.createOscillator());
+        det.type = "sine";
+        det.frequency.value = mtof(m) * 1.003;
+        const g = track(ctx.createGain());
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.linearRampToValueAtTime(0.055, t0 + 1.6);
+        g.gain.setValueAtTime(0.055, t0 + dur - 1.6);
+        g.gain.linearRampToValueAtTime(0.0001, t0 + dur);
+        const f = track(ctx.createBiquadFilter());
+        f.type = "lowpass"; f.frequency.value = 1200;
+        osc.connect(g); det.connect(g); g.connect(f); f.connect(master); f.connect(wet);
+        osc.start(t0); det.start(t0);
+        osc.stop(t0 + dur + 0.1); det.stop(t0 + dur + 0.1);
+      });
+    }
+
+    function playOrgano() {
+      const chords = [
+        [50, 57, 62, 66], [45, 52, 57, 60], [43, 50, 55, 59], [45, 52, 57, 61]
+      ];
+      let i = 0;
+      (function loop() {
+        if (current !== "organo") return;
+        sustained(chords[i % chords.length], ctx.currentTime + 0.05, 8.5);
+        i++;
+        later(loop, 8000);
+      })();
+    }
+
+    function noiseSource() {
+      const len = ctx.sampleRate * 2;
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      let last = 0;
+      for (let i = 0; i < len; i++) {
+        const white = Math.random() * 2 - 1;
+        last = (last + 0.02 * white) / 1.02; // aproximación de ruido rosa
+        d[i] = last * 3.5;
+      }
+      const src = track(ctx.createBufferSource());
+      src.buffer = buf; src.loop = true;
+      return src;
+    }
+
+    function playBinaural(baseHz, beatHz) {
+      const mk = (freq, pan) => {
+        const osc = track(ctx.createOscillator());
+        osc.type = "sine"; osc.frequency.value = freq;
+        const g = track(ctx.createGain()); g.gain.value = 0.09;
+        const p = track(ctx.createStereoPanner ? ctx.createStereoPanner() : ctx.createGain());
+        if (p.pan) p.pan.value = pan;
+        osc.connect(g); g.connect(p); p.connect(master);
+        osc.start();
+      };
+      mk(baseHz, -1);
+      mk(baseHz + beatHz, 1);
+      // Colchón suave de ruido filtrado
+      const src = noiseSource();
+      const f = track(ctx.createBiquadFilter());
+      f.type = "lowpass"; f.frequency.value = 320;
+      const g = track(ctx.createGain()); g.gain.value = 0.05;
+      src.connect(f); f.connect(g); g.connect(master);
+      src.start();
+    }
+
+    function playLluvia() {
+      const src = noiseSource();
+      const f = track(ctx.createBiquadFilter());
+      f.type = "lowpass"; f.frequency.value = 900;
+      const g = track(ctx.createGain()); g.gain.value = 0.22;
+      const lfo = track(ctx.createOscillator());
+      lfo.frequency.value = 0.09;
+      const lfoG = track(ctx.createGain()); lfoG.gain.value = 260;
+      lfo.connect(lfoG); lfoG.connect(f.frequency);
+      src.connect(f); f.connect(g); g.connect(master);
+      src.start(); lfo.start();
+    }
+
+    return {
+      play(channel) {
+        if (!ensure()) return false;
+        stopAll();
+        current = channel;
+        if (channel === "barroco") playBarroco();
+        else if (channel === "organo") playOrgano();
+        else if (channel === "alfa") playBinaural(200, 10);
+        else if (channel === "theta") playBinaural(180, 6);
+        else if (channel === "lluvia") playLluvia();
+        return true;
+      },
+      stop() { stopAll(); },
+      setVolume(v) { if (master) master.gain.value = v; },
+      get current() { return current; }
+    };
+  })();
+
+  function openAudio() {
+    const A = D.audio;
+    const card = $("#modal-card");
+    card.innerHTML = "";
+    card.appendChild(el("h2", "modal-title", A.title));
+    card.appendChild(el("p", "muted small", A.intro));
+
+    const list = el("div", "options");
+    A.channels.forEach((ch) => {
+      const btn = el("button", "btn btn-option audio-option" + (state.audio.channel === ch.id ? " chosen" : ""),
+        "<strong>" + ch.name + "</strong><span class='chip-sub'>" + ch.desc + "</span>");
+      btn.addEventListener("click", () => {
+        state.audio.channel = ch.id;
+        save();
+        if (ch.id === "off") AudioEngine.stop();
+        else AudioEngine.play(ch.id);
+        list.querySelectorAll("button").forEach((b) => b.classList.remove("chosen"));
+        btn.classList.add("chosen");
+      });
+      list.appendChild(btn);
+    });
+    card.appendChild(list);
+
+    const volWrap = el("div", "field");
+    volWrap.appendChild(el("label", "field-label", "Volumen de la nave"));
+    const vol = el("input", "vol-slider");
+    vol.type = "range"; vol.min = "0"; vol.max = "1"; vol.step = "0.05";
+    vol.value = String(state.audio.volume);
+    vol.addEventListener("input", () => {
+      state.audio.volume = parseFloat(vol.value);
+      AudioEngine.setVolume(state.audio.volume);
+      save();
+    });
+    volWrap.appendChild(vol);
+    card.appendChild(volWrap);
+
+    card.appendChild(el("p", "neuro-note", "🧠 " + A.note));
+    const close = el("button", "btn btn-ghost", "Cerrar");
+    close.addEventListener("click", closeModal);
+    card.appendChild(close);
+    $("#modal").classList.remove("hidden");
+  }
+
+  /* ============================================================
+     PLANO DEL TEMPLO — tablero navegable (a lo CLUE)
+     ============================================================ */
+
+  function templeRooms() {
+    const accepted = state.score !== null && state.score >= D.veredicto.threshold;
+    const inTemple = !!state.boveda;
+    const gradeDone = (gi) => D.grades[gi].doors.every((d) => state.opened[d.id]);
+    const bodyUnlocked = (i) => i === 0 || state.bodiesDone[D.bodies[i - 1].id];
+    const allBodies = D.bodies.every((b) => state.bodiesDone[b.id]);
+
+    return [
+      { id: "cumbre",    x: 115, y: 15,  w: 150, h: 55, label: "Oriente · Cumbre 33°",
+        status: state.scene === "finale" ? "current" : allBodies ? "open" : "locked",
+        nav: () => { if (allBodies) go("finale"); } },
+      { id: "kadosh",    x: 15,  y: 85,  w: 170, h: 60, label: "Kadosh · 19–30",
+        status: state.bodiesDone.kadosh ? "done" : (inTemple && bodyUnlocked(3)) ? "open" : "locked",
+        nav: () => { if (inTemple && bodyUnlocked(3)) { closeMap(); openBodyModal(D.bodies[3], !!state.bodiesDone.kadosh); } } },
+      { id: "supremo",   x: 195, y: 85,  w: 170, h: 60, label: "Supremo · 31–33",
+        status: state.bodiesDone.supremo ? "done" : (inTemple && bodyUnlocked(4)) ? "open" : "locked",
+        nav: () => { if (inTemple && bodyUnlocked(4)) { closeMap(); openBodyModal(D.bodies[4], !!state.bodiesDone.supremo); } } },
+      { id: "perfeccion", x: 15, y: 160, w: 170, h: 60, label: "Perfección · 4–14",
+        status: state.bodiesDone.perfeccion ? "done" : (inTemple && bodyUnlocked(1)) ? "open" : "locked",
+        nav: () => { if (inTemple && bodyUnlocked(1)) { closeMap(); openBodyModal(D.bodies[1], !!state.bodiesDone.perfeccion); } } },
+      { id: "rosacruz",  x: 195, y: 160, w: 170, h: 60, label: "Rosa Cruz · 15–18",
+        status: state.bodiesDone.rosacruz ? "done" : (inTemple && bodyUnlocked(2)) ? "open" : "locked",
+        nav: () => { if (inTemple && bodyUnlocked(2)) { closeMap(); openBodyModal(D.bodies[2], !!state.bodiesDone.rosacruz); } } },
+      { id: "norte",     x: 15,  y: 235, w: 110, h: 60, label: "C. del Norte · 1°",
+        status: gradeDone(0) ? "done" : (inTemple && state.gradeIndex === 0 && (state.scene === "hall" || state.scene === "ceremony")) ? "current" : inTemple ? "open" : "locked",
+        nav: () => { if (inTemple && !state.bodiesDone.azul && state.gradeIndex === 0) go("hall"); } },
+      { id: "medio",     x: 135, y: 235, w: 110, h: 60, label: "C. del Medio · 3°",
+        status: gradeDone(2) ? "done" : (inTemple && state.gradeIndex === 2 && (state.scene === "hall" || state.scene === "ceremony")) ? "current" : (inTemple && state.gradeIndex >= 2) ? "open" : "locked",
+        nav: () => { if (inTemple && !state.bodiesDone.azul && state.gradeIndex === 2) go("hall"); } },
+      { id: "mediodia",  x: 255, y: 235, w: 110, h: 60, label: "C. del Mediodía · 2°",
+        status: gradeDone(1) ? "done" : (inTemple && state.gradeIndex === 1 && (state.scene === "hall" || state.scene === "ceremony")) ? "current" : (inTemple && state.gradeIndex >= 1) ? "open" : "locked",
+        nav: () => { if (inTemple && !state.bodiesDone.azul && state.gradeIndex === 1) go("hall"); } },
+      { id: "sendero",   x: 95,  y: 310, w: 190, h: 60, label: "Atrio · Sendero 33",
+        status: state.scene === "campus" ? "current" : inTemple ? "open" : "locked",
+        nav: () => { if (inTemple) go("campus"); } },
+      { id: "reflexion", x: 200, y: 385, w: 165, h: 55, label: "Cámara de Reflexión",
+        status: state.scene === "camara" ? "current" : inTemple ? "done" : accepted ? "open" : "locked",
+        nav: () => { if (accepted && !state.boveda) go("camara"); } },
+      { id: "pruebas",   x: 15,  y: 385, w: 165, h: 55, label: "Cámara de Pruebas",
+        status: (state.scene === "filtro" || state.scene === "veredicto") ? "current" : accepted ? "done" : "open",
+        nav: () => { if (!accepted && state.scene !== "umbral") go("filtro"); } },
+      { id: "umbral",    x: 130, y: 452, w: 120, h: 40, label: "Umbral",
+        status: state.scene === "umbral" ? "current" : "done", nav: () => {} }
+    ];
+  }
+
+  function closeMap() { $("#modal").classList.add("hidden"); }
+
+  function openMap() {
+    const rooms = templeRooms();
+    const card = $("#modal-card");
+    card.innerHTML = "";
+    card.appendChild(el("h2", "modal-title", "Plano del Templo"));
+    card.appendChild(el("p", "muted small", "Toca una cámara iluminada para dirigirte a ella. El punto dorado señala dónde estás."));
+
+    const NS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("viewBox", "0 0 380 505");
+    svg.setAttribute("class", "temple-map");
+
+    rooms.forEach((r) => {
+      const g = document.createElementNS(NS, "g");
+      g.setAttribute("class", "map-room map-" + r.status);
+      const rect = document.createElementNS(NS, "rect");
+      rect.setAttribute("x", r.x); rect.setAttribute("y", r.y);
+      rect.setAttribute("width", r.w); rect.setAttribute("height", r.h);
+      rect.setAttribute("rx", 8);
+      g.appendChild(rect);
+      const label = document.createElementNS(NS, "text");
+      label.setAttribute("x", r.x + r.w / 2);
+      label.setAttribute("y", r.y + r.h / 2 + 4);
+      label.setAttribute("text-anchor", "middle");
+      label.textContent = (r.status === "done" ? "✓ " : r.status === "locked" ? "🔒 " : "") + r.label;
+      g.appendChild(label);
+      if (r.status === "current") {
+        const dot = document.createElementNS(NS, "circle");
+        dot.setAttribute("cx", r.x + r.w - 14);
+        dot.setAttribute("cy", r.y + 14);
+        dot.setAttribute("r", 6);
+        dot.setAttribute("class", "map-you");
+        g.appendChild(dot);
+      }
+      g.addEventListener("click", () => { closeMap(); r.nav(); });
+      svg.appendChild(g);
+    });
+
+    card.appendChild(svg);
+    const close = el("button", "btn btn-ghost", "Cerrar el plano");
+    close.addEventListener("click", closeModal);
+    card.appendChild(close);
+    $("#modal").classList.remove("hidden");
   }
 
   function narrative(lines, fast) {
@@ -1134,7 +1460,13 @@
     const grade = currentGrade();
     const scene = el("section", "scene scene-hall");
 
+    // Inmersión: columnas a los flancos y emblema del grado como marca de agua
+    scene.appendChild(el("div", "pillar pillar-left", '<div class="pillar-capital"></div><div class="pillar-shaft"></div><div class="pillar-base"></div><div class="pillar-letter">B</div>'));
+    scene.appendChild(el("div", "pillar pillar-right", '<div class="pillar-capital"></div><div class="pillar-shaft"></div><div class="pillar-base"></div><div class="pillar-letter">J</div>'));
+    scene.appendChild(el("div", "hall-watermark", gradeEmblem(grade.id)));
+
     const head = el("div", "hall-head");
+    head.appendChild(el("div", "hall-emblem", gradeEmblem(grade.id)));
     head.appendChild(el("div", "grade-badge", grade.symbol + " " + grade.name + " · " + grade.column));
     head.appendChild(el("h1", "title-main", grade.hall));
     scene.appendChild(head);
@@ -1170,7 +1502,8 @@
     card.setAttribute("aria-label", door.title + (locked ? " (cerrada)" : opened ? " (abierta)" : ""));
 
     const frame = el("div", "door-frame");
-    frame.appendChild(el("div", "door-leaf", '<span class="door-num">' + roman(num) + "</span>"));
+    const glyph = { enigma: "❖", reflexion: "✎", dilema: "⚖" }[door.type] || "◆";
+    frame.appendChild(el("div", "door-leaf", '<span class="door-num">' + roman(num) + '</span><span class="door-glyph">' + glyph + "</span>"));
     card.appendChild(frame);
     card.appendChild(el("div", "door-title", door.title));
     card.appendChild(el("div", "door-type", typeLabel(door.type)));
@@ -1469,9 +1802,48 @@
 
   function resetJourney() {
     if (!confirm("¿Reiniciar el viaje? Tu Diario, tu Expediente y tu Luz volverán a cero.")) return;
+    const audio = state.audio; // la atmósfera elegida sobrevive al reinicio
+    AudioEngine.stop();
     state = defaultState();
+    state.audio = audio;
+    state.audio.channel = "off";
     save();
     render();
+  }
+
+  function gradeEmblem(gradeId) {
+    if (gradeId === "aprendiz") return symbolSquareCompass();
+    if (gradeId === "companero") return symbolBlazingStar();
+    return symbolEye();
+  }
+
+  function symbolSquareCompass() {
+    return (
+      '<svg viewBox="0 0 120 120" width="110" height="110" aria-hidden="true">' +
+      '<g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M60 18 L24 92 M60 18 L96 92" />' +
+      '<circle cx="60" cy="18" r="5" fill="currentColor" />' +
+      '<path d="M30 66 L60 96 L90 66" />' +
+      "</g>" +
+      '<text x="60" y="66" text-anchor="middle" font-size="22" fill="currentColor" font-family="Cinzel, serif">G</text>' +
+      "</svg>"
+    );
+  }
+
+  function symbolBlazingStar() {
+    // Estrella flamígera de cinco puntas con la G al centro
+    const pts = [];
+    for (let i = 0; i < 10; i++) {
+      const r = i % 2 === 0 ? 52 : 21;
+      const a = -Math.PI / 2 + (i * Math.PI) / 5;
+      pts.push((60 + r * Math.cos(a)).toFixed(1) + "," + (62 + r * Math.sin(a)).toFixed(1));
+    }
+    return (
+      '<svg viewBox="0 0 120 120" width="110" height="110" aria-hidden="true">' +
+      '<polygon points="' + pts.join(" ") + '" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" />' +
+      '<text x="60" y="70" text-anchor="middle" font-size="20" fill="currentColor" font-family="Cinzel, serif">G</text>' +
+      "</svg>"
+    );
   }
 
   function symbolEye() {
@@ -1517,6 +1889,18 @@
   $("#btn-journal").addEventListener("click", openJournal);
   $("#btn-tabla").addEventListener("click", openTabla);
   $("#btn-gym").addEventListener("click", openGym);
+  $("#btn-audio").addEventListener("click", openAudio);
+  $("#btn-map").addEventListener("click", openMap);
+
+  // El navegador exige un gesto del usuario para iniciar audio:
+  // si había una atmósfera elegida, se reanuda en la primera interacción.
+  const resumeAudio = () => {
+    if (state.audio.channel !== "off" && AudioEngine.current === "off") {
+      AudioEngine.play(state.audio.channel);
+    }
+    document.removeEventListener("pointerdown", resumeAudio);
+  };
+  document.addEventListener("pointerdown", resumeAudio);
   $("#journal-close").addEventListener("click", () => $("#journal").classList.add("hidden"));
   $("#tabla-close").addEventListener("click", () => $("#tabla").classList.add("hidden"));
   $("#btn-reset").addEventListener("click", resetJourney);
