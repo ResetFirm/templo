@@ -10,17 +10,19 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "templo.v2";
+  const STORAGE_KEY = "templo.v3";
   const D = TEMPLE_DATA;
 
   /* ---------- Estado ---------- */
 
   const defaultState = () => ({
-    scene: "umbral",          // umbral | filtro | veredicto | camara | hall | ceremony | finale
+    scene: "umbral",          // umbral | filtro | veredicto | camara | apertura | campus | hall | ceremony | finale
     name: "",
+    boveda: "",               // bóveda elegida en la apertura (libertad de conciencia)
     gradeIndex: 0,
     opened: {},               // { doorId: true }
     sealed: {},               // { pruebaId: true }
+    bodiesDone: {},           // { bodyId: true } — cuerpos del rito completados
     light: 0,
     journal: [],              // { at, title, text }
     voices: [],               // ids de Voces del Oriente reveladas
@@ -31,6 +33,7 @@
       retries: {},            // { pruebaId: n }
       holdReleases: 0
     },
+    gymBest: 0,               // mejor racha del Gimnasio Neuronal
     score: null,
     startedAt: null
   });
@@ -101,12 +104,22 @@
 
   function currentGrade() { return D.grades[state.gradeIndex]; }
 
+  function memberTitle() {
+    // Título más alto alcanzado en el Sendero de los 33 grados
+    for (let i = D.bodies.length - 1; i >= 0; i--) {
+      if (state.bodiesDone[D.bodies[i].id]) return D.bodies[i].title33;
+    }
+    return null;
+  }
+
   function gradeTitle() {
     if (state.scene === "umbral") return "";
     if (state.scene === "filtro" || state.scene === "veredicto") return "Aspirante";
-    if (state.scene === "camara") return "Aspirante aceptado";
-    if (state.scene === "finale") return "Maestro ∴";
-    return currentGrade().name;
+    if (state.scene === "camara" || state.scene === "apertura") return "Aspirante aceptado";
+    const t = memberTitle();
+    if (state.scene === "finale") return t || "Inspector General · 33°";
+    if (state.scene === "hall" || state.scene === "ceremony") return currentGrade().name;
+    return t || "Iniciado";
   }
 
   function updateHUD() {
@@ -134,6 +147,8 @@
       case "filtro":    return renderFiltro();
       case "veredicto": return renderVeredicto();
       case "camara":    return renderCamara();
+      case "apertura":  return renderApertura();
+      case "campus":    return renderCampus();
       case "hall":      return renderHall();
       case "ceremony":  return renderCeremony();
       case "finale":    return renderFinale();
@@ -760,6 +775,10 @@
       "Nombre simbólico : " + state.name,
       "Fecha            : " + new Date().toLocaleString("es"),
       "Índice de Compromiso : " + state.score + "/100" + (seal ? "  (" + seal.name + ")" : ""),
+      "Rito             : " + D.lodge.rite,
+      "Bóveda de trabajo: " + (state.boveda || "aún no declarada"),
+      "Grado alcanzado  : " + (memberTitle() || "Aspirante"),
+      "Insignias        : " + (D.bodies.filter((b) => state.bodiesDone[b.id]).map((b) => b.badge.name).join(", ") || "ninguna aún"),
       "",
       "— MÉTRICAS DEL FILTRO —",
       "Tiempo en pruebas      : ~" + dur + " min",
@@ -819,10 +838,292 @@
       state.journal.push({ at: Date.now(), title: "Testamento del profano", text });
       addLight(D.camara.reward);
       save();
-      go("hall");
+      go("apertura");
     }, D.camara.cta);
     scene.appendChild(area);
     root.appendChild(scene);
+  }
+
+  /* ============================================================
+     APERTURA DE LOS TRABAJOS — Masonería Liberal
+     ============================================================ */
+
+  function renderApertura() {
+    const A = D.apertura;
+    const scene = el("section", "scene scene-apertura");
+    scene.appendChild(el("div", "rite-tag", D.lodge.rite));
+    scene.appendChild(el("h1", "title-main", A.title));
+    scene.appendChild(narrative(A.lines));
+
+    const box = el("div", "umbral-question");
+    box.appendChild(el("p", "prompt", A.question));
+    const opts = el("div", "options");
+    const reply = el("p", "teaching hidden", "");
+
+    A.options.forEach((o) => {
+      const btn = el("button", "btn btn-option", o.label);
+      btn.addEventListener("click", () => {
+        opts.querySelectorAll("button").forEach((b) => { b.disabled = true; b.classList.remove("chosen"); });
+        btn.classList.add("chosen");
+        reply.classList.remove("hidden");
+        reply.textContent = o.reply;
+        state.boveda = o.label;
+        save();
+        if (!box.querySelector(".btn-gold")) {
+          const enter = el("button", "btn btn-gold btn-big", "Abrir el Sendero de los 33 Grados");
+          enter.addEventListener("click", () => go("campus"));
+          box.appendChild(enter);
+        }
+      });
+      opts.appendChild(btn);
+    });
+
+    box.append(opts, reply);
+    scene.appendChild(box);
+    scene.appendChild(el("p", "muted small", A.note));
+    root.appendChild(scene);
+  }
+
+  /* ============================================================
+     EL CAMPUS — Sendero de los 33 Grados (LMS)
+     ============================================================ */
+
+  function bodyProgress(body) {
+    if (state.bodiesDone[body.id]) return 100;
+    if (body.kind === "grades") {
+      const total = D.grades.reduce((n, g) => n + g.doors.length, 0);
+      const done = Object.keys(state.opened).length;
+      return Math.round((done / total) * 100);
+    }
+    return 0;
+  }
+
+  function renderCampus() {
+    const scene = el("section", "scene scene-campus");
+    scene.appendChild(el("div", "rite-tag", D.lodge.rite));
+    scene.appendChild(el("h1", "title-main", D.campus.title));
+    if (state.boveda) scene.appendChild(el("p", "boveda-line", "Trabajos abiertos: " + escapeHTML(state.boveda) + "."));
+    scene.appendChild(narrative(D.campus.intro, true));
+
+    const path = el("div", "bodies");
+    D.bodies.forEach((body, i) => {
+      const done = !!state.bodiesDone[body.id];
+      const locked = i > 0 && !state.bodiesDone[D.bodies[i - 1].id];
+      path.appendChild(bodyCard(body, i, done, locked));
+    });
+    scene.appendChild(path);
+
+    const allDone = D.bodies.every((b) => state.bodiesDone[b.id]);
+    if (allDone) {
+      const btn = el("button", "btn btn-gold btn-big", "Ascender a la Cumbre · 33°");
+      btn.addEventListener("click", () => go("finale"));
+      scene.appendChild(btn);
+    }
+    root.appendChild(scene);
+  }
+
+  function bodyCard(body, index, done, locked) {
+    const card = el("div", "body-card" + (done ? " body-done" : "") + (locked ? " body-locked" : ""));
+    card.style.setProperty("--accent", body.accent);
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", locked ? "-1" : "0");
+
+    const head = el("div", "body-head");
+    head.appendChild(el("span", "body-range", body.range));
+    if (done) head.appendChild(el("span", "body-badge", body.badge.symbol + " " + body.badge.name));
+    card.appendChild(head);
+    card.appendChild(el("h3", "body-name", body.name));
+    card.appendChild(el("p", "body-sub", body.subtitle));
+
+    const pct = bodyProgress(body);
+    const bar = el("div", "body-bar", '<div class="body-fill" style="width:' + pct + '%"></div>');
+    card.appendChild(bar);
+    card.appendChild(el("p", "body-state", done ? "✓ Cámara completada — " + body.title33 : locked ? "🔒 Completa la cámara anterior" : (pct > 0 ? "En curso · " + pct + "%" : "Toca para entrar")));
+
+    if (!locked) {
+      const open = () => {
+        if (body.kind === "grades" && !done) go("hall");
+        else openBodyModal(body, done);
+      };
+      card.addEventListener("click", open);
+      card.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
+    }
+    return card;
+  }
+
+  function openBodyModal(body, done) {
+    const card = $("#modal-card");
+    card.innerHTML = "";
+    card.appendChild(el("div", "modal-type", body.range + " · " + (done ? body.badge.symbol + " " + body.badge.name : "Cámara en curso")));
+    card.appendChild(el("h2", "modal-title", body.name));
+    card.appendChild(el("p", "success-text", body.description));
+
+    const obj = el("div", "objectives");
+    obj.appendChild(el("h3", "journal-section", "Objetivos de aprendizaje"));
+    body.objectives.forEach((o) => obj.appendChild(el("p", "objective", "◦ " + o)));
+    card.appendChild(obj);
+
+    card.appendChild(el("p", "neuro-note", "🧠 " + body.neuro));
+
+    const degs = el("div", "degree-list");
+    body.degrees.forEach((d) => degs.appendChild(el("span", "degree-pill", d)));
+    card.appendChild(degs);
+
+    if (!done && body.kind === "lesson") {
+      const btn = el("button", "btn btn-gold btn-big", "Entrar a la lección insignia");
+      btn.addEventListener("click", () => openLesson(body));
+      card.appendChild(btn);
+    } else if (done) {
+      card.appendChild(el("p", "reward", "Cámara completada — " + body.title33));
+    }
+
+    const close = el("button", "btn btn-ghost", "Volver al Sendero");
+    close.addEventListener("click", closeModal);
+    card.appendChild(close);
+    $("#modal").classList.remove("hidden");
+  }
+
+  function openLesson(body) {
+    const lesson = body.lesson;
+    const card = $("#modal-card");
+    card.innerHTML = "";
+    card.appendChild(el("h2", "modal-title", lesson.title));
+    card.appendChild(el("div", "modal-type", typeLabel(lesson.type)));
+    card.appendChild(narrative(lesson.narrative, true));
+
+    const onDone = (journalText) => {
+      if (journalText !== undefined) {
+        state.journal.push({ at: Date.now(), title: lesson.title, text: journalText });
+      }
+      completeBody(body, lesson);
+    };
+
+    if (lesson.type === "enigma") card.appendChild(lessonEnigma(lesson, onDone));
+    if (lesson.type === "dilema") card.appendChild(lessonDilema(lesson, onDone));
+    if (lesson.type === "reflexion") card.appendChild(reflectionArea(lesson.prompt, lesson.minChars, (t) => onDone(t), "Sellar la lección"));
+
+    const close = el("button", "btn btn-ghost", "Retirarse por ahora");
+    close.addEventListener("click", closeModal);
+    card.appendChild(close);
+    $("#modal").classList.remove("hidden");
+  }
+
+  function lessonEnigma(lesson, onDone) {
+    const wrap = el("div", "challenge");
+    const form = el("form", "form-row");
+    const input = el("input", "input");
+    input.type = "text";
+    input.placeholder = "Tu respuesta…";
+    const btn = el("button", "btn btn-gold", "Responder");
+    btn.type = "submit";
+    form.append(input, btn);
+    const feedback = el("p", "feedback", "");
+    let tries = 0;
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (matchesAnswer(input.value, lesson.answerKeys)) onDone();
+      else {
+        tries++;
+        input.classList.add("shake");
+        setTimeout(() => input.classList.remove("shake"), 500);
+        feedback.textContent = tries >= 2 ? "Pista: " + lesson.hint : "Aún no. Escucha de nuevo el enigma: se describe a sí mismo.";
+      }
+    });
+    wrap.append(form, feedback);
+    return wrap;
+  }
+
+  function lessonDilema(lesson, onDone) {
+    const wrap = el("div", "challenge");
+    wrap.appendChild(el("p", "prompt", lesson.prompt));
+    const list = el("div", "options");
+    lesson.options.forEach((opt) => {
+      const btn = el("button", "btn btn-option", opt.label);
+      btn.addEventListener("click", () => {
+        list.querySelectorAll("button").forEach((b) => (b.disabled = true));
+        btn.classList.add("chosen");
+        wrap.appendChild(el("p", "teaching", opt.teaching));
+        const cont = el("button", "btn btn-gold", "Sellar la lección");
+        cont.addEventListener("click", () => onDone());
+        wrap.appendChild(cont);
+      });
+      list.appendChild(btn);
+    });
+    wrap.appendChild(list);
+    return wrap;
+  }
+
+  function completeBody(body, lesson) {
+    state.bodiesDone[body.id] = true;
+    addLight(lesson ? lesson.reward : 5);
+    save();
+
+    const card = $("#modal-card");
+    card.innerHTML = "";
+    card.appendChild(el("h2", "modal-title gold", body.badge.symbol + " Insignia conquistada"));
+    if (lesson) card.appendChild(el("p", "success-text", lesson.success));
+    card.appendChild(el("div", "gauge-seal", body.badge.symbol + " " + body.badge.name + " · " + body.title33));
+    card.appendChild(el("p", "reward", "+" + (lesson ? lesson.reward : 5) + " de Luz"));
+    const btn = el("button", "btn btn-gold", "Volver al Sendero");
+    btn.addEventListener("click", () => { closeModal(); render(); });
+    card.appendChild(btn);
+  }
+
+  /* ============================================================
+     GIMNASIO NEURONAL — repaso por recuperación activa
+     ============================================================ */
+
+  function openGym() {
+    const G = D.gym;
+    const questions = shuffled(G.bank).slice(0, 3);
+    let index = 0;
+    let correct = 0;
+
+    const card = $("#modal-card");
+
+    function renderQuestion() {
+      card.innerHTML = "";
+      card.appendChild(el("h2", "modal-title", G.title));
+      if (index === 0) card.appendChild(el("p", "muted small", G.intro));
+      card.appendChild(el("div", "modal-type", "Repetición " + (index + 1) + " de 3 · mejor racha: " + state.gymBest));
+      const q = questions[index];
+      card.appendChild(el("p", "prompt", q.q));
+      const opts = el("div", "options");
+      q.options.forEach((o, i) => {
+        const btn = el("button", "btn btn-option", o);
+        btn.addEventListener("click", () => {
+          opts.querySelectorAll("button").forEach((b) => (b.disabled = true));
+          const ok = i === q.answer;
+          btn.classList.add(ok ? "chosen" : "rejected");
+          if (!ok) opts.children[q.answer].classList.add("chosen");
+          if (ok) { correct++; addLight(1); }
+          const next = el("button", "btn btn-gold", index < questions.length - 1 ? "Siguiente repetición" : "Ver resultado");
+          next.addEventListener("click", () => { index++; index < questions.length ? renderQuestion() : renderResult(); });
+          card.appendChild(next);
+        });
+        opts.appendChild(btn);
+      });
+      card.appendChild(opts);
+      const close = el("button", "btn btn-ghost", "Salir del gimnasio");
+      close.addEventListener("click", closeModal);
+      card.appendChild(close);
+    }
+
+    function renderResult() {
+      if (correct > state.gymBest) { state.gymBest = correct; save(); }
+      card.innerHTML = "";
+      card.appendChild(el("h2", "modal-title gold", correct === 3 ? "🧠 Sinapsis de oro" : "Sesión registrada"));
+      card.appendChild(el("p", "success-text", "Aciertos: " + correct + " de 3." + (correct === 3 ? " La memoria que se recupera, se queda." : " Fallar recordando también fortalece: vuelve mañana.")));
+      card.appendChild(el("p", "neuro-note", "🧠 " + G.note));
+      const again = el("button", "btn btn-gold", "Otra serie");
+      again.addEventListener("click", openGym);
+      const close = el("button", "btn btn-ghost", "Cerrar");
+      close.addEventListener("click", closeModal);
+      card.append(again, close);
+    }
+
+    renderQuestion();
+    $("#modal").classList.remove("hidden");
   }
 
   /* ============================================================
@@ -849,10 +1150,14 @@
 
     const allOpen = grade.doors.every((d) => state.opened[d.id]);
     if (allOpen) {
-      const btn = el("button", "btn btn-gold btn-big", "Pedir el paso ▸ " + (state.gradeIndex < D.grades.length - 1 ? D.grades[state.gradeIndex + 1].name : "La Luz"));
+      const btn = el("button", "btn btn-gold btn-big", "Pedir el paso ▸ " + (state.gradeIndex < D.grades.length - 1 ? D.grades[state.gradeIndex + 1].name : "Ceremonia final de la Azul"));
       btn.addEventListener("click", () => go("ceremony"));
       scene.appendChild(btn);
     }
+
+    const back = el("button", "btn btn-ghost", "◂ Volver al Sendero");
+    back.addEventListener("click", () => go("campus"));
+    scene.appendChild(back);
 
     scene.appendChild(el("div", "floor", ""));
     root.appendChild(scene);
@@ -1041,11 +1346,13 @@
 
     const oathWrap = el("div", "oath hidden");
     oathWrap.appendChild(el("p", "oath-text", "«" + cer.oath + "»"));
-    const oathBtn = el("button", "btn btn-gold btn-big", isLast ? "Recibir la Luz" : "Prestar juramento y ascender");
+    const oathBtn = el("button", "btn btn-gold btn-big", isLast ? "Cerrar la Masonería Azul" : "Prestar juramento y ascender");
     oathBtn.addEventListener("click", () => {
       addLight(2);
       if (isLast) {
-        go("finale");
+        state.bodiesDone.azul = true;
+        save();
+        go("campus");
       } else {
         state.gradeIndex++;
         save();
@@ -1074,9 +1381,23 @@
     const scene = el("section", "scene scene-finale");
     scene.appendChild(el("div", "portal-symbol big-eye", symbolEye()));
     scene.appendChild(el("h1", "title-main", D.finale.title));
-    scene.appendChild(narrative(D.finale.lines.concat([
-      "Luz reunida en el viaje: ☀ " + state.light + " · Voces reveladas: " + state.voices.length + "/9."
-    ])));
+    scene.appendChild(narrative(D.finale.lines));
+
+    // Perfil de miembro: la piedra del hermano en la catedral global
+    const card = el("div", "member-card");
+    card.appendChild(el("div", "member-name", escapeHTML(state.name || "Buscador")));
+    card.appendChild(el("div", "member-title", (memberTitle() || "Maestro Masón") + " · " + D.lodge.name));
+    if (state.boveda) card.appendChild(el("p", "member-boveda", escapeHTML(state.boveda)));
+    const badges = el("div", "member-badges");
+    D.bodies.forEach((b) => {
+      if (state.bodiesDone[b.id]) badges.appendChild(el("span", "degree-pill badge-pill", b.badge.symbol + " " + b.badge.name));
+    });
+    card.appendChild(badges);
+    card.appendChild(el("p", "member-stats", "☀ " + state.light + " de Luz · ✧ " + state.voices.length + "/9 Voces · 🧠 racha " + state.gymBest + "/3"));
+    scene.appendChild(card);
+
+    scene.appendChild(el("h3", "journal-section", D.finale.networkTitle));
+    scene.appendChild(el("p", "success-text", D.finale.networkText));
     scene.appendChild(el("p", "vitriol", D.finale.signature));
 
     const row = el("div", "form-row center");
@@ -1084,9 +1405,11 @@
     dl.addEventListener("click", downloadExpediente);
     const journalBtn = el("button", "btn", "Abrir mi Diario");
     journalBtn.addEventListener("click", openJournal);
+    const gymBtn = el("button", "btn", "🧠 Gimnasio Neuronal");
+    gymBtn.addEventListener("click", openGym);
     const againBtn = el("button", "btn btn-ghost", "Recorrer el Templo de nuevo");
     againBtn.addEventListener("click", resetJourney);
-    row.append(dl, journalBtn, againBtn);
+    row.append(dl, journalBtn, gymBtn, againBtn);
     scene.appendChild(row);
     root.appendChild(scene);
   }
@@ -1193,6 +1516,7 @@
 
   $("#btn-journal").addEventListener("click", openJournal);
   $("#btn-tabla").addEventListener("click", openTabla);
+  $("#btn-gym").addEventListener("click", openGym);
   $("#journal-close").addEventListener("click", () => $("#journal").classList.add("hidden"));
   $("#tabla-close").addEventListener("click", () => $("#tabla").classList.add("hidden"));
   $("#btn-reset").addEventListener("click", resetJourney);

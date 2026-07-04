@@ -21,8 +21,9 @@
 const TEMPLE_DATA = {
 
   lodge: {
-    name: "El Templo",
+    name: "El Templo · Logia Kaizen",
     motto: "Me educo · Trabajo · Ayudo",
+    rite: "Masonería Liberal · Rito Escocés + Rito Francés · Método Kaizen",
     contactEmail: "esteban@resetfirm.ai"
   },
 
@@ -245,6 +246,214 @@ const TEMPLE_DATA = {
     churchill:  { author: "Winston Churchill",    role: "estadista, masón",                   quote: "El éxito no es definitivo y el fracaso no es fatal: lo que cuenta es el valor de continuar." },
     kipling:    { author: "Rudyard Kipling",      role: "poeta, autor de «If—», masón",       quote: "Si puedes conservar la cabeza cuando todos a tu alrededor la pierden… tuya será la Tierra." },
     fleming:    { author: "Alexander Fleming",    role: "descubridor de la penicilina, masón", quote: "No inventé la penicilina: la naturaleza la hizo. Yo solo tuve los ojos abiertos cuando apareció." }
+  },
+
+  /* ---------- Apertura de los Trabajos (Masonería Liberal) ---------- */
+
+  apertura: {
+    title: "Apertura de los Trabajos",
+    lines: [
+      "Has sido aceptado. Antes de abrir el Sendero, la logia declara sus columnas:",
+      "Esta es una logia de Masonería Liberal: aquí la libertad de conciencia es absoluta.",
+      "Nadie te dirá qué creer. Creyentes y librepensadores trabajan hombro a hombro,",
+      "porque la piedra se talla igual bajo cualquier cielo.",
+      "Trabajamos una síntesis del Rito Escocés Antiguo y Aceptado y del Rito Francés,",
+      "con el Método Kaizen: neurociencias, academia y mejora continua — 1% mejor cada día.",
+      "El rito es nuestro plan de estudios. El Templo es digital. El mundo es la logia."
+    ],
+    question: "¿Bajo qué bóveda abres tus trabajos?",
+    options: [
+      {
+        label: "A la Gloria del Gran Arquitecto del Universo",
+        reply: "Que el símbolo te acompañe. Aquí nadie te pedirá definirlo: el Gran Arquitecto es la pregunta, no la respuesta."
+      },
+      {
+        label: "Al Progreso de la Humanidad y de mi propia Conciencia",
+        reply: "Que tu conciencia sea tu plomada. Aquí nadie te pedirá renunciar a tu razón: es tu primera herramienta."
+      },
+      {
+        label: "Bajo ambas bóvedas: el símbolo y la humanidad",
+        reply: "Que camines con las dos luces. La tradición y la razón no compiten: se escoltan."
+      }
+    ],
+    note: "Esta elección es tuya y solo tuya. La libertad absoluta de conciencia es la primera columna de esta logia."
+  },
+
+  /* ---------- El Sendero de los 33 Grados (plan de estudios) ---------- */
+
+  campus: {
+    title: "El Sendero de los 33 Grados",
+    intro: [
+      "El rito es un plan de estudios; el método es el rito.",
+      "Cinco cámaras, treinta y tres peldaños, una sola obra: tú.",
+      "Cada cámara entrena una capacidad distinta de tu arquitectura interior.",
+      "Avanza en orden: en esta escuela nada se salta, todo se construye."
+    ]
+  },
+
+  bodies: [
+    {
+      id: "azul",
+      range: "Grados 1–3",
+      name: "Masonería Azul",
+      subtitle: "La fundación compartida con todos los masones",
+      accent: "#5b8fd9",
+      kind: "grades",
+      title33: "Maestro Masón · 3°",
+      badge: { symbol: "▦", name: "Piedra Fundacional" },
+      description: "La Masonería Simbólica: Aprendiz, Compañero y Maestro. Aquí se aprende el lenguaje de los símbolos, el trabajo sobre uno mismo y la leyenda que funda la Orden.",
+      objectives: ["Gobernar la atención y el hábito (ME EDUCO)", "Trabajar con fundamento y criterio (TRABAJO)", "Convertir lo aprendido en legado (AYUDO)"],
+      neuro: "Neurociencia aplicada: el símbolo y la narrativa activan memoria episódica y emocional — se recuerda lo que se vive, no lo que se lee.",
+      degrees: ["1° Aprendiz", "2° Compañero", "3° Maestro"]
+    },
+    {
+      id: "perfeccion",
+      range: "Grados 4–14",
+      name: "Logia de Perfección",
+      subtitle: "Enfoque, lealtad, deber y justicia",
+      accent: "#b0413e",
+      kind: "lesson",
+      title33: "Gran Elegido · 14°",
+      badge: { symbol: "🗝", name: "Llave de Marfil" },
+      description: "Los grados inefables: la escuela del deber. Del Maestro Secreto al Gran Elegido, se templan la discreción, la responsabilidad y la justicia que no depende de testigos.",
+      objectives: ["Sostener el enfoque en una obra de largo plazo", "Ser leal sin ser cómplice", "Juzgar con equidad: primero los propios actos"],
+      neuro: "Neurociencia aplicada: la corteza prefrontal madura con práctica deliberada de autocontrol — cada dilema resuelto es una repetición del músculo ejecutivo.",
+      degrees: ["4° Maestro Secreto", "5° Maestro Perfecto", "6° Secretario Íntimo", "7° Preboste y Juez", "8° Intendente de los Edificios", "9° Elegido de los Nueve", "10° Elegido de los Quince", "11° Sublime Caballero Elegido", "12° Gran Maestro Arquitecto", "13° Real Arco", "14° Gran Elegido Perfecto"],
+      lesson: {
+        id: "lec-perfeccion",
+        title: "Lección insignia — La Balanza y la Llave",
+        type: "dilema",
+        narrative: [
+          "Cámara del grado 7°, Preboste y Juez. Sobre la mesa: una balanza y una llave de marfil.",
+          "Un hermano querido cometió una falta que daña a la logia.",
+          "Tú lo sabes. Nadie más lo sabe. Él te pide silencio en nombre de la amistad."
+        ],
+        prompt: "¿Qué hace el Preboste?",
+        options: [
+          {
+            label: "Callar: la lealtad al hermano es primero",
+            teaching: "La lealtad que exige injusticia no es lealtad: es secuestro afectivo. El grado enseña a separar amar al hermano de avalar su falta. Se puede sostener su mano camino al tribunal."
+          },
+          {
+            label: "Denunciarlo de inmediato ante todos",
+            teaching: "La justicia sin proceso es otra forma de violencia. El Preboste no es verdugo: es juez. Primero habla con él a solas y le ofrece la oportunidad de repararlo por sí mismo."
+          },
+          {
+            label: "Confrontarlo a solas y darle un plazo para repararlo",
+            teaching: "Esa es la balanza del grado: firmeza en el deber, misericordia en la forma. La justicia masónica repara antes que castiga — pero no calla."
+          }
+        ],
+        success: "La llave de marfil gira: guardas los secretos legítimos, no los que pudren. Enfoque, lealtad, deber y justicia acaban de pesarse en tu balanza.",
+        reward: 4
+      }
+    },
+    {
+      id: "rosacruz",
+      range: "Grados 15–18",
+      name: "Capítulo Rosa Cruz",
+      subtitle: "Exploración de la tolerancia y el amor fraternal",
+      accent: "#c96a8d",
+      kind: "lesson",
+      title33: "Príncipe Rosacruz · 18°",
+      badge: { symbol: "✚", name: "Rosa y Cruz" },
+      description: "Del Caballero de Oriente al Soberano Príncipe Rosacruz: la reconstrucción del Templo interior tras la pérdida. La palabra recuperada aquí se escribe con tres letras: Fe en el ser humano, Esperanza activa, Caridad que no humilla.",
+      objectives: ["Comprender al que piensa radicalmente distinto", "Practicar la fraternidad más allá del acuerdo", "Transformar el conflicto en aprendizaje"],
+      neuro: "Neurociencia aplicada: la empatía cognitiva se entrena — perspectivar activa la red de mentalización (teoría de la mente) y reduce la reactividad de la amígdala ante el desacuerdo.",
+      degrees: ["15° Caballero de Oriente o de la Espada", "16° Príncipe de Jerusalén", "17° Caballero de Oriente y Occidente", "18° Soberano Príncipe Rosacruz"],
+      lesson: {
+        id: "lec-rosacruz",
+        title: "Lección insignia — La Mesa de los Contrarios",
+        type: "reflexion",
+        narrative: [
+          "Cámara del grado 18°. Una mesa redonda con un solo pan, para partirlo entre distintos.",
+          "«El Rosacruz no tolera desde arriba: comprende desde al lado.",
+          "La tolerancia que no ha tocado el desacuerdo es solo indiferencia.»"
+        ],
+        prompt: "Piensa en una persona real que piense radicalmente distinto a ti (política, religión, vida). Escribe: ¿qué experiencia suya explica su postura, qué podrías aprender de ella, y qué gesto concreto de fraternidad puedes tener esta semana sin traicionar tus ideas?",
+        minChars: 180,
+        success: "Partiste el pan sin exigir que el otro cambie de mesa. Eso — no el acuerdo — es el amor fraternal del grado.",
+        reward: 5
+      }
+    },
+    {
+      id: "kadosh",
+      range: "Grados 19–30",
+      name: "Consejo Kadosh",
+      subtitle: "La lucha simbólica contra la tiranía y el fanatismo",
+      accent: "#7a5fb5",
+      kind: "lesson",
+      title33: "Caballero Kadosh · 30°",
+      badge: { symbol: "◭", name: "Águila Bicéfala" },
+      description: "Los grados filosóficos y caballerescos: del Gran Pontífice al Caballero Kadosh. La escalera misteriosa se sube peldaño a peldaño: ciencia y virtud contra la ignorancia, la ambición y el fanatismo — empezando por los propios.",
+      objectives: ["Detectar la tiranía en sus formas modernas (dogma, algoritmo, miedo)", "Defender la libertad de conciencia propia y ajena", "Actuar con valor sin volverse aquello que combate"],
+      neuro: "Neurociencia aplicada: el pensamiento crítico es inhibición entrenada — detectar el sesgo propio antes que el ajeno exige metacognición, y la metacognición se fortalece con práctica reflexiva.",
+      degrees: ["19° Gran Pontífice", "20° Venerable Gran Maestro", "21° Noaquita o Caballero Prusiano", "22° Caballero del Real Hacha", "23° Jefe del Tabernáculo", "24° Príncipe del Tabernáculo", "25° Caballero de la Serpiente de Bronce", "26° Príncipe de la Merced", "27° Gran Comendador del Templo", "28° Caballero del Sol", "29° Gran Escocés de San Andrés", "30° Caballero Kadosh"],
+      lesson: {
+        id: "lec-kadosh",
+        title: "Lección insignia — El Enemigo sin Rostro",
+        type: "enigma",
+        narrative: [
+          "Cámara del grado 30°. Una escalera de dos tramos: virtud y ciencia.",
+          "En lo alto, una figura encadenada pregunta:",
+          "«No llevo corona y gobierno multitudes. No pienso, y decido por ti.",
+          "Grito certezas para tapar preguntas. Odio la duda porque me desnuda.",
+          "Vivo en los imperios, en las sectas… y a veces, en el espejo.",
+          "¿Qué soy?»"
+        ],
+        answerKeys: ["fanatismo", "fanatico", "fanático", "el fanatismo"],
+        hint: "El Kadosh lo combate junto a la tiranía. Es la certeza que prohíbe preguntar.",
+        success: "Las cadenas caen: no eran de la figura — eran tuyas. El Kadosh no lucha contra personas: lucha contra las cadenas mentales, empezando por las propias.",
+        reward: 5
+      }
+    },
+    {
+      id: "supremo",
+      range: "Grados 31–33",
+      name: "Supremo Consejo",
+      subtitle: "Grados administrativos y de síntesis filosófica",
+      accent: "#d4af37",
+      kind: "lesson",
+      title33: "Inspector General · 33°",
+      badge: { symbol: "△", name: "Delta Radiante" },
+      description: "La cima del sendero: el Inspector Inquisidor, el Príncipe del Real Secreto y el Soberano Gran Inspector General. Ya no se aprende para sí: se administra, se sintetiza y se sirve. El secreto real es que nunca hubo secreto — hay trabajo.",
+      objectives: ["Sintetizar tu filosofía de vida en principios operativos", "Diseñar tu contribución a la Orden y al mundo", "Formar a los que suben detrás de ti"],
+      neuro: "Neurociencia aplicada: enseñar es la forma más profunda de aprender — el efecto protegé: quien explica consolida, reorganiza y descubre sus propios vacíos.",
+      degrees: ["31° Gran Inspector Inquisidor Comendador", "32° Sublime Príncipe del Real Secreto", "33° Soberano Gran Inspector General"],
+      lesson: {
+        id: "lec-supremo",
+        title: "Lección insignia — La Síntesis del 33",
+        type: "reflexion",
+        narrative: [
+          "La última cámara es blanca y está casi vacía: un atril, y detrás, un espejo que ya conoces.",
+          "«Has subido treinta y tres peldaños. Ahora gobiérnalos.",
+          "El grado 33 no se recibe: se redacta.»"
+        ],
+        prompt: "Escribe tu síntesis filosófica en tres actos: (1) los tres principios que hoy gobiernan tu conducta, (2) la obra con la que servirás a la Orden y al mundo, (3) a quién vas a formar para que suba detrás de ti.",
+        minChars: 220,
+        success: "El espejo se vuelve ventana: del otro lado, el mundo. La logia no termina en el Templo — empieza al salir de él.",
+        reward: 6
+      }
+    }
+  ],
+
+  /* ---------- Gimnasio Neuronal (repaso por recuperación activa) ---------- */
+
+  gym: {
+    title: "Gimnasio Neuronal",
+    intro: "Recordar es reconstruir: cada pregunta que respondes sin mirar apuntala la sinapsis. Tres repeticiones, elige bien.",
+    note: "Método Kaizen: la recuperación activa (retrieval practice) y el repaso espaciado son las técnicas de aprendizaje con más evidencia en neurociencia cognitiva.",
+    bank: [
+      { q: "¿Qué esconden las siglas V.I.T.R.I.O.L.?", options: ["Una fórmula alquímica de metales", "Visita el Interior de la Tierra y, Rectificando, hallarás la Piedra Oculta", "Los siete oficiales de la logia", "El nombre secreto del Templo"], answer: 1 },
+      { q: "La Escuadra simboliza…", options: ["El poder del Venerable", "La medida del tiempo", "La rectitud en las acciones", "El límite del conocimiento"], answer: 2 },
+      { q: "El Compás simboliza…", options: ["La medida justa de los deseos", "La distancia entre hermanos", "El viaje del Aprendiz", "La perfección del círculo"], answer: 0 },
+      { q: "El orden del Caballete Kaizen es…", options: ["Trabajo → Ayudo → Me educo", "Ayudo → Trabajo → Me educo", "Me educo → Trabajo → Ayudo", "Me educo → Ayudo → Trabajo"], answer: 2 },
+      { q: "La piedra bruta representa…", options: ["Los defectos del mundo", "A uno mismo, aún sin tallar", "El primer salario del Compañero", "La base del Templo de Salomón"], answer: 1 },
+      { q: "Los grados 4–14 (Logia de Perfección) cultivan…", options: ["Tolerancia y amor fraternal", "Enfoque, lealtad, deber y justicia", "La síntesis filosófica", "El arte de la memoria"], answer: 1 },
+      { q: "Los grados 15–18 (Rosa Cruz) exploran…", options: ["La lucha contra la tiranía", "La administración de la Orden", "La geometría sagrada", "La tolerancia y el amor fraternal"], answer: 3 },
+      { q: "Los grados 19–30 (Kadosh) representan…", options: ["La lucha simbólica contra la tiranía y el fanatismo", "El gobierno de las logias", "Los oficios de la construcción", "El duelo por el Maestro Hiram"], answer: 0 },
+      { q: "¿Qué garantiza la Masonería Liberal a sus miembros?", options: ["Un dogma común obligatorio", "La libertad absoluta de conciencia", "El ascenso automático de grado", "El secreto de la palabra perdida"], answer: 1 },
+      { q: "La letra G de la Estrella Flamígera evoca ante todo…", options: ["La Gnosis prohibida", "El Gran Secreto", "La Geometría", "La Gloria del Oriente"], answer: 2 }
+    ]
   },
 
   /* ---------- Cámara de Reflexión ---------- */
@@ -524,20 +733,22 @@ const TEMPLE_DATA = {
     }
   ],
 
-  /* ---------- Final ---------- */
+  /* ---------- Final: la Cumbre y la Red Global ---------- */
 
   finale: {
-    title: "La Luz",
+    title: "La Cumbre · 33°",
     lines: [
-      "El Templo se abre y ya no hay más puertas: hay mundo.",
-      "Recorriste el Filtro, la Cámara de Reflexión y los tres grados",
-      "de la Masonería Simbólica — y cada puerta te abrió a ti.",
-      "Tu obra espera ser construida. Tu Diario guarda las piedras que tallaste.",
-      "Este camino no se recorre en soledad: comparte lo aprendido,",
-      "construye comunidad y suma voluntades.",
-      "Pregúntate siempre: ¿qué estoy construyendo en mí…",
-      "y con quién lo estoy compartiendo?"
+      "Treinta y tres peldaños, y ya no hay más puertas: hay mundo.",
+      "El Templo digital fue tu escuela; ahora eres tú el que enseña.",
+      "Esta logia nació para conectar: miembros debidamente probados,",
+      "en todos los meridianos, tejiendo la red fraternal más grande del planeta.",
+      "Tu perfil de miembro es tu piedra en esa catedral global.",
+      "Comparte lo aprendido. Forma a los que suben. Vuelve al Gimnasio: la mente,",
+      "como la piedra, se pule cada día — 1% mejor, sin descanso y sin prisa.",
+      "¿Qué estás construyendo en ti… y con quién lo estás compartiendo?"
     ],
+    networkTitle: "La Red Global",
+    networkText: "Próxima fase de la logia: el directorio fraternal — perfiles verificados, obras publicadas, mentorías entre grados y triángulos de trabajo por ciudad. El networking con propósito: conectar millones de constructores.",
     signature: "V.I.T.R.I.O.L."
   }
 };

@@ -786,3 +786,176 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
   margin-top: 14px;
 }
 .tabla-closing { font-style: italic; color: var(--gold-soft); max-width: 520px; margin: 14px auto 0; }
+
+/* ============================================================
+   v3 — Apertura liberal, Sendero de los 33 Grados (LMS),
+   Gimnasio Neuronal y Perfil de Miembro
+   ============================================================ */
+
+.rite-tag {
+  display: inline-block;
+  font-family: var(--font-title);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid rgba(154, 160, 184, 0.3);
+  border-radius: 999px;
+  padding: 4px 16px;
+}
+
+.boveda-line {
+  font-style: italic;
+  color: var(--gold-soft);
+  font-size: 0.95em;
+  margin: 4px 0 0;
+}
+
+/* ---------- Sendero: tarjetas de cámara ---------- */
+
+.bodies {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 26px auto 16px;
+  max-width: 620px;
+  position: relative;
+}
+.bodies::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -18px;
+  bottom: -8px;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, var(--gold-dim), transparent);
+}
+
+.body-card {
+  --accent: var(--gold);
+  position: relative;
+  z-index: 1;
+  text-align: left;
+  background: linear-gradient(180deg, rgba(20, 28, 66, 0.92), rgba(13, 19, 48, 0.92));
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s, box-shadow 0.2s;
+}
+.body-card:hover:not(.body-locked),
+.body-card:focus-visible:not(.body-locked) {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.45);
+  outline: none;
+}
+.body-locked { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.5); }
+.body-done { border-color: var(--accent); }
+
+.body-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.body-range {
+  font-family: var(--font-title);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.body-badge {
+  font-family: var(--font-title);
+  font-size: 12px;
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  border-radius: 999px;
+  padding: 2px 12px;
+}
+.body-name {
+  font-family: var(--font-title);
+  font-size: 21px;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  margin: 6px 0 2px;
+}
+.body-sub { margin: 0 0 10px; color: var(--muted); font-style: italic; }
+.body-bar {
+  height: 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(154, 160, 184, 0.25);
+  overflow: hidden;
+}
+.body-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  transition: width 0.5s ease;
+}
+.body-state {
+  margin: 8px 0 0;
+  font-family: var(--font-title);
+  font-size: 13px;
+  color: var(--muted);
+}
+.body-done .body-state { color: var(--gold); }
+
+/* ---------- Módulo: objetivos, neuro y grados ---------- */
+
+.objectives { text-align: left; margin: 10px 0 2px; }
+.objective { margin: 3px 0; }
+.neuro-note {
+  text-align: left;
+  border-left: 3px solid #6fb3a8;
+  background: rgba(111, 179, 168, 0.08);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  font-size: 0.95em;
+  margin: 14px 0;
+}
+.degree-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin: 12px 0 6px;
+}
+.degree-pill {
+  font-family: var(--font-title);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  border: 1px solid rgba(154, 160, 184, 0.3);
+  border-radius: 999px;
+  padding: 3px 12px;
+  white-space: nowrap;
+}
+.badge-pill { color: var(--gold-soft); border-color: var(--gold-dim); }
+
+/* ---------- Perfil de miembro ---------- */
+
+.member-card {
+  max-width: 460px;
+  margin: 8px auto 20px;
+  border: 1px solid var(--gold-dim);
+  border-radius: 18px;
+  padding: 22px 26px;
+  background:
+    radial-gradient(300px 120px at 50% 0%, rgba(212, 175, 55, 0.12), transparent),
+    linear-gradient(180deg, rgba(20, 28, 66, 0.95), rgba(13, 19, 48, 0.95));
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.member-name {
+  font-family: var(--font-title);
+  font-size: 26px;
+  letter-spacing: 0.08em;
+  color: var(--gold-soft);
+}
+.member-title {
+  font-family: var(--font-title);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.member-boveda { font-style: italic; color: var(--ink); font-size: 0.9em; margin: 10px 0 0; }
+.member-badges { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 12px 0 4px; }
+.member-stats { font-family: var(--font-title); font-size: 13px; color: var(--gold-soft); margin: 8px 0 0; letter-spacing: 0.06em; }

@@ -1,34 +1,39 @@
-# El Templo — Prototipo v2
+# El Templo · Logia Kaizen — Prototipo v3
 
-Webapp gamificada para una nueva logia masónica moderna —con **IA como arquitectura**— donde el usuario ingresa al templo como en un **juego de misterio y estrategia para adultos**: un acceso secreto y discreto, un filtro de admisión con pruebas interactivas, y el viaje por los tres grados de la Masonería Azul (Aprendiz, Compañero, Maestro) tallando la propia piedra.
+Templo digital de una **logia de Masonería Liberal de vanguardia** (libertad absoluta de conciencia, síntesis del Rito Escocés Antiguo y Aceptado y del Rito Francés), diseñado como un **LMS gamificado con estimulación neuronal** — el **Método Kaizen** de Esteban Castillo: neurociencias + academia + mejora continua. El rito es el plan de estudios; el objetivo, guiar el desarrollo del miembro y conectar a millones de masones debidamente probados en la red fraternal más grande del planeta.
 
 ## El viaje
 
-1. **El Umbral** — acceso místico y discreto: la puerta apenas se ve; hay que descubrirla, llamar tres veces y responder bien a la voz que pregunta *¿quién llama?* (los curiosos y los que buscan poder son rechazados con enseñanza).
-2. **Cámara de Pruebas (El Filtro del Aspirante)** — cinco sellos con mecánicas de juego:
-   - **Sello I — La Tabla del Orden**: *arrastrar y soltar* los pilares del Caballete (ME EDUCO → TRABAJO → AYUDO) en el orden del constructor.
-   - **Sello II — Las Voces del Oriente**: *completar* palabras faltantes en frases de Franklin y Goethe.
-   - **Sello III — La Lectura de los Símbolos**: *unir* significados con las herramientas (escuadra, compás, nivel, plomada).
-   - **Sello IV — La Prueba de la Constancia**: *sostener el cincel* sin soltarlo (mide paciencia; cada interrupción queda registrada).
-   - **Sello V — La Propuesta del Aspirante**: nadie entra con las manos vacías — proyecto/idea de valor, talentos que aporta, beneficiarios y compromiso semanal.
-3. **El Veredicto** — se calcula un **Índice de Compromiso** (0–100) a partir de reintentos, constancia, profundidad de la propuesta y compromiso declarado. Bajo el umbral, el Templo no abre (puede reintentarse). Sobre el umbral: Sello de Bronce / Plata / Oro y **Expediente del Aspirante** descargable para revisión del Maestro.
+1. **El Umbral** — acceso místico y discreto: puerta oculta, tres golpes, y la voz que rechaza a curiosos y buscadores de poder.
+2. **Cámara de Pruebas (Filtro del Aspirante)** — cinco sellos interactivos: ordenar el Caballete (drag & drop), completar frases de masones célebres, unir símbolos, sostener el cincel (constancia) y presentar **La Propuesta** (nadie entra con las manos vacías).
+3. **El Veredicto** — Índice de Compromiso 0–100, sellos Bronce/Plata/Oro y **Expediente del Aspirante** descargable para el Maestro.
 4. **Cámara de Reflexión** — testamento del profano (V.I.T.R.I.O.L.).
-5. **Tres grados** alineados al Caballete: Aprendiz (*ME EDUCO*), Compañero (*TRABAJO*), Maestro (*AYUDO*) — 3 puertas por grado (enigmas, dilemas simbólicos, reflexiones) y ceremonias de paso con tres golpes rituales y juramentos del Caballete.
-6. **La Luz** — culminación, Diario y Expediente completo.
+5. **Apertura de los Trabajos** — declaración liberal: el miembro elige su bóveda (*Gran Arquitecto*, *Humanidad y Conciencia*, o ambas). Nadie decide por él.
+6. **El Sendero de los 33 Grados** — el rito como plan de estudios (LMS):
 
-## Mecánicas de juego
+   | Cámara | Grados | Enfoque |
+   |---|---|---|
+   | Masonería Azul | 1–3 | Fundación compartida con todos los masones (jugable completa: 9 puertas + 3 ceremonias) |
+   | Logia de Perfección | 4–14 | Enfoque, lealtad, deber y justicia |
+   | Capítulo Rosa Cruz | 15–18 | Tolerancia y amor fraternal |
+   | Consejo Kadosh | 19–30 | Lucha simbólica contra la tiranía y el fanatismo |
+   | Supremo Consejo | 31–33 | Grados administrativos y síntesis filosófica |
 
-- **Puertas y sellos secuenciales** — nada se abre sin lo anterior.
-- **Luz (☀)** — puntos por cada reto superado.
-- **Voces del Oriente** — coleccionables: cada puerta revela la enseñanza de un masón célebre (Franklin, Goethe, Washington, Voltaire, Bolívar, Mozart, Churchill, Kipling, Fleming).
-- **Tabla de Trazar (△ Tabla en el HUD)** — el Caballete del Aprendiz siempre a mano: ME EDUCO / TRABAJO / AYUDO con la IA como infraestructura al centro.
-- **Diario del Iniciado** — todas las reflexiones escritas.
-- **Expediente del Aspirante** — archivo descargable con métricas, propuesta, diario y voces, pensado para que el Maestro evalúe compromiso y aporte (sin backend en este prototipo).
+   Cada cámara es un **módulo LMS**: descripción, objetivos de aprendizaje, nota de neurociencia aplicada, listado de grados y una **lección insignia jugable** (dilema del Preboste, mesa de los contrarios, enigma del fanatismo, síntesis del 33). Completarla otorga insignia y título (Gran Elegido 14°, Príncipe Rosacruz 18°, Caballero Kadosh 30°, Inspector General 33°).
+7. **La Cumbre · 33°** — perfil de miembro (nombre, título, bóveda, insignias, estadísticas) y visión de la **Red Global**.
+
+## Estimulación neuronal (Método Kaizen)
+
+- **🧠 Gimnasio Neuronal** (HUD) — repaso por *recuperación activa*: series de 3 preguntas sobre símbolos, rito y caballete, con racha registrada. La técnica de aprendizaje con más evidencia en neurociencia cognitiva.
+- **Notas de neurociencia por módulo** — cada cámara explica qué capacidad entrena (memoria episódica, control ejecutivo, empatía cognitiva, metacognición, efecto protegé).
+- **Gamificación estructural** — Luz (XP), insignias por cámara, coleccionables (9 Voces del Oriente), progreso visible por módulo, desbloqueo secuencial.
+
+## Herramientas del miembro
+
+- **△ Tabla de Trazar** — el Caballete Kaizen (ME EDUCO / TRABAJO / AYUDO, IA como infraestructura).
+- **✎ Diario del Iniciado** — reflexiones y voces coleccionadas.
+- **Expediente completo** — descargable en cualquier momento: métricas del filtro, propuesta, bóveda, grado alcanzado, insignias, diario.
 - **Progreso persistente** en `localStorage`.
-
-## Evaluación para el Maestro (Índice de Compromiso)
-
-Fórmula transparente sobre 100: base 40 + precisión (menos reintentos) + constancia (menos interrupciones del cincel) + profundidad de la propuesta y talentos + compromiso semanal declarado. Umbral de aceptación: 50.
 
 ## Ejecutar
 
@@ -44,16 +49,17 @@ Compatible con GitHub Pages.
 ## Estructura
 
 ```
-index.html        # shell (HUD, escenas, modales: reto, diario, tabla de trazar)
-css/styles.css    # estética noche+oro, puertas, sellos, tablero drag&drop, veredicto
-js/data.js        # contenido: umbral, filtro, caballete, voces, grados, ceremonias
-js/app.js         # motor: escenas, pruebas interactivas, scoring, expediente, diario
+index.html        # shell (HUD, escenas, modales: reto, diario, tabla, gimnasio)
+css/styles.css    # estética noche+oro, sendero LMS, tarjetas de cámara, perfil
+js/data.js        # contenido: umbral, filtro, apertura liberal, 5 cuerpos del rito,
+                  #   lecciones insignia, gimnasio neuronal, voces, grados azules
+js/app.js         # motor: escenas, pruebas, lecciones, scoring, gimnasio, perfil
 ```
 
-## Ideas para v3
+## Ideas para v4
 
-- Backend: recepción real de expedientes y panel del Maestro (dashboard de aspirantes).
-- Audio ambiental y narración.
-- Tokenización/insignias verificables por logro (alineado al modelo Artesanos®).
-- Modo mentor IA: acompañamiento socrático durante las reflexiones.
-- Analítica del progreso del iniciado (retención, hábito, constancia) como en un LMS.
+- Backend: cuentas, recepción de expedientes, panel del Maestro y **Red Global real** (directorio de perfiles verificados, mentorías entre grados, triángulos por ciudad).
+- Repaso espaciado con calendario (algoritmo SM-2) y notificaciones.
+- Mentor IA socrático durante lecciones y reflexiones.
+- Contenido completo por grado (33 lecciones) con rúbricas académicas.
+- Insignias verificables (Open Badges / tokenización, alineado al modelo Artesanos®).
