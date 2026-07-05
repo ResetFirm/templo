@@ -1,4 +1,6 @@
-# El Templo · Logia Kaizen — Prototipo v4
+# Templo Satori · Método Kaizen — Prototipo v4
+
+**Satori** (悟り): el despertar súbito del Zen — lo que la Orden llama *recibir la Luz*. **Kaizen** (改善): la mejora continua — el camino diario del cincel. El destino y el camino.
 
 Templo digital de una **logia de Masonería Liberal de vanguardia** (libertad absoluta de conciencia, síntesis del Rito Escocés Antiguo y Aceptado y del Rito Francés), diseñado como un **LMS gamificado con estimulación neuronal** — el **Método Kaizen** de Esteban Castillo: neurociencias + academia + mejora continua. El rito es el plan de estudios; el objetivo, guiar el desarrollo del miembro y conectar a millones de masones debidamente probados en la red fraternal más grande del planeta.
 

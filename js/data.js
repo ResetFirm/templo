@@ -21,7 +21,8 @@
 const TEMPLE_DATA = {
 
   lodge: {
-    name: "El Templo · Logia Kaizen",
+    name: "Templo Satori",
+    tagline: "Templo Satori · Método Kaizen",
     motto: "Me educo · Trabajo · Ayudo",
     rite: "Masonería Liberal · Rito Escocés + Rito Francés · Método Kaizen",
     contactEmail: "esteban@resetfirm.ai"
@@ -259,7 +260,10 @@ const TEMPLE_DATA = {
       "porque la piedra se talla igual bajo cualquier cielo.",
       "Trabajamos una síntesis del Rito Escocés Antiguo y Aceptado y del Rito Francés,",
       "con el Método Kaizen: neurociencias, academia y mejora continua — 1% mejor cada día.",
-      "El rito es nuestro plan de estudios. El Templo es digital. El mundo es la logia."
+      "Este templo lleva por nombre Satori — el despertar súbito del Zen,",
+      "lo que nuestra Orden llama recibir la Luz — y por método, Kaizen: el camino diario.",
+      "El destino y el camino. El rito es nuestro plan de estudios.",
+      "El Templo es digital. El mundo es la logia."
     ],
     question: "¿Bajo qué bóveda abres tus trabajos?",
     options: [
