@@ -1174,3 +1174,22 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
 .book-line { margin: 0 0 14px; }
 .book-line:first-letter { color: var(--gold); font-size: 1.25em; font-family: var(--font-title); }
 .library-contribute { font-style: italic; }
+
+/* ---------- Caballete de Kai (recreación SVG) ---------- */
+
+.tabla-caballete {
+  margin: 10px auto 4px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--gold-dim);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.5);
+}
+.tabla-caballete svg { display: block; width: 100%; height: auto; }
+.tabla-credit {
+  font-family: var(--font-title);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin: 6px 0 14px;
+}

@@ -2,7 +2,7 @@
 
 **Satori** (悟り): el despertar súbito del Zen — lo que la Orden llama *recibir la Luz*. **Kaizen** (改善): la mejora continua — el camino diario del cincel. El destino y el camino.
 
-Templo digital de una **logia de Masonería Liberal de vanguardia** (libertad absoluta de conciencia, síntesis del Rito Escocés Antiguo y Aceptado y del Rito Francés), diseñado como un **LMS gamificado con estimulación neuronal** — el **Método Kaizen** de Esteban Castillo: neurociencias + academia + mejora continua. El rito es el plan de estudios; el objetivo, guiar el desarrollo del miembro y conectar a millones de masones debidamente probados en la red fraternal más grande del planeta.
+Templo digital de una **logia de Masonería Liberal de vanguardia** (libertad absoluta de conciencia, síntesis del Rito Escocés Antiguo y Aceptado y del Rito Francés), diseñado como un **LMS gamificado con estimulación neuronal** — el **Método Kaizen** de Esteban Castillo, «Kai»: neurociencias + academia + mejora continua. El rito es el plan de estudios; el objetivo, guiar el desarrollo del miembro y conectar a millones de masones debidamente probados en la red fraternal más grande del planeta.
 
 ## El viaje
 
@@ -36,7 +36,7 @@ Templo digital de una **logia de Masonería Liberal de vanguardia** (libertad ab
 ## Herramientas del miembro
 
 - **📚 Biblioteca de los Maestros** — documentos de la Orden e historias de la masonería **por país**. Incluye la **Regla de los Doce Puntos** (documento doctrinal de las Grandes Logias Regulares, presentado como material de estudio de la logia liberal) y el estante del Ecuador con *La Masonería en el Ecuador* (de las logias de la independencia a la Revolución Liberal de Eloy Alfaro), más entradas iniciales de México, Venezuela y Argentina, y estantes en documentación (Panamá, Rep. Dominicana). Cada primera lectura sellada otorga +2 de Luz; los miembros pueden proponer los libros de su Oriente. Accesible desde el HUD y desde el Plano del Templo.
-- **△ Tabla de Trazar** — el Caballete Kaizen (ME EDUCO / TRABAJO / AYUDO, IA como infraestructura).
+- **△ Tabla de Trazar** — recreación SVG fiel del **Caballete original de Kai** (Esteban Castillo): el triángulo rojo con la IA como infraestructura, el humano y el ADN sobre el mundo, y los tres pilares ME EDUCO / TRABAJO / AYUDO. Firmado «Trazado por Kai ∴».
 - **✎ Diario del Iniciado** — reflexiones y voces coleccionadas.
 - **Expediente completo** — descargable en cualquier momento: métricas del filtro, propuesta, bóveda, grado alcanzado, insignias, diario.
 - **Progreso persistente** en `localStorage`.

@@ -212,7 +212,9 @@ const TEMPLE_DATA = {
   /* ---------- Tabla de Trazar (Caballete del Aprendiz) ---------- */
 
   caballete: {
-    title: "Tabla de Trazar — Caballete del Aprendiz",
+    title: "Tabla Caballete — Aprendiz",
+    author: "Kai",
+    credit: "Caballete original trazado por Kai ∴ — Método Kaizen",
     intro: "La IA ya no es solo una herramienta: es una fuerza que transforma cómo pensamos, aprendemos y trabajamos. Por eso, hoy más que nunca, la educación interior es la clave. Este Caballete no habla de tecnología, sino de orden.",
     pillars: [
       {

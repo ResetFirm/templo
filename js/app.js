@@ -1889,8 +1889,8 @@
     box.appendChild(el("h2", "modal-title", c.title));
     box.appendChild(el("p", "tabla-intro", c.intro));
 
-    const tri = el("div", "tabla-triangle", symbolTriangle());
-    box.appendChild(tri);
+    box.appendChild(el("div", "tabla-caballete", caballeteSVG()));
+    box.appendChild(el("p", "tabla-credit", c.credit));
 
     c.pillars.forEach((p, i) => {
       const pill = el("div", "tabla-pillar");
@@ -1902,6 +1902,90 @@
     box.appendChild(el("p", "tabla-center", "△ " + c.center));
     box.appendChild(el("p", "tabla-closing", c.closing));
     $("#tabla").classList.remove("hidden");
+  }
+
+  /* Recreación fiel del Caballete original de Kai: triángulo rojo con la
+     IA como infraestructura, el humano y el ADN, sobre el mundo. */
+  function caballeteSVG() {
+    const sans = 'font-family="Montserrat, Arial, sans-serif"';
+    const dnaDots = (() => {
+      let s = "";
+      for (let i = 0; i <= 10; i++) {
+        const x = 375 + i * 15;
+        const y1 = 272 + Math.sin(i * 0.9) * 10;
+        const y2 = 272 - Math.sin(i * 0.9) * 10;
+        s += '<circle cx="' + x + '" cy="' + y1 + '" r="2.6" fill="' + (i % 2 ? "#d94040" : "#5b8fd9") + '"/>';
+        s += '<circle cx="' + x + '" cy="' + y2 + '" r="2.6" fill="' + (i % 2 ? "#9db8e8" : "#e06666") + '"/>';
+        s += '<line x1="' + x + '" y1="' + y1 + '" x2="' + x + '" y2="' + y2 + '" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>';
+      }
+      return s;
+    })();
+
+    return (
+      '<svg viewBox="0 0 900 500" role="img" aria-label="Tabla Caballete del Aprendiz, por Kai">' +
+      // Fondo: noche y mundo
+      '<defs>' +
+      '<radialGradient id="cbGlow" cx="50%" cy="42%" r="55%">' +
+      '<stop offset="0%" stop-color="#12335a"/><stop offset="60%" stop-color="#081527"/><stop offset="100%" stop-color="#050d1a"/>' +
+      "</radialGradient>" +
+      '<linearGradient id="cbTri" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="#d42222"/><stop offset="100%" stop-color="#a51212"/>' +
+      "</linearGradient>" +
+      "</defs>" +
+      '<rect width="900" height="500" fill="url(#cbGlow)"/>' +
+      // Globo sugerido: meridianos
+      '<g stroke="rgba(91,143,217,0.22)" fill="none">' +
+      '<circle cx="450" cy="560" r="330"/><circle cx="450" cy="560" r="260"/>' +
+      '<ellipse cx="450" cy="560" rx="330" ry="120"/><ellipse cx="450" cy="560" rx="180" ry="330"/>' +
+      "</g>" +
+      '<g fill="rgba(232,205,122,0.5)">' +
+      '<circle cx="130" cy="330" r="1.6"/><circle cx="790" cy="300" r="1.6"/><circle cx="700" cy="120" r="1.4"/><circle cx="180" cy="120" r="1.4"/><circle cx="830" cy="430" r="1.4"/>' +
+      "</g>" +
+      // Cabecera
+      '<text x="70" y="46" ' + sans + ' font-size="14" fill="#e9e4d8" letter-spacing="2">TABLA CABALLETE</text>' +
+      '<text x="70" y="80" font-family="Cinzel, serif" font-size="30" font-weight="700" fill="#e8cd7a">Aprendiz</text>' +
+      // Escuadra y compás con G
+      '<g transform="translate(78,108) scale(0.75)" fill="none" stroke="rgba(232,205,122,0.75)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M60 18 L24 92 M60 18 L96 92"/><circle cx="60" cy="18" r="4" fill="rgba(232,205,122,0.75)"/><path d="M30 66 L60 96 L90 66"/>' +
+      '<text x="60" y="66" text-anchor="middle" font-size="20" fill="rgba(232,205,122,0.9)" font-family="Cinzel, serif" stroke="none">G</text>' +
+      "</g>" +
+      // Triángulo rojo
+      '<polygon points="450,110 278,350 622,350" fill="url(#cbTri)" stroke="#e05050" stroke-width="1.5"/>' +
+      // Cerebro-circuito (IA)
+      '<g transform="translate(450,163)" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M-24 12 q-10 -4 -8 -15 q2 -9 11 -11 q1 -9 11 -10 q9 -1 13 5 q9 -3 15 3 q7 6 4 14 q6 6 1 13 q-4 7 -12 6 q-4 7 -13 6 q-8 -1 -10 -7 q-9 3 -12 -4 z"/>' +
+      '<path d="M-6 -22 v10 M6 -18 v12 M-14 -10 h8 M8 0 h9 M-2 2 v9" stroke-width="1.4" opacity="0.9"/>' +
+      '<circle cx="0" cy="0" r="7" fill="#a51212" stroke="#ffffff" stroke-width="1.2"/>' +
+      '<text x="0" y="3" text-anchor="middle" font-size="6.5" fill="#ffffff" stroke="none" ' + sans + ' font-weight="700">IAE</text>' +
+      "</g>" +
+      '<text x="450" y="205" text-anchor="middle" ' + sans + ' font-size="12.5" font-weight="800" fill="#ffffff" letter-spacing="1">IA COMO</text>' +
+      '<text x="450" y="220" text-anchor="middle" ' + sans + ' font-size="12.5" font-weight="800" fill="#ffffff" letter-spacing="1">INFRAESTRUCTURA</text>' +
+      // Humano
+      '<g fill="#ffffff" opacity="0.96">' +
+      '<circle cx="450" cy="243" r="8"/>' +
+      '<path d="M450 252 q-11 2 -13 14 l-6 24 q-1 5 3 6 q4 1 5 -3 l6 -21 l1 34 l-7 36 q-1 5 4 6 q5 1 6 -4 l7 -33 l7 33 q1 5 6 4 q5 -1 4 -6 l-7 -36 l1 -34 l6 21 q1 4 5 3 q4 -1 3 -6 l-6 -24 q-2 -12 -13 -14 z"/>' +
+      "</g>" +
+      // ADN cruzando
+      '<g>' + dnaDots + "</g>" +
+      // Lema dentro del triángulo
+      '<text x="450" y="322" text-anchor="middle" ' + sans + ' font-size="11" font-weight="800" fill="#ffffff" letter-spacing="0.5">NEUROCIENCIAS, GAMIFICACIÓN Y TOKENIZACIÓN PARA</text>' +
+      '<text x="450" y="337" text-anchor="middle" ' + sans + ' font-size="11" font-weight="800" fill="#ffffff" letter-spacing="0.5">LA ADAPTACIÓN Y EVOLUCIÓN HUMANA</text>' +
+      // Pilar 1 — ME EDUCO (cúspide)
+      '<text x="450" y="52" text-anchor="middle" ' + sans + ' font-size="22" font-weight="800" fill="#ffffff">1</text>' +
+      '<text x="450" y="78" text-anchor="middle" ' + sans + ' font-size="20" font-weight="800" fill="#e8492a" letter-spacing="1.5">ME EDUCO</text>' +
+      '<text x="450" y="97" text-anchor="middle" ' + sans + ' font-size="13" font-weight="700" fill="#ffffff">mente cuerpo espíritu</text>' +
+      // Pilar 2 — TRABAJO (base derecha)
+      '<text x="648" y="382" text-anchor="middle" ' + sans + ' font-size="22" font-weight="800" fill="#ffffff">2</text>' +
+      '<text x="648" y="410" text-anchor="middle" ' + sans + ' font-size="20" font-weight="800" fill="#e8492a" letter-spacing="1.5">TRABAJO</text>' +
+      '<text x="648" y="429" text-anchor="middle" ' + sans + ' font-size="13" font-weight="700" fill="#ffffff">fundamento &amp; propósito</text>' +
+      // Pilar 3 — AYUDO (base izquierda)
+      '<text x="252" y="382" text-anchor="middle" ' + sans + ' font-size="22" font-weight="800" fill="#ffffff">3</text>' +
+      '<text x="252" y="410" text-anchor="middle" ' + sans + ' font-size="20" font-weight="800" fill="#e8492a" letter-spacing="1.5">AYUDO</text>' +
+      '<text x="252" y="429" text-anchor="middle" ' + sans + ' font-size="13" font-weight="700" fill="#ffffff">¿Quién? ¿Cómo? ¿Cuándo?</text>' +
+      // Firma del autor
+      '<text x="860" y="478" text-anchor="end" font-family="Cinzel, serif" font-size="14" fill="#e8cd7a" letter-spacing="2">Trazado por Kai ∴</text>' +
+      "</svg>"
+    );
   }
 
   function resetJourney() {
@@ -1958,21 +2042,6 @@
       '<path d="M38 58 Q60 42 82 58 Q60 74 38 58 Z" />' +
       '<circle cx="60" cy="58" r="6" fill="currentColor" />' +
       "</g></svg>"
-    );
-  }
-
-  function symbolTriangle() {
-    return (
-      '<svg viewBox="0 0 200 150" width="220" height="165" aria-hidden="true">' +
-      '<g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">' +
-      '<path d="M100 12 L14 138 L186 138 Z" />' +
-      "</g>" +
-      '<text x="100" y="34" text-anchor="middle" font-size="11" fill="currentColor" font-family="Cinzel, serif">1 ME EDUCO</text>' +
-      '<text x="158" y="132" text-anchor="middle" font-size="11" fill="currentColor" font-family="Cinzel, serif">2 TRABAJO</text>' +
-      '<text x="44" y="132" text-anchor="middle" font-size="11" fill="currentColor" font-family="Cinzel, serif">3 AYUDO</text>' +
-      '<text x="100" y="100" text-anchor="middle" font-size="9" fill="currentColor" font-family="Cinzel, serif" opacity="0.8">IA COMO</text>' +
-      '<text x="100" y="112" text-anchor="middle" font-size="9" fill="currentColor" font-family="Cinzel, serif" opacity="0.8">INFRAESTRUCTURA</text>' +
-      "</svg>"
     );
   }
 
