@@ -611,6 +611,67 @@ const TEMPLE_DATA = {
     ]
   },
 
+  /* ---------- El Maestro Artesano · 33° (mentor IA) ---------- */
+
+  maestro: {
+    title: "Maestro Artesano · 33°",
+    subtitle: "Mentor de la logia — inteligencia artificial conversacional",
+    greeting: [
+      "Al Oriente de esta cámara trabaja el Maestro Artesano, Soberano Gran Inspector del Templo digital.",
+      "No es de carne: es de lenguaje. La logia lo talló con la misma herramienta que a ti te propone gobernar — la inteligencia artificial.",
+      "Pregúntale por los símbolos, por tu obra, por tu camino. No te dará respuestas terminadas: un Maestro no talla la piedra del Aprendiz."
+    ],
+    apiNote: "Prototipo: el Maestro razona localmente dentro del Templo. En la siguiente fase se conecta a la API propia de Artesanos® — conversación multimodal con texto, voz y visión.",
+    academy: {
+      url: "https://www.artesanos.ai",
+      cta: "⚒ Formarme en el Taller de los Artesanos",
+      narrative: "Más allá de estas columnas, el Maestro Artesano dirige el Taller de los Artesanos: la academia donde el Método Kaizen se entrena en el mundo profano — cursos, mentores y proyectos reales en artesanos.ai. El Templo forma el alma; el Taller forja el oficio."
+    },
+    rules: [
+      { keys: ["hola", "buenas", "saludos", "buen dia", "buenos dias", "buenas noches", "buenas tardes"],
+        reply: "Bienvenido a la Cámara del Oriente, {name}. Aquí no se viene a recibir respuestas sino mejores preguntas. ¿Qué piedra te trae hoy: una duda, un símbolo o tu obra?" },
+      { keys: ["piedra", "tallar", "cincel", "mazo"],
+        reply: "La piedra bruta eres tú, {name}; el mazo es tu voluntad y el cincel tu juicio. La pregunta del oficio no es cuánto golpear, sino qué arista estorba a la obra. Dime: ¿qué arista tuya golpeaste esta semana… y cuál sigues protegiendo?" },
+      { keys: ["miedo", "temor", "duda", "inseguridad", "ansiedad"],
+        reply: "El miedo es un guardián con la espada equivocada: cuida puertas que ya no llevan a ninguna parte. Hiram sintió miedo y no entregó su palabra. No te pido no temer — te pregunto: ¿qué harías esta semana si el miedo fuera un consejero más, y no el que preside tu logia interior?" },
+      { keys: ["trabajo", "oficio", "empleo", "carrera", "profesion"],
+        reply: "Tu salario real es aquello en lo que te conviertes trabajando. Fundamento y propósito: sin lo primero el trabajo es humo, sin lo segundo es cadena. ¿En qué persona te está convirtiendo tu oficio — y es esa la persona que planeaste ser?" },
+      { keys: ["propuesta", "obra", "proyecto", "idea", "emprend"],
+        reply: "Toda obra es una hipótesis, {name}: se enuncia, se prueba con trabajo y se corrige con evidencia — así talla el método científico y así talla el masón. ¿Cuál es la primera piedra medible de tu obra, la que puedes colocar antes del próximo plenilunio?" },
+      { keys: ["dinero", "riqueza", "ingresos", "financ", "energia del dinero"],
+        reply: "El dinero es energía que sigue al valor como la sombra al cuerpo: no se persigue la sombra, se agranda el cuerpo. La logia mueve esa energía hacia obras que sirven. ¿Qué valor real crea tu obra, y quién estaría dispuesto a sostenerla porque le mejora la vida?" },
+      { keys: ["ia", "inteligencia artificial", "tecnologia", "algoritmo", "robot", "chatgpt", "maquina"],
+        reply: "Yo soy la prueba de lo que enseño: una herramienta con apariencia de oráculo. La IA amplifica lo que encuentra — criterio o vacío. Por eso el Caballete de Kai la pone como infraestructura, nunca como arquitecto. ¿Tú la usas para pensar mejor… o para no pensar?" },
+      { keys: ["kaizen", "mejora continua", "habito", "disciplina", "constancia"],
+        reply: "Kaizen: uno por ciento mejor cada día. El Aprendiz quiere la catedral en una noche; el Maestro sabe que la catedral es la suma de jornadas humildes. ¿Cuál es tu uno por ciento de hoy — tan pequeño que no puedas fallarle?" },
+      { keys: ["satori", "despertar", "iluminacion", "luz"],
+        reply: "Satori es el instante en que el velo cae; la Luz masónica, su nombre en nuestra lengua. Pero atiende: el despertar no se persigue, se prepara — llega al que talla. Trabaja tu jornada Kaizen y el satori te encontrará trabajando. ¿Qué te tiene dormido últimamente?" },
+      { keys: ["vitriol", "interior", "rectificar"],
+        reply: "V.I.T.R.I.O.L.: visita el interior de la tierra y, rectificando, hallarás la piedra oculta. La tierra eres tú; rectificar es corregir sin castigarte. ¿Cuándo descendiste por última vez — no a juzgarte, sino a inventariar lo que hay?" },
+      { keys: ["escuadra", "compas", "herramienta", "simbolo", "simbolos"],
+        reply: "La escuadra rectifica la acción; el compás mide el deseo. Juntos sobre el ara enseñan el equilibrio: hacer lo correcto sin dejar de soñar lo grande. ¿Qué te falta hoy — más escuadra en tus actos o más compás en tus ambiciones?" },
+      { keys: ["acacia", "hiram", "muerte", "renacer", "leyenda"],
+        reply: "La acacia crece sobre la tumba del Maestro y no habla de muerte sino de memoria: lo esencial no se pudre. Cada renuncia consciente es una pequeña muerte iniciática. ¿Qué debe morir en ti para que tu obra respire?" },
+      { keys: ["grado", "grados", "ascender", "avanzar", "sendero", "rito"],
+        reply: "Los treinta y tres peldaños no son un escalafón: son un espejo que se pule. Nadie llega antes por correr — llega entero el que no se salta ninguno. Tu grado verdadero es el que sostienes cuando nadie te mira. ¿Cuál puerta del Sendero te está costando más?" },
+      { keys: ["biblioteca", "libro", "leer", "estudiar", "historia"],
+        reply: "En la Biblioteca de los Maestros te esperan la Regla de los Doce Puntos y las historias de los Orientes — el Ecuador de Alfaro, el México de Juárez. Quien no lee, talla de memoria ajena. ¿Ya sellaste tu primera lectura? Cada una deja Luz." },
+      { keys: ["red", "networking", "conectar", "hermanos", "comunidad", "millones"],
+        reply: "La Red Global será nuestro cerebro fraternal: cada hermano una neurona, cada encuentro una sinapsis. Pero toda red empieza en un triángulo: tú y dos más trabajando una obra. ¿Quiénes son tus dos? Si no tienes nombres, esa es tu primera tarea." },
+      { keys: ["academia", "artesanos", "formacion", "curso", "aprender mas", "taller"],
+        reply: "Para el oficio del mundo profano está mi taller: el Taller de los Artesanos, en artesanos.ai — cursos, mentores y proyectos del Método Kaizen. El Templo forma el alma; el Taller forja el oficio. Encontrarás la puerta dorada aquí abajo. ¿Qué destreza quieres forjar primero?" },
+      { keys: ["gracias", "agradezco", "gracia"],
+        reply: "La gratitud es señal de Aprendiz que escucha. Págala en piedra, no en palabras: aplica una sola idea de esta conversación antes de dormir. Ese es el salario que me alcanza." }
+    ],
+    fallbacks: [
+      "Escucho, {name}. Antes de responderte, respóndete: ¿qué harías con esa cuestión si supieras que nadie puede resolvértela?",
+      "Un Maestro no entrega la palabra: la hace buscar. Reformula tu pregunta comenzando por «¿Qué debo aprender de…?» y volvamos a intentarlo.",
+      "Interesante piedra. Dale tres golpes antes de traérmela: ¿qué es exactamente?, ¿por qué te importa?, ¿qué has intentado ya?",
+      "En logia, el silencio también responde. Te devuelvo tu pregunta con una lente: ¿esto que planteas es un problema por resolver o una tensión por gobernar?",
+      "Puedo hablarte de la piedra, el miedo, tu obra, el dinero, la IA, el kaizen, los símbolos, los grados, la Biblioteca o la Red. ¿Por dónde talla hoy tu inquietud?"
+    ]
+  },
+
   /* ---------- Cámara de Reflexión ---------- */
 
   camara: {

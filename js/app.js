@@ -35,6 +35,7 @@
     },
     gymBest: 0,               // mejor racha del Gimnasio Neuronal
     readings: {},             // { obraId: true } — lecturas de la Biblioteca
+    chat: [],                 // conversación con el Maestro Artesano [{role, text}]
     audio: { channel: "off", volume: 0.5 },
     score: null,
     startedAt: null
@@ -1253,6 +1254,16 @@
       btn.addEventListener("click", () => go("finale"));
       scene.appendChild(btn);
     }
+
+    const row = el("div", "form-row center");
+    const maestroBtn = el("button", "btn", "☉ Consultar al Maestro Artesano");
+    maestroBtn.addEventListener("click", openMaestro);
+    const academy = el("a", "btn academy-link", "⚒ Taller de los Artesanos");
+    academy.href = D.maestro.academy.url;
+    academy.target = "_blank";
+    academy.rel = "noopener noreferrer";
+    row.append(maestroBtn, academy);
+    scene.appendChild(row);
     root.appendChild(scene);
   }
 
@@ -1401,6 +1412,157 @@
     const btn = el("button", "btn btn-gold", "Volver al Sendero");
     btn.addEventListener("click", () => { closeModal(); render(); });
     card.appendChild(btn);
+  }
+
+  /* ============================================================
+     EL MAESTRO ARTESANO · 33° — mentor IA conversacional
+     Prototipo: motor socrático local. Punto de conexión listo
+     para la API propia (multimodal) en MAESTRO_API.endpoint.
+     ============================================================ */
+
+  const MAESTRO_API = {
+    endpoint: null,   // p. ej. "https://api.artesanos.ai/v1/maestro" — al conectarla, respond() la usará
+    apiKey: null
+  };
+
+  const MaestroEngine = {
+    context() {
+      return {
+        name: state.name || "Buscador",
+        grade: memberTitle() || gradeTitle() || "Aspirante",
+        light: state.light,
+        bodiesDone: Object.keys(state.bodiesDone),
+        readings: readingCount(),
+        proposal: state.propuesta ? state.propuesta.proposal.slice(0, 200) : null
+      };
+    },
+
+    async respond(text) {
+      if (MAESTRO_API.endpoint) {
+        // Conexión futura a la API propia (conversación multimodal)
+        try {
+          const res = await fetch(MAESTRO_API.endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", ...(MAESTRO_API.apiKey ? { Authorization: "Bearer " + MAESTRO_API.apiKey } : {}) },
+            body: JSON.stringify({ message: text, context: this.context(), history: state.chat.slice(-10) })
+          });
+          const data = await res.json();
+          if (data && data.reply) return data.reply;
+        } catch (e) { /* si la API falla, el Maestro local responde */ }
+      }
+      return this.localReply(text);
+    },
+
+    localReply(text) {
+      const M = D.maestro;
+      const norm = normalize(text);
+      const ctx = this.context();
+
+      // Consultas dinámicas sobre el propio camino
+      if (/\b(progreso|avance|estadistic|como voy|mi camino)\b/.test(norm)) {
+        const insignias = D.bodies.filter((b) => state.bodiesDone[b.id]).map((b) => b.badge.name);
+        return "Tu piedra habla por ti, " + ctx.name + ": eres " + ctx.grade + ", con ☀ " + ctx.light +
+          " de Luz, " + state.voices.length + (state.voices.length === 1 ? " Voz" : " Voces") + " del Oriente, " +
+          ctx.readings + (ctx.readings === 1 ? " lectura sellada" : " lecturas selladas") +
+          (insignias.length ? " y las insignias de " + insignias.join(", ") : " y aún sin insignias de cámara") +
+          ". La pregunta que importa: ¿qué talla sigue?";
+      }
+      if (/\b(voz|voces|cita|frase)\b/.test(norm) && state.voices.length) {
+        const v = D.voices[state.voices[Math.floor(Math.random() * state.voices.length)]];
+        return "Escucha de nuevo a " + v.author + ", " + v.role + ": «" + v.quote + "». ¿Qué te dice hoy que no te dijo cuando la revelaste?";
+      }
+
+      const rule = M.rules.find((r) => r.keys.some((k) => norm.includes(normalize(k))));
+      const template = rule ? rule.reply : M.fallbacks[Math.floor(Math.random() * M.fallbacks.length)];
+      return template.replace(/\{name\}/g, ctx.name);
+    }
+  };
+
+  function pushChat(role, text) {
+    state.chat.push({ role, text });
+    if (state.chat.length > 40) state.chat = state.chat.slice(-40);
+    save();
+  }
+
+  function chatBubble(msg) {
+    const row = el("div", "chat-row chat-" + msg.role);
+    if (msg.role === "maestro") row.appendChild(el("span", "chat-avatar", "☉"));
+    row.appendChild(el("div", "chat-bubble", escapeHTML(msg.text)));
+    return row;
+  }
+
+  function openMaestro() {
+    const M = D.maestro;
+    const card = $("#modal-card");
+    card.innerHTML = "";
+    card.appendChild(el("h2", "modal-title", "☉ " + M.title));
+    card.appendChild(el("div", "modal-type", M.subtitle));
+
+    if (!state.chat.length) {
+      M.greeting.forEach((line) => pushChat("maestro", line));
+      pushChat("maestro", "Habla, " + (state.name || "Buscador") + ". El Oriente escucha.");
+    }
+
+    const box = el("div", "chat-box");
+    state.chat.forEach((m) => box.appendChild(chatBubble(m)));
+    card.appendChild(box);
+
+    const inputRow = el("div", "chat-input-row");
+    const micBtn = el("button", "btn chat-tool", "🎙");
+    micBtn.disabled = true;
+    micBtn.title = "Voz — se activa al conectar la API multimodal de Artesanos®";
+    const imgBtn = el("button", "btn chat-tool", "📷");
+    imgBtn.disabled = true;
+    imgBtn.title = "Visión — se activa al conectar la API multimodal de Artesanos®";
+    const input = el("input", "input chat-input");
+    input.type = "text";
+    input.placeholder = "Pregunta al Maestro…";
+    input.setAttribute("aria-label", "Mensaje para el Maestro Artesano");
+    const sendBtn = el("button", "btn btn-gold chat-send", "Enviar");
+
+    async function send() {
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = "";
+      pushChat("user", text);
+      box.appendChild(chatBubble({ role: "user", text }));
+      box.scrollTop = box.scrollHeight;
+
+      const typing = el("div", "chat-row chat-maestro", '<span class="chat-avatar">☉</span><div class="chat-bubble chat-typing"><span></span><span></span><span></span></div>');
+      box.appendChild(typing);
+      box.scrollTop = box.scrollHeight;
+
+      const reply = await MaestroEngine.respond(text);
+      setTimeout(() => {
+        typing.remove();
+        pushChat("maestro", reply);
+        box.appendChild(chatBubble({ role: "maestro", text: reply }));
+        box.scrollTop = box.scrollHeight;
+      }, 500 + Math.min(1200, reply.length * 4));
+    }
+
+    sendBtn.addEventListener("click", send);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); send(); } });
+    inputRow.append(micBtn, imgBtn, input, sendBtn);
+    card.appendChild(inputRow);
+
+    card.appendChild(el("p", "muted small", M.apiNote));
+
+    // El Taller de los Artesanos: la academia exterior del Templo
+    card.appendChild(el("p", "academy-narrative", M.academy.narrative));
+    const academy = el("a", "btn btn-gold academy-link", M.academy.cta);
+    academy.href = M.academy.url;
+    academy.target = "_blank";
+    academy.rel = "noopener noreferrer";
+    card.appendChild(academy);
+
+    const close = el("button", "btn btn-ghost", "Retirarse del Oriente");
+    close.addEventListener("click", closeModal);
+    card.appendChild(close);
+
+    $("#modal").classList.remove("hidden");
+    box.scrollTop = box.scrollHeight;
+    input.focus();
   }
 
   /* ============================================================
@@ -1840,13 +2002,17 @@
     const row = el("div", "form-row center");
     const dl = el("button", "btn btn-gold", "⬇ Expediente completo");
     dl.addEventListener("click", downloadExpediente);
+    const maestroBtn = el("button", "btn", "☉ Hablar con el Maestro");
+    maestroBtn.addEventListener("click", openMaestro);
+    const academy = el("a", "btn academy-link", D.maestro.academy.cta);
+    academy.href = D.maestro.academy.url;
+    academy.target = "_blank";
+    academy.rel = "noopener noreferrer";
     const journalBtn = el("button", "btn", "Abrir mi Diario");
     journalBtn.addEventListener("click", openJournal);
-    const gymBtn = el("button", "btn", "🧠 Gimnasio Neuronal");
-    gymBtn.addEventListener("click", openGym);
     const againBtn = el("button", "btn btn-ghost", "Recorrer el Templo de nuevo");
     againBtn.addEventListener("click", resetJourney);
-    row.append(dl, journalBtn, gymBtn, againBtn);
+    row.append(dl, maestroBtn, academy, journalBtn, againBtn);
     scene.appendChild(row);
     root.appendChild(scene);
   }
@@ -2065,6 +2231,7 @@
   $("#btn-audio").addEventListener("click", openAudio);
   $("#btn-map").addEventListener("click", openMap);
   $("#btn-library").addEventListener("click", openLibrary);
+  $("#btn-maestro").addEventListener("click", openMaestro);
 
   // El navegador exige un gesto del usuario para iniciar audio:
   // si había una atmósfera elegida, se reanuda en la primera interacción.
