@@ -1116,3 +1116,61 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
   animation: youPulse 1.6s ease-in-out infinite;
 }
 @keyframes youPulse { 50% { opacity: 0.35; } }
+
+/* ============================================================
+   v4.1 — Biblioteca de los Maestros
+   ============================================================ */
+
+.country-shelves {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 10px 0;
+}
+.country-shelf { text-align: center; padding: 12px 10px; }
+.country-shelf strong { display: block; font-family: var(--font-title); letter-spacing: 0.05em; }
+.country-flag { font-size: 26px; display: block; margin-bottom: 4px; }
+.shelf-pending { opacity: 0.6; }
+
+.book-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin: 8px 0;
+  position: relative;
+  padding-left: 52px;
+}
+.book-card strong { display: block; font-family: var(--font-title); letter-spacing: 0.05em; color: var(--gold-soft); }
+.book-spine {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+}
+.book-card .chip-sub, .country-shelf .chip-sub { text-transform: none; }
+.book-read { border-color: var(--gold-dim); background: rgba(212, 175, 55, 0.07); }
+.book-mark {
+  position: absolute;
+  right: 14px;
+  top: 10px;
+  font-family: var(--font-title);
+  font-size: 12px;
+  color: var(--gold);
+}
+
+.book-pages {
+  text-align: left;
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(400px 80px at 50% 0%, rgba(212, 175, 55, 0.07), transparent),
+    rgba(255, 255, 255, 0.02);
+  padding: 18px 22px;
+  margin: 12px 0;
+  max-height: 46vh;
+  overflow-y: auto;
+}
+.book-line { margin: 0 0 14px; }
+.book-line:first-letter { color: var(--gold); font-size: 1.25em; font-family: var(--font-title); }
+.library-contribute { font-style: italic; }

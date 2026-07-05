@@ -34,6 +34,7 @@
       holdReleases: 0
     },
     gymBest: 0,               // mejor racha del Gimnasio Neuronal
+    readings: {},             // { obraId: true } — lecturas de la Biblioteca
     audio: { channel: "off", volume: 0.5 },
     score: null,
     startedAt: null
@@ -427,9 +428,15 @@
       { id: "mediodia",  x: 255, y: 235, w: 110, h: 60, label: "C. del Mediodía · 2°",
         status: gradeDone(1) ? "done" : (inTemple && state.gradeIndex === 1 && (state.scene === "hall" || state.scene === "ceremony")) ? "current" : (inTemple && state.gradeIndex >= 1) ? "open" : "locked",
         nav: () => { if (inTemple && !state.bodiesDone.azul && state.gradeIndex === 1) go("hall"); } },
-      { id: "sendero",   x: 95,  y: 310, w: 190, h: 60, label: "Atrio · Sendero 33",
+      { id: "biblioteca", x: 15, y: 310, w: 88, h: 60, label: "Biblioteca",
+        status: "open",
+        nav: () => { openLibrary(); } },
+      { id: "sendero",   x: 115, y: 310, w: 170, h: 60, label: "Atrio · Sendero 33",
         status: state.scene === "campus" ? "current" : inTemple ? "open" : "locked",
         nav: () => { if (inTemple) go("campus"); } },
+      { id: "gimnasio",  x: 297, y: 310, w: 68, h: 60, label: "Gimnasio",
+        status: "open",
+        nav: () => { openGym(); } },
       { id: "reflexion", x: 200, y: 385, w: 165, h: 55, label: "Cámara de Reflexión",
         status: state.scene === "camara" ? "current" : inTemple ? "done" : accepted ? "open" : "locked",
         nav: () => { if (accepted && !state.boveda) go("camara"); } },
@@ -1105,6 +1112,7 @@
       "Bóveda de trabajo: " + (state.boveda || "aún no declarada"),
       "Grado alcanzado  : " + (memberTitle() || "Aspirante"),
       "Insignias        : " + (D.bodies.filter((b) => state.bodiesDone[b.id]).map((b) => b.badge.name).join(", ") || "ninguna aún"),
+      "Lecturas selladas: " + readingCount() + " (Biblioteca de los Maestros)",
       "",
       "— MÉTRICAS DEL FILTRO —",
       "Tiempo en pruebas      : ~" + dur + " min",
@@ -1393,6 +1401,102 @@
     const btn = el("button", "btn btn-gold", "Volver al Sendero");
     btn.addEventListener("click", () => { closeModal(); render(); });
     card.appendChild(btn);
+  }
+
+  /* ============================================================
+     BIBLIOTECA DE LOS MAESTROS — documentos e historias por país
+     ============================================================ */
+
+  function readingCount() {
+    return Object.keys(state.readings).length;
+  }
+
+  function openLibrary() {
+    const L = D.library;
+    const card = $("#modal-card");
+    card.innerHTML = "";
+    card.appendChild(el("h2", "modal-title", L.title));
+    card.appendChild(el("p", "muted small", L.intro));
+    card.appendChild(el("p", "reward", L.rewardNote + " · Lecturas completadas: " + readingCount()));
+
+    card.appendChild(el("h3", "journal-section", "Documentos de la Orden"));
+    L.docs.forEach((doc) => card.appendChild(shelfCard(doc, () => openReading(doc, openLibrary))));
+
+    card.appendChild(el("h3", "journal-section", "Estantes por país"));
+    const shelves = el("div", "country-shelves");
+    L.countries.forEach((c) => {
+      const btn = el("button", "btn btn-option country-shelf" + (c.status !== "disponible" ? " shelf-pending" : ""),
+        '<span class="country-flag">' + c.flag + '</span><strong>' + c.name + "</strong>" +
+        '<span class="chip-sub">' + (c.status === "disponible" ? c.books.length + (c.books.length === 1 ? " obra" : " obras") : "en documentación") + "</span>");
+      btn.addEventListener("click", () => openCountry(c));
+      shelves.appendChild(btn);
+    });
+    card.appendChild(shelves);
+    card.appendChild(el("p", "muted small library-contribute", L.contribute));
+
+    const close = el("button", "btn btn-ghost", "Cerrar la Biblioteca");
+    close.addEventListener("click", closeModal);
+    card.appendChild(close);
+    $("#modal").classList.remove("hidden");
+  }
+
+  function shelfCard(work, onOpen) {
+    const read = !!state.readings[work.id];
+    const box = el("button", "btn btn-option book-card" + (read ? " book-read" : ""));
+    box.innerHTML =
+      '<span class="book-spine">📖</span><strong>' + work.title + "</strong>" +
+      '<span class="chip-sub">' + work.era + " — " + work.summary + "</span>" +
+      (read ? '<span class="book-mark">✦ Leída</span>' : "");
+    box.addEventListener("click", onOpen);
+    return box;
+  }
+
+  function openCountry(country) {
+    const card = $("#modal-card");
+    card.innerHTML = "";
+    card.appendChild(el("div", "modal-type", "Estante del Oriente"));
+    card.appendChild(el("h2", "modal-title", country.flag + " " + country.name));
+
+    if (country.books.length) {
+      country.books.forEach((b) => card.appendChild(shelfCard(b, () => openReading(b, () => openCountry(country)))));
+    } else {
+      card.appendChild(el("p", "success-text", "Este estante espera su primer libro. " + D.library.contribute));
+    }
+
+    const back = el("button", "btn btn-ghost", "◂ Volver a la Biblioteca");
+    back.addEventListener("click", openLibrary);
+    card.appendChild(back);
+    $("#modal").classList.remove("hidden");
+  }
+
+  function openReading(work, onBack) {
+    const card = $("#modal-card");
+    card.innerHTML = "";
+    card.appendChild(el("div", "modal-type", work.era));
+    card.appendChild(el("h2", "modal-title", work.title));
+    if (work.note) card.appendChild(el("p", "neuro-note", "🕮 " + work.note));
+
+    const pages = el("div", "book-pages");
+    work.lines.forEach((line) => pages.appendChild(el("p", "book-line", line)));
+    card.appendChild(pages);
+
+    if (!state.readings[work.id]) {
+      const done = el("button", "btn btn-gold", "Sellar la lectura (+2 de Luz)");
+      done.addEventListener("click", () => {
+        state.readings[work.id] = true;
+        addLight(2);
+        save();
+        done.replaceWith(el("p", "reward", "✦ Lectura sellada — la letra se vuelve piedra"));
+      });
+      card.appendChild(done);
+    } else {
+      card.appendChild(el("p", "reward", "✦ Ya sellaste esta lectura"));
+    }
+
+    const back = el("button", "btn btn-ghost", "◂ Volver");
+    back.addEventListener("click", onBack);
+    card.appendChild(back);
+    $("#modal").classList.remove("hidden");
   }
 
   /* ============================================================
@@ -1726,7 +1830,7 @@
       if (state.bodiesDone[b.id]) badges.appendChild(el("span", "degree-pill badge-pill", b.badge.symbol + " " + b.badge.name));
     });
     card.appendChild(badges);
-    card.appendChild(el("p", "member-stats", "☀ " + state.light + " de Luz · ✧ " + state.voices.length + "/9 Voces · 🧠 racha " + state.gymBest + "/3"));
+    card.appendChild(el("p", "member-stats", "☀ " + state.light + " de Luz · ✧ " + state.voices.length + "/9 Voces · 🧠 racha " + state.gymBest + "/3 · 📖 " + readingCount() + " lecturas"));
     scene.appendChild(card);
 
     scene.appendChild(el("h3", "journal-section", D.finale.networkTitle));
@@ -1891,6 +1995,7 @@
   $("#btn-gym").addEventListener("click", openGym);
   $("#btn-audio").addEventListener("click", openAudio);
   $("#btn-map").addEventListener("click", openMap);
+  $("#btn-library").addEventListener("click", openLibrary);
 
   // El navegador exige un gesto del usuario para iniciar audio:
   // si había una atmósfera elegida, se reanuda en la primera interacción.

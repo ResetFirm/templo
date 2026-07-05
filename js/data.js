@@ -440,6 +440,136 @@ const TEMPLE_DATA = {
     }
   ],
 
+  /* ---------- Biblioteca de los Maestros ---------- */
+
+  library: {
+    title: "Biblioteca de los Maestros",
+    intro: "Todo templo guarda una biblioteca: la piedra se talla con cincel, la mente con lectura. Aquí viven los documentos de la Orden y las historias de la masonería, país por país. Leer también ilumina: cada lectura completada otorga Luz.",
+    rewardNote: "✦ Primera lectura de cada obra: +2 de Luz",
+    docs: [
+      {
+        id: "regla12",
+        title: "La Regla de los Doce Puntos",
+        era: "Doctrina de las Grandes Logias Regulares",
+        summary: "La regla aceptada por la mayor parte de las Grandes Logias Regulares del mundo, exigida para el reconocimiento como Obediencia Regular.",
+        note: "Documento doctrinal de la masonería regular. Nuestra logia, de corriente liberal, lo estudia como parte viva de la tradición: estudiar no es suscribir — es conocer las columnas de todas las casas para levantar la propia con criterio.",
+        lines: [
+          "1. La Masonería es una Fraternidad iniciática, que tiene como fundamento tradicional la creencia en Dios, el Gran Arquitecto del Universo.",
+          "2. La Masonería se basa en los «Antiguos Deberes» y en los «Landmarks» de la Fraternidad, con absoluto respeto a las tradiciones específicas de la Orden.",
+          "3. Es una Orden a la que solo pertenecen personas libres y respetables, comprometidas con un ideal de Paz, Amor y Fraternidad.",
+          "4. Tiene como objetivo el perfeccionamiento moral de sus miembros y el de la humanidad entera.",
+          "5. Impone la práctica exacta y escrupulosa de los rituales y simbolismos, vía de acceso al Conocimiento por los caminos espirituales e iniciáticos que le son propios.",
+          "6. Impone el respeto a las opiniones y creencias de cada uno; prohíbe en su seno toda discusión política o religiosa. Así se constituye en centro permanente de Unión Fraternal.",
+          "7. Las obligaciones se toman sobre un Volumen de la Ley Sagrada, para dar al juramento carácter solemne y perenne.",
+          "8. Los masones se reúnen fuera del mundo profano, en Logias donde siempre están las Tres Grandes Luces: un Libro de la Ley Sagrada, una Escuadra y un Compás.",
+          "9. Solo se admite a personas mayores, de reputación intachable, leales y discretas, dignas de ser hermanos.",
+          "10. Se cultiva el amor a la Patria, el sometimiento a las Leyes y el respeto a las Autoridades; el trabajo es el deber primordial del ser humano y se le honra en todas sus formas.",
+          "11. Los masones contribuyen, por el ejemplo de su comportamiento sabio y digno, al esplendor de la Orden, dentro del respeto al secreto masónico.",
+          "12. Los masones se deben mutuamente ayuda y protección fraternal, aun con peligro de la propia vida, y practican el arte de conservar la calma y el equilibrio: la perfecta maestría de sí mismos."
+        ]
+      }
+    ],
+    countries: [
+      {
+        id: "ecuador",
+        flag: "🇪🇨",
+        name: "Ecuador",
+        status: "disponible",
+        books: [
+          {
+            id: "masoneria-ecuador",
+            title: "La Masonería en el Ecuador",
+            era: "Siglos XIX–XXI",
+            summary: "Crónica de la Orden en el Ecuador: de las logias de la independencia a la Revolución Liberal y el laicismo.",
+            note: "Edición de estudio de la logia. Los hermanos del Oriente del Ecuador pueden aportar documentos, actas y correcciones: la historia también se talla.",
+            lines: [
+              "I · Los precursores — Las ideas de la Ilustración cruzan el océano con los libertadores. En la Gran Reunión Americana de Francisco de Miranda y en la Logia Lautaro se forman los hombres que soñarán la independencia; sus tenidas son conspiración y escuela a la vez.",
+              "II · Las primeras columnas — En el puerto de Guayaquil, abierto al mundo, se levantan las primeras logias del país. Comerciantes, marinos y letrados traen consigo la escuadra y el compás, y con ellos la prensa, la tertulia y la idea peligrosa de que el poder se discute.",
+              "III · La proscripción — El siglo XIX conservador persigue a la Orden: bajo García Moreno la masonería es prohibida y sus hombres trabajan en el exilio o en el silencio. La lección del período: la Luz que no puede exhibirse, se transmite de mano en mano.",
+              "IV · Eloy Alfaro y la Revolución Liberal — 1895. El Viejo Luchador, hermano masón, corona décadas de combate con la transformación liberal del Ecuador: educación laica y pública, libertad de cultos y de conciencia, registro civil, el ferrocarril que une sierra y costa. El ideario de la logia se vuelve política de Estado.",
+              "V · El legado — El laicismo educativo y la libertad de conciencia que el Ecuador da por sentados fueron tallados a cincel por generaciones de hermanos. Este Templo digital hereda esa obra: la continúa con las herramientas de su época — la red, el dato y la inteligencia artificial."
+            ]
+          }
+        ]
+      },
+      {
+        id: "mexico",
+        flag: "🇲🇽",
+        name: "México",
+        status: "disponible",
+        books: [
+          {
+            id: "masoneria-mexico",
+            title: "La Reforma y las Logias",
+            era: "Siglo XIX",
+            summary: "Benito Juárez y la generación de la Reforma: la separación de la Iglesia y el Estado tallada en ley.",
+            note: "Entrada inicial del estante mexicano. Los hermanos de ese Oriente están invitados a ampliarla.",
+            lines: [
+              "I — Benito Juárez, hermano masón, encabeza la generación de la Reforma: las Leyes que separan la Iglesia del Estado, instituyen el registro civil y proclaman que «entre los individuos, como entre las naciones, el respeto al derecho ajeno es la paz».",
+              "II — Las logias mexicanas del XIX son campo de batalla ideológico: yorkinos y escoceses ensayan en sus columnas los partidos que la república aún no tiene.",
+              "III — El legado: el Estado laico mexicano, una de las obras masónicas más profundas del continente."
+            ]
+          }
+        ]
+      },
+      {
+        id: "venezuela",
+        flag: "🇻🇪",
+        name: "Venezuela",
+        status: "disponible",
+        books: [
+          {
+            id: "masoneria-venezuela",
+            title: "Miranda, Bolívar y la Logia de los Libertadores",
+            era: "Siglos XVIII–XIX",
+            summary: "La Gran Reunión Americana: la logia londinense donde se juró la libertad de un continente.",
+            note: "Entrada inicial del estante venezolano.",
+            lines: [
+              "I — Francisco de Miranda, el Precursor, funda en Londres la Gran Reunión Americana: por sus columnas pasan los hombres que luego libertarán medio continente.",
+              "II — Simón Bolívar, iniciado en la Orden, jura en Roma libertar a su patria. Su divisa cabría en cualquier tabla de trazar: «Moral y luces son nuestras primeras necesidades».",
+              "III — La lección del estante: antes de ser ejércitos, las revoluciones son conversaciones entre personas libres — y la logia fue su primera sala."
+            ]
+          }
+        ]
+      },
+      {
+        id: "argentina",
+        flag: "🇦🇷",
+        name: "Argentina",
+        status: "disponible",
+        books: [
+          {
+            id: "masoneria-argentina",
+            title: "San Martín y la Logia Lautaro",
+            era: "Siglo XIX",
+            summary: "La logia operativa de la independencia del sur: estrategia, sigilo y renuncia.",
+            note: "Entrada inicial del estante argentino.",
+            lines: [
+              "I — José de San Martín organiza desde la Logia Lautaro la campaña libertadora del sur: Argentina, Chile y Perú se conquistan primero en el trazado de una logia.",
+              "II — En Guayaquil, San Martín y Bolívar se encuentran a solas; nadie sabe qué se dijeron. San Martín renuncia y se retira: la maestría también es saber apartarse.",
+              "III — La lección del estante: el poder que la Orden enseña es el que se ejerce sobre uno mismo — el único que San Martín nunca entregó."
+            ]
+          }
+        ]
+      },
+      {
+        id: "panama",
+        flag: "🇵🇦",
+        name: "Panamá",
+        status: "en documentación",
+        books: []
+      },
+      {
+        id: "dominicana",
+        flag: "🇩🇴",
+        name: "Rep. Dominicana",
+        status: "en documentación",
+        books: []
+      }
+    ],
+    contribute: "¿Falta el libro de tu Oriente? La Biblioteca crece como el Templo: piedra a piedra. Propón la historia masónica de tu país con tu propuesta de obra — los estantes vacíos son una invitación, no un olvido."
+  },
+
   /* ---------- Armonías del Templo (audio generativo) ---------- */
 
   audio: {
@@ -472,7 +602,10 @@ const TEMPLE_DATA = {
       { q: "Los grados 15–18 (Rosa Cruz) exploran…", options: ["La lucha contra la tiranía", "La administración de la Orden", "La geometría sagrada", "La tolerancia y el amor fraternal"], answer: 3 },
       { q: "Los grados 19–30 (Kadosh) representan…", options: ["La lucha simbólica contra la tiranía y el fanatismo", "El gobierno de las logias", "Los oficios de la construcción", "El duelo por el Maestro Hiram"], answer: 0 },
       { q: "¿Qué garantiza la Masonería Liberal a sus miembros?", options: ["Un dogma común obligatorio", "La libertad absoluta de conciencia", "El ascenso automático de grado", "El secreto de la palabra perdida"], answer: 1 },
-      { q: "La letra G de la Estrella Flamígera evoca ante todo…", options: ["La Gnosis prohibida", "El Gran Secreto", "La Geometría", "La Gloria del Oriente"], answer: 2 }
+      { q: "La letra G de la Estrella Flamígera evoca ante todo…", options: ["La Gnosis prohibida", "El Gran Secreto", "La Geometría", "La Gloria del Oriente"], answer: 2 },
+      { q: "Según la Regla de los Doce Puntos, las Tres Grandes Luces de la logia son…", options: ["El Sol, la Luna y el Venerable", "El Libro de la Ley Sagrada, la Escuadra y el Compás", "Las columnas B, J y el Delta", "El Mazo, el Cincel y la Regla de 24 pulgadas"], answer: 1 },
+      { q: "¿Qué prohíbe la Regla de los Doce Puntos dentro de la logia?", options: ["El estudio de otros ritos", "Toda discusión política o religiosa", "La lectura de libros profanos", "El trabajo después del mediodía"], answer: 1 },
+      { q: "¿Qué figura encabezó la Revolución Liberal ecuatoriana de 1895, ligada a la Orden?", options: ["Gabriel García Moreno", "Vicente Rocafuerte", "Eloy Alfaro", "Juan Montalvo"], answer: 2 }
     ]
   },
 

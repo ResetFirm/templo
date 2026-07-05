@@ -35,6 +35,7 @@ Templo digital de una **logia de Masonería Liberal de vanguardia** (libertad ab
 
 ## Herramientas del miembro
 
+- **📚 Biblioteca de los Maestros** — documentos de la Orden e historias de la masonería **por país**. Incluye la **Regla de los Doce Puntos** (documento doctrinal de las Grandes Logias Regulares, presentado como material de estudio de la logia liberal) y el estante del Ecuador con *La Masonería en el Ecuador* (de las logias de la independencia a la Revolución Liberal de Eloy Alfaro), más entradas iniciales de México, Venezuela y Argentina, y estantes en documentación (Panamá, Rep. Dominicana). Cada primera lectura sellada otorga +2 de Luz; los miembros pueden proponer los libros de su Oriente. Accesible desde el HUD y desde el Plano del Templo.
 - **△ Tabla de Trazar** — el Caballete Kaizen (ME EDUCO / TRABAJO / AYUDO, IA como infraestructura).
 - **✎ Diario del Iniciado** — reflexiones y voces coleccionadas.
 - **Expediente completo** — descargable en cualquier momento: métricas del filtro, propuesta, bóveda, grado alcanzado, insignias, diario.
