@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Marea de Cacao — el chocolate y el mar</title>
+<meta name="description" content="Una fábula interactiva: golpea la luna tres veces, abre el mar de chocolate y reclama el cofre." />
+<style>
+  /* ============================================================
+     MAREA DE CACAO — fábula nocturna en una sola escena.
+     Tema único deliberado: la pieza vive de noche.
+     ============================================================ */
+  :root{
+    --cacao-noche:   #140C09;  /* cielo profundo, casi grano tostado */
+    --cacao-medio:   #1E1310;
+    --horizonte:     #24333C;  /* azul marino que se cuela bajo el chocolate */
+    --luz-luna:      #F2E7D3;  /* crema / espuma */
+    --luz-luna-70:   rgba(242,231,211,.7);
+    --luz-luna-45:   rgba(242,231,211,.45);
+    --oro:           #D9A441;  /* caramelo lunar — único acento */
+    --oro-suave:     rgba(217,164,65,.35);
+    --cobre:         #A6653F;
+    --ola-1:         #26120B;
+    --ola-2:         #33190F;
+    --ola-3:         #41200F;
+    --serif: "Didot","Bodoni MT","Bodoni 72",Georgia,"Times New Roman",serif;
+    --sans: "Avenir Next","Avenir","Segoe UI","Trebuchet MS",system-ui,sans-serif;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; }
+  body{
+    font-family:var(--sans);
+    color:var(--luz-luna);
+    background:
+      radial-gradient(120% 60% at 50% 108%, rgba(217,164,65,.10), transparent 55%),
+      linear-gradient(to bottom, var(--cacao-noche) 0%, var(--cacao-medio) 42%, var(--horizonte) 62%, #101B21 100%);
+    overflow:hidden;
+  }
+  button{ font:inherit; color:inherit; }
+
+  #scene{ position:fixed; inset:0; }
+
+  /* ---------- cielo ---------- */
+  #sky{ position:absolute; inset:0 0 42% 0; overflow:hidden; pointer-events:none; }
+  .star{
+    position:absolute; border-radius:50%;
+    background:var(--luz-luna);
+    animation: twinkle 3.4s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle{ from{ opacity:.15 } to{ opacity:.85 } }
+
+  /* ---------- texto del relato ---------- */
+  #story{
+    position:absolute; top:clamp(18px, 4.5vh, 48px); left:50%; transform:translateX(-50%);
+    width:min(92vw, 640px); text-align:center; z-index:5;
+    transition:opacity .8s ease;
+  }
+  #story .eyebrow{
+    font-size:.72rem; letter-spacing:.34em; text-transform:uppercase;
+    color:var(--oro); margin-bottom:.9rem;
+  }
+  #story h1{
+    font-family:var(--serif); font-style:italic; font-weight:400;
+    font-size:clamp(2.2rem, 7vw, 3.8rem); line-height:1.05;
+    text-wrap:balance; letter-spacing:.01em;
+  }
+  #story h1 small{
+    display:block; font-size:clamp(.95rem, 2.4vw, 1.15rem);
+    font-style:normal; font-family:var(--sans);
+    color:var(--luz-luna-70); letter-spacing:.12em; margin-top:.7rem;
+  }
+  #story .intro{
+    max-width:46ch; margin:1.1rem auto 0; line-height:1.65;
+    font-size:clamp(.92rem, 2.3vw, 1.02rem); color:var(--luz-luna-70);
+  }
+  #scene.compact #story .intro,
+  #scene.compact #story h1 small{ display:none; }
+  #scene.compact #story h1{ font-size:clamp(1.5rem, 4vw, 2.2rem); }
+
+  /* ---------- narración por etapas ---------- */
+  #narration{
+    position:absolute; left:50%; transform:translateX(-50%);
+    top:clamp(150px, 26vh, 240px); z-index:5;
+    width:min(90vw, 520px); text-align:center;
+    font-family:var(--serif); font-style:italic;
+    font-size:clamp(1rem, 2.6vw, 1.25rem); color:var(--luz-luna);
+    text-shadow:0 2px 18px rgba(0,0,0,.6);
+    opacity:0; transition:opacity .6s ease;
+  }
+  #narration.visible{ opacity:1; }
+  #scene.compact #narration{ top:clamp(96px, 15vh, 150px); }
+
+  /* ---------- la luna ---------- */
+  #moon{
+    position:absolute; left:50%; top:44%;
+    transform:translate(-50%,-50%);
+    width:clamp(120px, 22vw, 190px); aspect-ratio:1;
+    border:none; border-radius:50%; cursor:pointer; z-index:6;
+    background:
+      radial-gradient(circle at 34% 30%, #FFFDF6 0%, var(--luz-luna) 38%, #D9CBB2 72%, #B8A88C 100%);
+    box-shadow:
+      0 0 40px 8px rgba(242,231,211,.35),
+      0 0 140px 30px rgba(242,231,211,.14),
+      inset -14px -12px 34px rgba(120,95,60,.35);
+    transition:box-shadow .5s ease, filter .5s ease;
+    animation: drift 7s ease-in-out infinite alternate;
+  }
+  @keyframes drift{ from{ transform:translate(-50%,-52%) } to{ transform:translate(-50%,-48%) } }
+  #moon:focus-visible{ outline:3px solid var(--oro); outline-offset:8px; }
+  /* cráteres */
+  #moon::before{
+    content:""; position:absolute; inset:0; border-radius:50%;
+    background:
+      radial-gradient(circle at 62% 28%, rgba(150,120,80,.28) 0 7%, transparent 8%),
+      radial-gradient(circle at 30% 58%, rgba(150,120,80,.22) 0 9%, transparent 10%),
+      radial-gradient(circle at 70% 66%, rgba(150,120,80,.25) 0 5%, transparent 6%),
+      radial-gradient(circle at 48% 42%, rgba(150,120,80,.16) 0 4%, transparent 5%);
+  }
+  /* grietas de oro que aparecen con cada golpe */
+  #moon .crack{
+    position:absolute; background:linear-gradient(var(--oro), var(--cobre));
+    border-radius:3px; opacity:0; transition:opacity .45s ease;
+    box-shadow:0 0 10px 2px var(--oro-suave);
+  }
+  #moon .crack.c1{ width:3px; height:38%; left:52%; top:8%; transform:rotate(14deg); }
+  #moon .crack.c2{ width:3px; height:30%; left:30%; top:38%; transform:rotate(-32deg); }
+  #moon .crack.c3{ width:3px; height:34%; left:64%; top:48%; transform:rotate(24deg); }
+  #scene[data-strikes="1"] .crack.c1,
+  #scene[data-strikes="2"] .crack.c1, #scene[data-strikes="2"] .crack.c2,
+  #scene[data-strikes="3"] .crack{ opacity:1; }
+  #scene[data-strikes="3"] #moon{
+    background:
+      radial-gradient(circle at 34% 30%, #FFE9B8 0%, var(--oro) 45%, var(--cobre) 100%);
+    box-shadow:
+      0 0 55px 14px rgba(217,164,65,.55),
+      0 0 180px 50px rgba(217,164,65,.22),
+      inset -14px -12px 34px rgba(90,50,20,.4);
+  }
+  #moon.struck{ animation: strike .5s ease; }
+  @keyframes strike{
+    0%{ transform:translate(-50%,-50%) scale(1) }
+    30%{ transform:translate(-50%,-50%) scale(.93) }
+    60%{ transform:translate(-50%,-50%) scale(1.05) }
+    100%{ transform:translate(-50%,-50%) scale(1) }
+  }
+  /* onda expansiva */
+  .ripple{
+    position:absolute; left:50%; top:44%; z-index:5;
+    width:20px; aspect-ratio:1; border-radius:50%;
+    border:2px solid var(--luz-luna-45); pointer-events:none;
+    transform:translate(-50%,-50%);
+    animation: ripple 1s ease-out forwards;
+  }
+  @keyframes ripple{
+    from{ width:clamp(120px,22vw,190px); opacity:.9 }
+    to{ width:min(70vw, 560px); opacity:0 }
+  }
+
+  /* ---------- indicador de golpes ---------- */
+  #strikes{
+    position:absolute; left:50%; transform:translateX(-50%);
+    top:calc(44% + clamp(80px, 14vw, 125px)); z-index:6;
+    display:flex; flex-direction:column; align-items:center; gap:.7rem;
+    transition:opacity .6s ease;
+  }
+  #strikes .hint{
+    font-size:.72rem; letter-spacing:.28em; text-transform:uppercase;
+    color:var(--luz-luna-70); text-align:center;
+  }
+  #strikes .dots{ display:flex; gap:.65rem; }
+  #strikes .dot{
+    width:11px; height:11px; border-radius:50%;
+    border:1.5px solid var(--luz-luna-45); transition:all .4s ease;
+  }
+  #strikes .dot.on{ background:var(--oro); border-color:var(--oro); box-shadow:0 0 12px 2px var(--oro-suave); }
+
+  /* ---------- fondo marino (visible al abrirse el mar) ---------- */
+  #seabed{
+    position:absolute; inset:auto 0 0 0; height:58%; z-index:1;
+    background:
+      radial-gradient(60% 45% at 50% 96%, rgba(217,164,65,.32), transparent 70%),
+      radial-gradient(90% 70% at 50% 100%, #2A1A10 0%, #17100C 60%, #0D0B0C 100%);
+  }
+  canvas#sea{ position:absolute; inset:auto 0 0 0; height:58%; width:100%; z-index:2; pointer-events:none; }
+
+  /* ---------- el claro: formulario / cofre / premio ---------- */
+  #trench{
+    position:absolute; left:50%; bottom:clamp(14px, 4vh, 44px);
+    transform:translateX(-50%); z-index:8;
+    width:min(92vw, 420px);
+    display:flex; flex-direction:column; align-items:center;
+    pointer-events:none; /* solo los paneles visibles reciben clics */
+  }
+  .panel{
+    width:100%;
+    background:rgba(20,12,9,.86);
+    border:1px solid var(--oro-suave);
+    border-radius:14px;
+    padding:clamp(1.1rem, 3.5vw, 1.7rem);
+    backdrop-filter:blur(6px);
+    box-shadow:0 18px 60px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.4);
+    opacity:0; transform:translateY(40px); pointer-events:none;
+    transition:opacity .8s ease, transform .8s cubic-bezier(.2,.8,.25,1);
+  }
+  .panel.visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .panel h2{
+    font-family:var(--serif); font-style:italic; font-weight:400;
+    font-size:clamp(1.25rem, 3.6vw, 1.55rem); line-height:1.2; text-wrap:balance;
+  }
+  .panel .sub{ margin-top:.45rem; font-size:.9rem; line-height:1.55; color:var(--luz-luna-70); }
+
+  form .fields{ display:flex; flex-direction:column; gap:.85rem; margin-top:1.1rem; }
+  label{
+    display:flex; flex-direction:column; gap:.35rem;
+    font-size:.7rem; letter-spacing:.22em; text-transform:uppercase; color:var(--luz-luna-70);
+  }
+  input, select{
+    font:inherit; color:var(--luz-luna);
+    background:rgba(242,231,211,.06);
+    border:1px solid rgba(242,231,211,.22);
+    border-radius:8px; padding:.65rem .8rem;
+    letter-spacing:normal; text-transform:none;
+  }
+  input::placeholder{ color:rgba(242,231,211,.35); }
+  input:focus-visible, select:focus-visible, .btn:focus-visible, #chest:focus-visible{
+    outline:2px solid var(--oro); outline-offset:2px;
+  }
+  select option{ background:var(--cacao-medio); color:var(--luz-luna); }
+  .btn{
+    margin-top:1.2rem; width:100%; cursor:pointer;
+    background:linear-gradient(180deg, #E8B95C, var(--oro) 55%, #B07E2C);
+    color:#241505; font-weight:600; letter-spacing:.06em;
+    border:none; border-radius:9px; padding:.8rem 1rem;
+    box-shadow:0 6px 24px rgba(217,164,65,.28);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{ transform:translateY(-1px); box-shadow:0 10px 30px rgba(217,164,65,.4); }
+  .btn:active{ transform:translateY(1px); }
+
+  /* ---------- el cofre ---------- */
+  #chest-stage{ display:flex; flex-direction:column; align-items:center; gap:1.1rem;
+    background:none; border:none; box-shadow:none; backdrop-filter:none; padding:0; }
+  #chest-stage .call{
+    font-family:var(--serif); font-style:italic; text-align:center;
+    font-size:clamp(1.05rem, 3vw, 1.3rem); text-shadow:0 2px 16px rgba(0,0,0,.7);
+  }
+  #chest{
+    position:relative; width:160px; height:118px;
+    background:none; border:none; cursor:pointer;
+    perspective:700px;
+    filter:drop-shadow(0 16px 30px rgba(0,0,0,.6));
+    animation: emerge 1.1s cubic-bezier(.2,.8,.3,1.15) both;
+  }
+  @keyframes emerge{ from{ transform:translateY(90px) scale(.7); opacity:0 } to{ transform:none; opacity:1 } }
+  #chest .glow{
+    position:absolute; left:8%; right:8%; top:34%; height:40%;
+    background:radial-gradient(50% 60% at 50% 30%, #FFE9B8 0%, var(--oro) 45%, transparent 75%);
+    opacity:0; transition:opacity .7s ease .25s; border-radius:8px;
+  }
+  #chest .base{
+    position:absolute; inset:auto 0 0 0; height:64px;
+    background:linear-gradient(180deg, #6B3E22 0%, #4A2815 70%, #381D0F 100%);
+    border:2px solid #8C5A2B; border-radius:7px;
+  }
+  #chest .lid{
+    position:absolute; inset:0 0 auto 0; height:58px;
+    background:linear-gradient(180deg, #7A4827 0%, #5A3018 100%);
+    border:2px solid #8C5A2B;
+    border-radius:64px 64px 6px 6px / 52px 52px 6px 6px;
+    transform-origin:50% 100%;
+    transition:transform .9s cubic-bezier(.3,1.4,.4,1);
+  }
+  #chest .strap{
+    position:absolute; top:0; bottom:0; width:14px;
+    background:linear-gradient(180deg, #E8B95C, #B07E2C);
+    border-radius:3px; box-shadow:inset 0 0 4px rgba(60,30,0,.5);
+  }
+  #chest .strap.s1{ left:24px; } #chest .strap.s2{ right:24px; }
+  #chest .lid .strap{ border-radius:12px 12px 0 0; }
+  #chest .lock{
+    position:absolute; left:50%; top:46px; transform:translateX(-50%);
+    width:26px; height:30px; z-index:2;
+    background:linear-gradient(180deg, #F0C86E, var(--oro) 55%, #9A6D22);
+    border-radius:5px; box-shadow:0 2px 6px rgba(0,0,0,.5);
+    transition:opacity .4s ease, transform .4s ease;
+  }
+  #chest .lock::after{
+    content:""; position:absolute; left:50%; top:9px; transform:translateX(-50%);
+    width:7px; height:11px; background:#3A2408; border-radius:4px 4px 1px 1px;
+  }
+  #chest.open .lid{ transform:rotateX(-108deg); }
+  #chest.open .glow{ opacity:1; }
+  #chest.open .lock{ opacity:0; transform:translate(-50%, 10px); }
+  #chest.open{ animation:none; }
+
+  /* partículas doradas */
+  .spark{ position:fixed; width:7px; height:7px; border-radius:50%; z-index:20; pointer-events:none; }
+
+  /* ---------- premio ---------- */
+  #prize .code{
+    margin-top:1.1rem; padding:.75rem 1rem; text-align:center;
+    border:1.5px dashed var(--oro); border-radius:9px;
+    font-family:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size:1.15rem; letter-spacing:.18em; color:var(--oro);
+    background:rgba(217,164,65,.08);
+  }
+  #prize .fine{ margin-top:.9rem; font-size:.78rem; line-height:1.5; color:var(--luz-luna-45); }
+
+  /* ---------- pie ---------- */
+  #foot{
+    position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
+    z-index:4; font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
+    color:rgba(242,231,211,.3); width:min(92vw, 640px); text-align:center;
+  }
+
+  .hidden{ display:none !important; }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{ animation:none !important; transition-duration:.01s !important; }
+  }
+</style>
+</head>
+<body>
+<div id="scene" data-strikes="0">
+
+  <div id="sky" aria-hidden="true"></div>
+
+  <header id="story">
+    <p class="eyebrow">Una fábula en tres golpes</p>
+    <h1>Marea de Cacao
+      <small>donde el chocolate aprendió a nadar</small>
+    </h1>
+    <p class="intro">Dicen que cada noche, cuando nadie mira, la luna templa el
+      chocolate contra la sal del mar. Esta noche, despertarla te toca a ti.</p>
+  </header>
+
+  <p id="narration" role="status" aria-live="polite"></p>
+
+  <button id="moon" aria-label="Golpea la luna (tres golpes abren el mar)">
+    <span class="crack c1" aria-hidden="true"></span>
+    <span class="crack c2" aria-hidden="true"></span>
+    <span class="crack c3" aria-hidden="true"></span>
+  </button>
+
+  <div id="strikes">
+    <p class="hint">Golpea la luna tres veces</p>
+    <div class="dots" aria-hidden="true">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    </div>
+  </div>
+
+  <div id="seabed" aria-hidden="true"></div>
+  <canvas id="sea" aria-hidden="true"></canvas>
+
+  <div id="trench">
+    <!-- Formulario -->
+    <form id="lead-form" class="panel" novalidate>
+      <h2>El mar guarda un cofre con tu nombre</h2>
+      <p class="sub">Déjale tus señas a la marea y ella lo traerá hasta la orilla.</p>
+      <div class="fields">
+        <label>Tu nombre
+          <input type="text" name="nombre" placeholder="¿Cómo te llama el mar?" required autocomplete="name" />
+        </label>
+        <label>Tu correo
+          <input type="email" name="correo" placeholder="tucorreo@marea.com" required autocomplete="email" />
+        </label>
+        <label>Tu chocolate
+          <select name="chocolate" required>
+            <option value="" selected disabled>Elige tu debilidad…</option>
+            <option>Oscuro 70% con sal de mar</option>
+            <option>Con leche y caramelo</option>
+            <option>Blanco con vainilla</option>
+            <option>Relleno de naranja</option>
+          </select>
+        </label>
+      </div>
+      <button type="submit" class="btn">Llamar al cofre</button>
+    </form>
+
+    <!-- Cofre -->
+    <div id="chest-stage" class="panel">
+      <p class="call">Algo emerge del fondo… tócalo.</p>
+      <button id="chest" aria-label="Abrir el cofre del tesoro">
+        <span class="glow" aria-hidden="true"></span>
+        <span class="lid" aria-hidden="true"><span class="strap s1"></span><span class="strap s2"></span></span>
+        <span class="base" aria-hidden="true"><span class="strap s1"></span><span class="strap s2"></span></span>
+        <span class="lock" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <!-- Premio -->
+    <div id="prize" class="panel">
+      <h2 id="prize-title">La Tableta de la Marea es tuya</h2>
+      <p class="sub">Chocolate oscuro 70% con sal de mar y caramelo lunar,
+        templado —según la leyenda— bajo tres golpes de luna.</p>
+      <p class="code" id="prize-code">MAREA-LUNA</p>
+      <p class="fine">Canjéalo por un 2×1 en tu primera marea. Guarda el código:
+        la luna no repite sus golpes.</p>
+    </div>
+  </div>
+
+  <p id="foot">Prototipo interactivo · los datos viven solo en este navegador</p>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const scene   = document.getElementById('scene');
+  const moon    = document.getElementById('moon');
+  const strikesEl = document.getElementById('strikes');
+  const dots    = strikesEl.querySelectorAll('.dot');
+  const narration = document.getElementById('narration');
+  const form    = document.getElementById('lead-form');
+  const chestStage = document.getElementById('chest-stage');
+  const chest   = document.getElementById('chest');
+  const prize   = document.getElementById('prize');
+
+  /* ---------- estrellas ---------- */
+  const sky = document.getElementById('sky');
+  for(let i=0;i<70;i++){
+    const s = document.createElement('span');
+    s.className = 'star';
+    const size = Math.random()*2 + 1;
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;`+
+      `width:${size}px;height:${size}px;animation-delay:${(Math.random()*3).toFixed(2)}s;`+
+      `animation-duration:${(2.2+Math.random()*3).toFixed(2)}s;`;
+    sky.appendChild(s);
+  }
+
+  /* ---------- audio sutil (WebAudio, sin assets) ---------- */
+  let actx = null;
+  function tone(freq, dur, type, gain){
+    try{
+      actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = type; o.frequency.value = freq;
+      g.gain.setValueAtTime(gain, actx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + dur);
+      o.connect(g).connect(actx.destination);
+      o.start(); o.stop(actx.currentTime + dur);
+    }catch(e){ /* silencio digno */ }
+  }
+  const thud  = ()=>{ tone(72, .9, 'sine', .25); tone(145, .4, 'sine', .08); };
+  const chime = ()=>{ [523,659,784].forEach((f,i)=>setTimeout(()=>tone(f, 1.1, 'triangle', .07), i*140)); };
+
+  /* ---------- narración ---------- */
+  function narrate(text){
+    narration.classList.remove('visible');
+    setTimeout(()=>{ narration.textContent = text; narration.classList.add('visible'); }, 300);
+  }
+
+  /* ---------- el mar (canvas) ---------- */
+  const canvas = document.getElementById('sea');
+  const ctx = canvas.getContext('2d');
+  let W = 0, H = 0, dpr = 1;
+  function resize(){
+    dpr = Math.min(devicePixelRatio||1, 2);
+    W = canvas.clientWidth; H = canvas.clientHeight;
+    canvas.width = W*dpr; canvas.height = H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  addEventListener('resize', resize); resize();
+
+  const layers = [
+    { base:.30, amp:12, speed:.9,  len:.011, color:'#26120B', foam:'rgba(242,231,211,.34)' },
+    { base:.44, amp:16, speed:1.25,len:.016, color:'#33190F', foam:'rgba(242,231,211,.22)' },
+    { base:.58, amp:20, speed:1.6, len:.021, color:'#41200F', foam:'rgba(242,231,211,.14)' },
+  ];
+
+  let gap = 0;            // 0 cerrado → 1 abierto
+  let parting = false, partStart = 0;
+  const PART_MS = reduceMotion ? 50 : 2800;
+  const easeInOut = x => x<.5 ? 4*x*x*x : 1 - Math.pow(-2*x+2,3)/2;
+
+  function waveY(L, x, t, edgeL, edgeR, wall){
+    let y = H*L.base
+      + L.amp*Math.sin(x*L.len + t*L.speed)
+      + L.amp*.5*Math.sin(x*L.len*1.7 - t*L.speed*.8);
+    if(wall > 0){
+      const d = Math.min(Math.abs(x-edgeL), Math.abs(x-edgeR));
+      y -= wall * Math.exp(-(d*d)/(2*70*70));   // el agua se apila en los muros
+    }
+    return y;
+  }
+
+  function drawBody(L, t, x0, x1, edgeL, edgeR, wall, innerAtEnd, innerAtStart){
+    ctx.beginPath();
+    const yStart = waveY(L, x0, t, edgeL, edgeR, wall);
+    if(innerAtStart){ ctx.moveTo(x0+4, H+2); ctx.quadraticCurveTo(x0-8, (yStart+H)/2, x0, yStart); }
+    else{ ctx.moveTo(x0, H+2); ctx.lineTo(x0, yStart); }
+    const pts = [];
+    for(let x=x0; x<=x1; x+=6){
+      const y = waveY(L, x, t, edgeL, edgeR, wall);
+      ctx.lineTo(x, y); pts.push([x,y]);
+    }
+    const yEnd = waveY(L, x1, t, edgeL, edgeR, wall);
+    if(innerAtEnd){ ctx.quadraticCurveTo(x1+8, (yEnd+H)/2, x1-4, H+2); }
+    else{ ctx.lineTo(x1, H+2); }
+    ctx.closePath();
+    ctx.fillStyle = L.color; ctx.fill();
+    /* espuma en la cresta */
+    ctx.beginPath();
+    pts.forEach(([x,y],i)=> i? ctx.lineTo(x,y) : ctx.moveTo(x,y));
+    ctx.strokeStyle = L.foam; ctx.lineWidth = 1.6; ctx.stroke();
+  }
+
+  function draw(now){
+    const t = now/1000;
+    if(parting){
+      const p = Math.min(1, (now-partStart)/PART_MS);
+      gap = easeInOut(p);
+      if(p>=1) parting = false;
+    }
+    ctx.clearRect(0,0,W,H);
+    const cx = W/2;
+    const maxHalf = Math.min(W*.36, 340);
+    const half = gap*maxHalf;
+    const wall = Math.min(1, gap*1.6) * 52;
+
+    /* reflejo de la luna mientras el mar está cerrado */
+    if(gap < .95){
+      const a = (1-gap)*.9;
+      for(let y=H*.26; y<H; y+=13){
+        const w = 26 + 22*Math.sin(y*.14 + t*2.1);
+        ctx.fillStyle = `rgba(242,231,211,${(0.028+0.026*Math.random())*a})`;
+        ctx.fillRect(cx - w/2 + 6*Math.sin(y*.2+t), y, w, 3);
+      }
+    }
+
+    for(const L of layers){
+      if(half < 4){
+        drawBody(L, t, 0, W, -1e4, 1e4, 0, false, false);
+      }else{
+        drawBody(L, t, 0, cx-half, cx-half, 1e9, wall, true, false);   // cuerpo izquierdo
+        drawBody(L, t, cx+half, W, -1e9, cx+half, wall, false, true);  // cuerpo derecho
+      }
+    }
+  }
+  (function loop(now){ draw(now||0); requestAnimationFrame(loop); })(0);
+
+  /* ---------- golpes de luna ---------- */
+  const NARR = [
+    'La luna tiembla. Algo, muy abajo, la escuchó.',
+    'El agua contiene la respiración…',
+    'La marea obedece: el mar se abre en dos.'
+  ];
+  let strikes = 0;
+
+  moon.addEventListener('click', ()=>{
+    if(strikes >= 3){
+      moon.classList.remove('struck'); void moon.offsetWidth;
+      moon.classList.add('struck');
+      return;
+    }
+    strikes++;
+    scene.dataset.strikes = strikes;
+    dots[strikes-1].classList.add('on');
+    thud();
+    moon.classList.remove('struck'); void moon.offsetWidth;
+    moon.classList.add('struck');
+    if(!reduceMotion){
+      const r = document.createElement('span');
+      r.className = 'ripple';
+      scene.appendChild(r);
+      setTimeout(()=>r.remove(), 1100);
+    }
+    narrate(NARR[strikes-1]);
+
+    if(strikes === 3){
+      strikesEl.style.opacity = '0';
+      moon.style.cursor = 'default';
+      moon.setAttribute('aria-label', 'Luna de caramelo: el mar ya está abierto');
+      setTimeout(()=>{
+        parting = true; partStart = performance.now();
+        scene.classList.add('compact');
+      }, reduceMotion ? 0 : 500);
+      setTimeout(()=>{
+        form.classList.add('visible');
+        form.querySelector('input').focus({ preventScroll:true });
+      }, reduceMotion ? 300 : PART_MS + 700);
+    }
+  });
+
+  /* ---------- formulario ---------- */
+  let leadName = '';
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    if(!form.reportValidity()) return;
+    const data = Object.fromEntries(new FormData(form).entries());
+    leadName = data.nombre.trim();
+    data.fecha = new Date().toISOString();
+    try{
+      const all = JSON.parse(localStorage.getItem('mareaDeCacao.leads') || '[]');
+      all.push(data);
+      localStorage.setItem('mareaDeCacao.leads', JSON.stringify(all));
+    }catch(err){ /* modo incógnito: seguimos igual */ }
+    console.info('[Marea de Cacao] lead capturado:', data);
+
+    form.classList.remove('visible');
+    narrate('El mar aceptó tu ofrenda.');
+    setTimeout(()=>{
+      form.classList.add('hidden');
+      chestStage.classList.remove('hidden');
+      requestAnimationFrame(()=> chestStage.classList.add('visible'));
+    }, 700);
+  });
+
+  /* ---------- el cofre y la sorpresa ---------- */
+  function burst(){
+    if(reduceMotion) return;
+    const rect = chest.getBoundingClientRect();
+    const ox = rect.left + rect.width/2, oy = rect.top + rect.height/2;
+    const colors = ['#D9A441','#F2E7D3','#A6653F','#FFE9B8'];
+    for(let i=0;i<42;i++){
+      const p = document.createElement('span');
+      p.className = 'spark';
+      p.style.background = colors[i%colors.length];
+      p.style.left = ox+'px'; p.style.top = oy+'px';
+      document.body.appendChild(p);
+      const ang = Math.random()*Math.PI*2;
+      const dist = 70 + Math.random()*180;
+      p.animate([
+        { transform:'translate(0,0) scale(1)', opacity:1 },
+        { transform:`translate(${Math.cos(ang)*dist}px, ${Math.sin(ang)*dist - 60}px) scale(.15)`, opacity:0 }
+      ], { duration:900+Math.random()*700, easing:'cubic-bezier(.15,.6,.3,1)' })
+       .onfinish = ()=>p.remove();
+    }
+  }
+
+  function makeCode(){
+    const salt = Math.random().toString(36).slice(2,6).toUpperCase();
+    const ini = (leadName || 'MAR').replace(/[^a-záéíóúñ]/gi,'').slice(0,3).toUpperCase() || 'MAR';
+    return `MAREA-${ini}-${salt}`;
+  }
+
+  let opened = false;
+  chest.addEventListener('click', ()=>{
+    if(opened) return;
+    opened = true;
+    chest.classList.add('open');
+    chime(); burst();
+    narrate('');
+    document.getElementById('prize-title').textContent =
+      leadName ? `${leadName}, la Tableta de la Marea es tuya` : 'La Tableta de la Marea es tuya';
+    document.getElementById('prize-code').textContent = makeCode();
+    setTimeout(()=>{
+      chestStage.classList.remove('visible');
+      setTimeout(()=>{
+        chestStage.classList.add('hidden');
+        prize.classList.remove('hidden');
+        requestAnimationFrame(()=> prize.classList.add('visible'));
+      }, 500);
+    }, reduceMotion ? 200 : 1600);
+  });
+
+  /* estados iniciales */
+  chestStage.classList.add('hidden');
+  prize.classList.add('hidden');
+})();
+</script>
+</body>
+</html>
