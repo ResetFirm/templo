@@ -140,8 +140,44 @@
       line-height: 1.08;
       color: var(--crema);
       margin-bottom: 20px;
+      /* Altura mínima para que el rotador de frases no mueva el layout */
+      min-height: 3.4em;
+      display: flex; align-items: center;
     }
     .hero h1 .resalte { color: var(--dorado); }
+
+    /* --- Rotador de titulares de campaña --- */
+    .frase-rotativa {
+      display: inline-block;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+    .frase-rotativa.saliendo { opacity: 0; transform: translateY(-12px); }
+    .frase-rotativa.entrando { opacity: 0; transform: translateY(12px); transition: none; }
+
+    /* --- Marco para el arte de campaña en el hero --- */
+    .marco-campana {
+      position: relative;
+      border-radius: var(--radio);
+      overflow: hidden;
+      border: 1px solid var(--borde);
+      aspect-ratio: 3 / 4;
+      max-height: 540px;
+      background:
+        radial-gradient(ellipse at 60% 30%, rgba(229, 185, 107, 0.2), transparent 60%),
+        linear-gradient(160deg, #261d12, var(--negro));
+      display: grid; place-items: center;
+      text-align: center;
+      padding: 32px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+    }
+    .marco-campana .contenido-placeholder { color: var(--gris-texto); }
+    .marco-campana .contenido-placeholder .escudo-grande {
+      font-family: var(--fuente-titulo);
+      font-size: 3rem; color: var(--dorado); margin-bottom: 12px;
+    }
+    .marco-campana img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
     .cinta {
       display: inline-block;
@@ -184,27 +220,68 @@
     }
     .nota-cta { font-size: 0.82rem; color: var(--gris-texto); margin-top: 12px; }
 
-    /* Tarjeta comparativa de tiempo (dato estrella de la campaña) */
-    .tarjeta-tiempo {
-      background: var(--negro-2);
-      border: 1px solid var(--borde);
-      border-radius: var(--radio);
-      padding: 32px 28px;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+    /* ============================================================
+       COMPARATIVA ANIMADA: OPTIMIZA TU TIEMPO DE ESTUDIO
+       Barras de progreso que se animan al entrar en pantalla
+       (referencia: arte "optimizatutiempodeestudio")
+       ============================================================ */
+    .comparativa .intro-comp {
+      text-align: center; color: var(--gris-texto);
+      max-width: 720px; margin: 0 auto 52px; font-size: 1.05rem;
     }
-    .tarjeta-tiempo h3 {
-      font-size: 0.85rem; letter-spacing: 2px;
-      color: var(--gris-texto); margin-bottom: 20px;
+    .comparativa .intro-comp strong { color: var(--crema); }
+    .comparativa .intro-comp .dato-lima { color: var(--lima); font-weight: 700; }
+
+    .fila-barra { margin-bottom: 40px; }
+    .fila-barra .cabecera {
+      display: flex; justify-content: space-between; align-items: baseline;
+      gap: 16px; margin-bottom: 12px; flex-wrap: wrap;
     }
-    .fila-tiempo { padding: 16px 0; }
-    .fila-tiempo + .fila-tiempo { border-top: 1px dashed var(--borde); }
-    .fila-tiempo .etiqueta { font-size: 0.85rem; color: var(--gris-texto); margin-bottom: 6px; }
-    .fila-tiempo .valor {
+    .fila-barra .sistema {
+      font-weight: 700; font-size: 1.05rem; color: var(--crema);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .fila-barra .duracion {
       font-family: var(--fuente-titulo);
-      font-size: 1.9rem; font-weight: 700; line-height: 1.1;
+      font-size: clamp(1.2rem, 2.6vw, 1.7rem); font-weight: 700;
+      opacity: 0; transform: translateX(-10px);
+      transition: opacity 0.6s ease 1.1s, transform 0.6s ease 1.1s;
     }
-    .fila-tiempo .valor.tradicional { color: var(--gris-texto); text-decoration: line-through; text-decoration-color: var(--rojo); text-decoration-thickness: 3px; }
-    .fila-tiempo .valor.artesanos { color: var(--lima); }
+    .fila-barra .duracion.tradicional { color: var(--gris-texto); }
+    .fila-barra .duracion.acelerado { color: var(--lima); }
+    .comparativa.animada .duracion { opacity: 1; transform: translateX(0); }
+
+    .pista {
+      background: rgba(243, 233, 218, 0.08);
+      border: 1px solid var(--borde);
+      border-radius: 999px;
+      height: 56px;
+      overflow: hidden;
+      position: relative;
+    }
+    .relleno {
+      height: 100%;
+      border-radius: 999px;
+      display: flex; align-items: center;
+      padding: 0 22px;
+      font-weight: 700; font-size: 0.92rem;
+      white-space: nowrap;
+      width: 0; /* la animación lo lleva a su ancho final */
+      transition: width 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+    }
+    .relleno.tradicional {
+      background: linear-gradient(90deg, #3a332a, #57504a);
+      color: var(--crema);
+    }
+    .relleno.acelerado {
+      background: linear-gradient(90deg, #b8d916, var(--lima));
+      color: var(--negro);
+      box-shadow: 0 0 30px rgba(223, 255, 47, 0.35);
+    }
+    /* Anchos finales: 6 años = 100% de la pista; 2.5 años ≈ 42% */
+    .comparativa.animada .relleno.tradicional { width: 100%; }
+    .comparativa.animada .relleno.acelerado { width: 42%; }
+
     .badge-ahorro {
       display: inline-block; margin-top: 14px;
       background: rgba(223, 255, 47, 0.12);
@@ -212,6 +289,22 @@
       color: var(--lima);
       font-size: 0.85rem; font-weight: 700;
       padding: 8px 14px; border-radius: 999px;
+      opacity: 0; transition: opacity 0.6s ease 1.4s;
+    }
+    .comparativa.animada .badge-ahorro { opacity: 1; }
+
+    .cita-tiempo {
+      text-align: center; font-style: italic;
+      color: var(--dorado); font-size: 1.05rem;
+      max-width: 640px; margin: 36px auto 0;
+    }
+
+    /* En pantallas pequeñas la barra lima (42%) es muy corta para el
+       texto: se oculta el texto interno y se muestra el badge debajo */
+    @media (max-width: 700px) {
+      .relleno.acelerado { font-size: 0; padding: 0; }
+      .pista { height: 40px; }
+      .relleno.tradicional { font-size: 0.78rem; padding: 0 14px; }
     }
 
     /* ============================================================
@@ -332,28 +425,40 @@
     .campo select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--gris-texto) 50%), linear-gradient(135deg, var(--gris-texto) 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 14px) 50%; background-size: 6px 6px; background-repeat: no-repeat; }
     .fila-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-    /* --- Chips lima: preferencia de contacto (experiencia de cliente) --- */
-    .grupo-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+    /* --- Chips lima: preferencia de contacto (experiencia de cliente) ---
+       Cuadrícula ordenada: tarjetas de igual ancho y alto, alineadas,
+       con ícono arriba y texto centrado. --- */
+    .grupo-chips {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
     .chip {
-      display: inline-flex; align-items: center; gap: 8px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px;
+      min-height: 84px;
       background: transparent;
       border: 2px solid rgba(223, 255, 47, 0.5);
       color: var(--lima);
       font-family: var(--fuente-texto);
-      font-weight: 600; font-size: 0.92rem;
-      padding: 12px 20px; border-radius: 999px;
+      font-weight: 600; font-size: 0.88rem;
+      text-align: center; line-height: 1.25;
+      padding: 14px 10px; border-radius: 14px;
       cursor: pointer;
       transition: all 0.15s ease;
       user-select: none;
     }
-    .chip:hover { border-color: var(--lima); background: rgba(223, 255, 47, 0.08); }
+    .chip .icono-chip { font-size: 1.35rem; line-height: 1; }
+    .chip:hover { border-color: var(--lima); background: rgba(223, 255, 47, 0.08); transform: translateY(-2px); }
     .chip.activo {
       background: var(--lima);
       border-color: var(--lima);
       color: var(--negro);
       box-shadow: 0 6px 20px rgba(223, 255, 47, 0.3);
     }
-    .ayuda-chip { font-size: 0.8rem; color: var(--gris-texto); margin-top: 8px; }
+    .chip.activo .icono-chip { transform: scale(1.1); }
+    .ayuda-chip { font-size: 0.8rem; color: var(--gris-texto); margin-top: 10px; text-align: center; }
+    @media (max-width: 620px) { .grupo-chips { grid-template-columns: repeat(2, 1fr); } }
 
     /* Bloques condicionales según la preferencia elegida */
     .condicional { display: none; margin-top: 18px; animation: aparecer 0.25s ease; }
@@ -400,6 +505,109 @@
     .mensaje-exito h3 { font-size: 1.5rem; color: var(--crema); margin-bottom: 12px; }
     .mensaje-exito p { color: var(--gris-texto); max-width: 440px; margin: 0 auto; }
     .mensaje-exito .canal { color: var(--lima); font-weight: 700; }
+
+    /* ============================================================
+       MENSUALIDAD (qué incluye)
+       ============================================================ */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .tarjeta-incluye {
+      background: var(--negro-2);
+      border: 1px solid var(--borde);
+      border-left: 4px solid var(--lima);
+      border-radius: var(--radio);
+      padding: 26px 24px;
+    }
+    .tarjeta-incluye h3 { font-size: 1.05rem; color: var(--crema); margin-bottom: 8px; }
+    .tarjeta-incluye h3 .check-lima { color: var(--lima); margin-right: 8px; }
+    .tarjeta-incluye p { font-size: 0.92rem; color: var(--gris-texto); }
+
+    /* ============================================================
+       BECA + REQUISITOS
+       ============================================================ */
+    .seccion-beca { background: var(--negro-2); }
+    .grid-beca { display: grid; grid-template-columns: 1fr 1.1fr; gap: 40px; align-items: center; }
+    .tarjeta-beca {
+      background: linear-gradient(160deg, rgba(223, 255, 47, 0.14), rgba(223, 255, 47, 0.04));
+      border: 1px solid rgba(223, 255, 47, 0.45);
+      border-radius: 20px;
+      padding: 38px 32px;
+      text-align: center;
+    }
+    .tarjeta-beca .titulo-beca {
+      font-family: var(--fuente-titulo); text-transform: uppercase;
+      letter-spacing: 1.5px; font-size: 1rem; color: var(--crema); margin-bottom: 18px;
+    }
+    .tarjeta-beca .precios { display: flex; justify-content: center; gap: 34px; margin-bottom: 16px; }
+    .tarjeta-beca .precio .monto {
+      font-family: var(--fuente-titulo);
+      font-size: clamp(2.4rem, 5vw, 3.4rem); font-weight: 700; color: var(--lima); line-height: 1;
+    }
+    .tarjeta-beca .precio .detalle { font-size: 0.85rem; color: var(--gris-texto); margin-top: 6px; }
+    .tarjeta-beca .nota-beca { font-size: 0.82rem; color: var(--gris-texto); }
+
+    .lista-requisitos { list-style: none; margin: 22px 0; }
+    .lista-requisitos li {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: var(--negro);
+      border: 1px solid var(--borde);
+      border-radius: 12px;
+      padding: 16px 18px; margin-bottom: 12px;
+      color: var(--crema); font-weight: 600; font-size: 0.98rem;
+    }
+    .lista-requisitos li .icono-req { color: var(--lima); font-size: 1.2rem; flex-shrink: 0; }
+    .nota-certificado {
+      font-size: 0.88rem; font-style: italic; color: var(--gris-texto);
+      border-left: 3px solid var(--dorado); padding-left: 14px;
+    }
+
+    /* ============================================================
+       TESTIMONIOS
+       ============================================================ */
+    .testimonios { background: var(--negro-2); }
+    .tarjeta-testimonio {
+      background: var(--negro);
+      border: 1px solid var(--borde);
+      border-radius: var(--radio);
+      padding: 30px 26px;
+      display: flex; flex-direction: column;
+    }
+    .tarjeta-testimonio .estrellas { color: var(--lima); letter-spacing: 3px; margin-bottom: 14px; font-size: 0.95rem; }
+    .tarjeta-testimonio blockquote {
+      color: var(--crema); font-size: 0.97rem; line-height: 1.65;
+      flex-grow: 1; margin-bottom: 20px;
+    }
+    .tarjeta-testimonio blockquote::before { content: "“"; color: var(--dorado); font-size: 1.6rem; line-height: 0; margin-right: 4px; }
+    .tarjeta-testimonio .autor { display: flex; align-items: center; gap: 12px; }
+    .tarjeta-testimonio .avatar {
+      width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(229, 185, 107, 0.18);
+      border: 1px solid var(--dorado);
+      display: grid; place-items: center;
+      font-family: var(--fuente-titulo); font-weight: 700; color: var(--dorado);
+    }
+    .tarjeta-testimonio .autor .nombre { font-weight: 700; color: var(--crema); font-size: 0.92rem; }
+    .tarjeta-testimonio .autor .rol { font-size: 0.8rem; color: var(--gris-texto); }
+
+    /* ============================================================
+       PASOS (¿Listo para dar el paso?)
+       ============================================================ */
+    .pasos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin: 40px 0; }
+    .paso {
+      background: var(--negro-2);
+      border: 1px solid var(--borde);
+      border-radius: var(--radio);
+      padding: 28px 22px; text-align: center;
+    }
+    .paso .numero {
+      width: 44px; height: 44px; margin: 0 auto 14px;
+      border-radius: 50%;
+      background: var(--lima); color: var(--negro);
+      font-family: var(--fuente-titulo); font-weight: 700; font-size: 1.2rem;
+      display: grid; place-items: center;
+    }
+    .paso h3 { font-size: 1.05rem; color: var(--crema); margin-bottom: 8px; }
+    .paso p { font-size: 0.88rem; color: var(--gris-texto); }
+    .paso p strong { color: var(--lima); }
 
     /* ============================================================
        FAQ (manejo de objeciones)
@@ -474,7 +682,11 @@
       .hero-grid { grid-template-columns: 1fr; gap: 40px; }
       .grid-3 { grid-template-columns: 1fr; }
       .grid-4 { grid-template-columns: 1fr 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .grid-beca { grid-template-columns: 1fr; }
+      .pasos { grid-template-columns: 1fr; }
       .caja-form { padding: 32px 22px; }
+      .marco-campana { max-width: 420px; margin: 0 auto; }
     }
     @media (max-width: 560px) {
       .grid-4 { grid-template-columns: 1fr; }
@@ -510,10 +722,12 @@
   <section class="hero">
     <div class="contenedor hero-grid">
       <div>
-        <h1>El mejor ejemplo para tus hijos <span class="resalte">eres tú, graduándote.</span></h1>
+        <!-- Titular rotativo: las frases de campaña van cambiando (ver JS al final) -->
+        <h1 aria-live="polite"><span class="frase-rotativa" id="frase-hero">El mejor ejemplo para tus hijos <span class="resalte">eres tú, graduándote.</span></span></h1>
         <div class="cinta">Bachillerato Acelerado 100% virtual para jóvenes y adultos. Termina tus estudios en tiempo récord.</div>
         <ul class="hero-puntos">
           <li><strong>Validez oficial:</strong> BGU avalado por el Ministerio de Educación del Ecuador.</li>
+          <li><strong>Beca de Superación:</strong> matrícula $0 y pensión de solo $25 mensuales.</li>
           <li><strong>Mentor IA 24/7:</strong> apoyo permanente para tareas, dudas y proyectos.</li>
           <li><strong>Ruta personalizada:</strong> estudia a tu ritmo, desde casa y sin descuidar tu trabajo o entrenamiento.</li>
           <li><strong>Gradúate en aprox. 2.5 años</strong> en lugar de 6: ahorras más de la mitad del tiempo.</li>
@@ -522,18 +736,13 @@
         <p class="nota-cta">Sin compromiso. Un asesor académico te contactará por el canal que tú elijas.</p>
       </div>
 
-      <!-- Comparativa de tiempo: el dato estrella de la campaña -->
-      <div class="tarjeta-tiempo">
-        <h3>¿Cuánto tiempo necesitas para graduarte?</h3>
-        <div class="fila-tiempo">
-          <div class="etiqueta">🏫 Sistema educativo tradicional (básica a bachillerato completo)</div>
-          <div class="valor tradicional">Aprox. 6 años</div>
+      <!-- Banner de campaña: reemplazar el placeholder por el arte oficial.
+           TODO (dev): <img src="ruta/arte-campana.jpg" alt="Artesanos AI High School"> dentro de .marco-campana -->
+      <div class="marco-campana">
+        <div class="contenido-placeholder">
+          <div class="escudo-grande">A✦</div>
+          <p><strong>Espacio para arte de campaña</strong><br>(imagen vertical 3:4 — usar el arte oficial de la pauta activa)</p>
         </div>
-        <div class="fila-tiempo">
-          <div class="etiqueta">✨ Artesanos AI High School</div>
-          <div class="valor artesanos">Aprox. 2.5 años</div>
-        </div>
-        <span class="badge-ahorro">¡Ahorras más de la mitad del tiempo!</span>
       </div>
     </div>
   </section>
@@ -547,6 +756,39 @@
       <span>AMIE Sierra <strong>09H06776</strong></span>
     </div>
   </div>
+
+  <!-- ============ COMPARATIVA ANIMADA: OPTIMIZA TU TIEMPO ============ -->
+  <section class="comparativa" id="comparativa">
+    <div class="contenedor">
+      <h2 class="titulo-seccion">Optimiza tu tiempo de estudio</h2>
+      <p class="intro-comp">A diferencia de la educación tradicional donde cada año escolar te toma <strong>12 meses</strong>, nuestro sistema de <strong>Bachillerato Acelerado</strong> condensa cada nivel en ciclos de aproximadamente <span class="dato-lima">5 meses</span>.</p>
+
+      <!-- Barra 1: sistema tradicional -->
+      <div class="fila-barra">
+        <div class="cabecera">
+          <span class="sistema">🏫 Sistema Educativo Tradicional</span>
+          <span class="duracion tradicional">Aproximadamente 6 años</span>
+        </div>
+        <div class="pista">
+          <div class="relleno tradicional">Educación Básica a Bachillerato Completo</div>
+        </div>
+      </div>
+
+      <!-- Barra 2: Artesanos (se anima hasta el 42% ≈ 2.5 de 6 años) -->
+      <div class="fila-barra">
+        <div class="cabecera">
+          <span class="sistema">⚡ Bachillerato Acelerado Artesanos AI</span>
+          <span class="duracion acelerado">¡Aproximadamente 2.5 años!</span>
+        </div>
+        <div class="pista">
+          <div class="relleno acelerado">¡Ahorras más de la mitad del tiempo!</div>
+        </div>
+        <span class="badge-ahorro">✨ ¡Ahorras más de la mitad del tiempo!</span>
+      </div>
+
+      <p class="cita-tiempo">"El tiempo va a pasar de todas formas. La meta es que pase mientras obtienes tu título."</p>
+    </div>
+  </section>
 
   <!-- ============ AUDIENCIAS ============ -->
   <section>
@@ -576,15 +818,23 @@
     </div>
   </section>
 
-  <!-- ============ BENEFICIOS ============ -->
+  <!-- ============ BENEFICIOS: ESTUDIA SIN COMPLICACIONES ============ -->
   <section class="beneficios">
     <div class="contenedor">
-      <h2 class="titulo-seccion">Educación inteligente, resultados reales</h2>
-      <p class="subtitulo-seccion">Un ecosistema educativo guiado por IA, docentes y recursos digitales.</p>
-      <div class="grid-4">
+      <h2 class="titulo-seccion">Estudia sin complicaciones</h2>
+      <p class="subtitulo-seccion">Sabemos que el tiempo es tu recurso más valioso. Por eso creamos un ecosistema educativo guiado por IA, docentes y recursos digitales.</p>
+      <div class="grid-3">
         <div class="beneficio">
-          <h3>Ruta personalizada</h3>
-          <p>Aprendizaje adaptado al ritmo de cada estudiante, sin horarios rígidos.</p>
+          <h3>Plataforma 24/7</h3>
+          <p>Acceso a clases grabadas, actividades y recursos desde cualquier lugar del mundo.</p>
+        </div>
+        <div class="beneficio">
+          <h3>Multidispositivo</h3>
+          <p>Ingresa fácilmente desde tu celular, tablet, laptop o computadora de escritorio.</p>
+        </div>
+        <div class="beneficio">
+          <h3>Flexibilidad absoluta</h3>
+          <p>Avanza en tus tiempos libres sin la obligación de asistir diariamente a clases presenciales.</p>
         </div>
         <div class="beneficio">
           <h3>Mentor IA 24/7</h3>
@@ -596,7 +846,112 @@
         </div>
         <div class="beneficio">
           <h3>Validez oficial</h3>
-          <p>Título de bachiller BGU reconocido por el Ministerio de Educación.</p>
+          <p>Título de bachiller BGU reconocido por el Ministerio de Educación del Ecuador.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUÉ INCLUYE TU MENSUALIDAD ============ -->
+  <section>
+    <div class="contenedor">
+      <h2 class="titulo-seccion">¿Qué incluye tu mensualidad?</h2>
+      <p class="subtitulo-seccion">Todo lo que necesitas para graduarte, sin costos ocultos.</p>
+      <div class="grid-2">
+        <div class="tarjeta-incluye">
+          <h3><span class="check-lima">✓</span>Acceso Total 24/7</h3>
+          <p>Ingreso ilimitado al aula virtual y las clases interactivas desde cualquier dispositivo.</p>
+        </div>
+        <div class="tarjeta-incluye">
+          <h3><span class="check-lima">✓</span>Tutorías de Fin de Semana</h3>
+          <p>Clases en vivo personalizadas para resolución de dudas con tus docentes asignados.</p>
+        </div>
+        <div class="tarjeta-incluye">
+          <h3><span class="check-lima">✓</span>Material de Apoyo Completo</h3>
+          <p>Libros de texto digitales y recursos educativos integrados en la plataforma, sin costos extra.</p>
+        </div>
+        <div class="tarjeta-incluye">
+          <h3><span class="check-lima">✓</span>Acompañamiento Permanente</h3>
+          <p>Monitoreo y seguimiento académico por tutores enfocados en asegurar que culmines con éxito.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BECA DE SUPERACIÓN + REQUISITOS ============ -->
+  <section class="seccion-beca">
+    <div class="contenedor">
+      <h2 class="titulo-seccion">Requisitos muy sencillos</h2>
+      <p class="subtitulo-seccion">Inicia tu solicitud hoy: asegura tu vacante y aplica a la Beca de Superación.</p>
+      <div class="grid-beca">
+        <!-- Tarjeta de la beca: el gancho económico de la campaña -->
+        <div class="tarjeta-beca">
+          <div class="titulo-beca">🎓 Beca de Superación</div>
+          <div class="precios">
+            <div class="precio">
+              <div class="monto">$0</div>
+              <div class="detalle">Matrícula</div>
+            </div>
+            <div class="precio">
+              <div class="monto">$25</div>
+              <div class="detalle">Pensión mensual</div>
+            </div>
+          </div>
+          <p class="nota-beca">Aplica al registrarte. Cupos limitados 2026.</p>
+        </div>
+        <!-- Requisitos -->
+        <div>
+          <p style="color: var(--gris-texto);">Para asegurar tu vacante solo necesitas enviar inicialmente:</p>
+          <ul class="lista-requisitos">
+            <li><span class="icono-req">🪪</span> Copia o foto de tu Cédula de Identidad</li>
+            <li><span class="icono-req">📄</span> Certificado del último año aprobado</li>
+          </ul>
+          <p class="nota-certificado">*¿No tienes tu certificado escolar? No te preocupes. Te brindamos todo el soporte y guía institucional ante el Distrito Educativo para recuperarlo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TESTIMONIOS ============ -->
+  <!-- TODO (dev/marketing): reemplazar por testimonios reales verificados
+       (con autorización de uso de nombre e imagen) antes de publicar. -->
+  <section class="testimonios">
+    <div class="contenedor">
+      <h2 class="titulo-seccion">Ellos ya dieron el paso</h2>
+      <p class="subtitulo-seccion">Historias de estudiantes y familias que decidieron no esperar.</p>
+      <div class="grid-3">
+        <div class="tarjeta-testimonio">
+          <div class="estrellas">★★★★★</div>
+          <blockquote>Dejé el colegio hace 12 años por trabajar. Con Artesanos estudio en las noches desde mi celular y ya estoy a pocos ciclos de graduarme. Mis hijos me ven estudiar y eso no tiene precio."</blockquote>
+          <div class="autor">
+            <div class="avatar">M</div>
+            <div>
+              <div class="nombre">María F.</div>
+              <div class="rol">Madre y estudiante · Bachillerato Acelerado</div>
+            </div>
+          </div>
+        </div>
+        <div class="tarjeta-testimonio">
+          <div class="estrellas">★★★★★</div>
+          <blockquote>Mi hijo entrena fútbol en las mañanas y antes vivíamos pidiendo permisos en el colegio. Ahora entrena tranquilo, estudia a su ritmo y sus notas mejoraron. El seguimiento para padres nos da total confianza."</blockquote>
+          <div class="autor">
+            <div class="avatar">C</div>
+            <div>
+              <div class="nombre">Carlos V.</div>
+              <div class="rol">Padre de deportista · Colegio en Casa</div>
+            </div>
+          </div>
+        </div>
+        <div class="tarjeta-testimonio">
+          <div class="estrellas">★★★★★</div>
+          <blockquote>Lo que más me sorprendió fue el Mentor IA: mi hija resuelve dudas a cualquier hora y los docentes refuerzan los fines de semana. Es homeschooling, pero con estructura y acompañamiento de verdad."</blockquote>
+          <div class="autor">
+            <div class="avatar">G</div>
+            <div>
+              <div class="nombre">Gabriela R.</div>
+              <div class="rol">Madre homeschooler · Colegio en Casa</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -674,11 +1029,11 @@
             <div class="campo">
               <label>¿Cómo prefieres que te contactemos? <span class="req">*</span></label>
               <div class="grupo-chips" id="chips-canal" role="radiogroup" aria-label="Canal de contacto preferido">
-                <button type="button" class="chip" data-canal="whatsapp">💬 WhatsApp</button>
-                <button type="button" class="chip" data-canal="llamada">📞 Llamada telefónica</button>
-                <button type="button" class="chip" data-canal="correo">✉️ Correo electrónico</button>
-                <button type="button" class="chip" data-canal="cita-virtual">🖥️ Cita virtual con la institución</button>
-                <button type="button" class="chip" data-canal="visita">📍 Visitar sus oficinas</button>
+                <button type="button" class="chip" data-canal="whatsapp"><span class="icono-chip">💬</span>WhatsApp</button>
+                <button type="button" class="chip" data-canal="llamada"><span class="icono-chip">📞</span>Llamada telefónica</button>
+                <button type="button" class="chip" data-canal="correo"><span class="icono-chip">✉️</span>Correo electrónico</button>
+                <button type="button" class="chip" data-canal="cita-virtual"><span class="icono-chip">🖥️</span>Cita virtual</button>
+                <button type="button" class="chip" data-canal="visita"><span class="icono-chip">📍</span>Visitar oficinas</button>
               </div>
               <p class="ayuda-chip">Respetamos tu tiempo: te contactamos solo por el canal que elijas.</p>
               <input type="hidden" id="canal-preferido" name="canal_preferido" value="">
@@ -771,7 +1126,15 @@
         </details>
         <details>
           <summary>¿Cuánto tiempo toma graduarse?</summary>
-          <div class="respuesta">Con nuestro Bachillerato Acelerado, completar desde educación básica hasta el bachillerato toma aproximadamente 2.5 años, frente a los 6 años del sistema tradicional. El tiempo exacto depende del nivel en el que ingreses y de tu ritmo de estudio.</div>
+          <div class="respuesta">Con nuestro Bachillerato Acelerado, cada nivel se condensa en ciclos de aproximadamente 5 meses (frente a los 12 meses del año escolar tradicional). Completar desde educación básica hasta el bachillerato toma aproximadamente 2.5 años, frente a los 6 años del sistema tradicional. El tiempo exacto depende del nivel en el que ingreses y de tu ritmo de estudio.</div>
+        </details>
+        <details>
+          <summary>¿Cuánto cuesta estudiar en Artesanos?</summary>
+          <div class="respuesta">Con la Beca de Superación, la matrícula es de $0 y la pensión mensual de $25. Incluye acceso total 24/7 al aula virtual, tutorías en vivo de fin de semana, material de apoyo completo (libros digitales sin costo extra) y acompañamiento permanente de tutores.</div>
+        </details>
+        <details>
+          <summary>¿Qué requisitos necesito para inscribirme?</summary>
+          <div class="respuesta">Solo dos documentos iniciales: copia o foto de tu Cédula de Identidad y el certificado del último año aprobado. ¿No tienes tu certificado escolar? Te brindamos todo el soporte y guía institucional ante el Distrito Educativo para recuperarlo.</div>
         </details>
         <details>
           <summary>¿Cómo se estudia? ¿Necesito asistir a clases presenciales?</summary>
@@ -789,11 +1152,28 @@
     </div>
   </section>
 
-  <!-- ============ CTA FINAL ============ -->
+  <!-- ============ CTA FINAL: ¿LISTO PARA DAR EL PASO? ============ -->
   <section class="cta-final">
     <div class="contenedor">
-      <h2>La promesa que te hiciste aún está a tiempo</h2>
-      <p>Cupos limitados 2026. Da el primer paso hoy: tú eliges cómo te contactamos.</p>
+      <h2>¿Listo para dar el paso?</h2>
+      <p>Tu título de Bachiller de la República del Ecuador te abrirá mejores oportunidades laborales y profesionales. No dejes que el tiempo pase sin avanzar.</p>
+      <div class="pasos">
+        <div class="paso">
+          <div class="numero">1</div>
+          <h3>Regístrate</h3>
+          <p>Nombres, cédula y tu correo. Toma menos de 2 minutos.</p>
+        </div>
+        <div class="paso">
+          <div class="numero">2</div>
+          <h3>Aplica a la Beca</h3>
+          <p><strong>Matrícula $0</strong> y <strong>pensión $25</strong> con la Beca de Superación.</p>
+        </div>
+        <div class="paso">
+          <div class="numero">3</div>
+          <h3>Estudia virtual</h3>
+          <p>Desde casa y a tu propio ritmo, con acompañamiento permanente.</p>
+        </div>
+      </div>
       <a href="#solicitar" class="btn-principal">Solicitar información →</a>
     </div>
   </section>
@@ -819,6 +1199,49 @@
   </a>
 
   <script>
+    // ============================================================
+    // 0a. Rotador de titulares del hero (frases de campaña)
+    // ============================================================
+    const frasesHero = [
+      'El mejor ejemplo para tus hijos <span class="resalte">eres tú, graduándote.</span>',
+      'Si el futuro no espera, <span class="resalte">¿por qué la educación de tus hijos sí?</span>',
+      '¿Te faltó terminar el colegio? <span class="resalte">Termínalo en tiempo récord.</span>',
+      'La promesa que te hiciste <span class="resalte">aún está a tiempo.</span>',
+      'Su talento no puede <span class="resalte">esperar al timbre.</span>',
+      'Entrena de día. Estudia a su ritmo. <span class="resalte">Se gradúa igual.</span>'
+    ];
+    const elFrase = document.getElementById('frase-hero');
+    let indiceFrase = 0;
+    setInterval(() => {
+      elFrase.classList.add('saliendo');                    // fade out hacia arriba
+      setTimeout(() => {
+        indiceFrase = (indiceFrase + 1) % frasesHero.length;
+        elFrase.innerHTML = frasesHero[indiceFrase];
+        elFrase.classList.remove('saliendo');
+        elFrase.classList.add('entrando');                  // aparece desde abajo
+        requestAnimationFrame(() => requestAnimationFrame(() => elFrase.classList.remove('entrando')));
+      }, 460);
+    }, 5000);
+
+    // ============================================================
+    // 0b. Comparativa de tiempo: animar las barras al entrar en
+    //     pantalla (IntersectionObserver)
+    // ============================================================
+    const seccionComp = document.getElementById('comparativa');
+    if ('IntersectionObserver' in window) {
+      const observador = new IntersectionObserver((entradas) => {
+        entradas.forEach(entrada => {
+          if (entrada.isIntersecting) {
+            seccionComp.classList.add('animada');
+            observador.disconnect(); // se anima una sola vez
+          }
+        });
+      }, { threshold: 0.35 });
+      observador.observe(seccionComp);
+    } else {
+      seccionComp.classList.add('animada'); // navegadores antiguos: sin animación
+    }
+
     // ============================================================
     // 1. Chips de preferencia de contacto (selección única)
     //    Muestra campos adicionales según el canal elegido.

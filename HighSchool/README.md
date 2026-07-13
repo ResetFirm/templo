@@ -9,14 +9,21 @@ El diferenciador de experiencia de cliente es el **selector de canal de contacto
 el lead elige cómo quiere ser contactado (WhatsApp, llamada, correo, cita virtual o visita a oficinas)
 y el formulario muestra campos adicionales según el canal (horario preferido, fecha de cita, sede).
 
+## Elementos dinámicos (JS incluido en el archivo)
+- **Titulares rotativos del hero:** 6 frases de campaña rotan cada 5 s con transición de fade/slide (array `frasesHero` en el script).
+- **Comparativa animada "Optimiza tu tiempo":** las barras de progreso (6 años vs 2.5 años) se animan al entrar en viewport vía IntersectionObserver; la barra Artesanos llena el 42% (≈2.5/6).
+- **Chips de contacto:** cuadrícula 3×2 (2 col en móvil), selección única, muestran campos condicionales.
+
 ## Pendientes para desarrollo (buscar `TODO (dev)` en index.html)
 1. **Logo oficial:** reemplazar el placeholder `.logo-escudo` por el SVG/PNG del escudo Artesanos.
-2. **Endpoint del formulario:** conectar `#form-lead` al CRM (POST). Hoy el envío está simulado con `setTimeout`.
-3. **Eventos de conversión:** en el submit exitoso disparar `dataLayer.push({event:'generate_lead', canal:...})` (GTM) y `fbq('track','Lead')` (Meta).
-4. **WhatsApp Business:** reemplazar `593999999999` en el botón flotante por el número oficial.
-5. **og:image:** agregar el arte de campaña en formato 1200×630.
-6. **Sedes:** confirmar direcciones exactas para el select de "visitar oficinas".
-7. **Política de privacidad:** confirmar que exista `artesanos.ai/privacidad` (el checkbox de consentimiento enlaza ahí).
+2. **Arte de campaña en el hero:** insertar `<img>` dentro de `.marco-campana` (formato vertical 3:4).
+3. **Endpoint del formulario:** conectar `#form-lead` al CRM (POST). Hoy el envío está simulado con `setTimeout`.
+4. **Eventos de conversión:** en el submit exitoso disparar `dataLayer.push({event:'generate_lead', canal:...})` (GTM) y `fbq('track','Lead')` (Meta).
+5. **WhatsApp Business:** reemplazar `593999999999` en el botón flotante por el número oficial.
+6. **og:image:** agregar el arte de campaña en formato 1200×630.
+7. **Sedes:** confirmar direcciones exactas para el select de "visitar oficinas".
+8. **Política de privacidad:** confirmar que exista `artesanos.ai/privacidad` (el checkbox de consentimiento enlaza ahí).
+9. **Testimonios:** los 3 testimonios actuales son de muestra — reemplazar por testimonios reales verificados (con autorización de uso de nombre e imagen) antes de publicar.
 
 ## Datos que envía el formulario
 | Campo | name | Notas |
