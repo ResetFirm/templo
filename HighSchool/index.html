@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artesanos AI High School | Bachillerato Acelerado 100% Virtual — Gradúate en tiempo récord</title>
+  <meta name="description" content="Bachillerato Acelerado 100% virtual con validez oficial para jóvenes y adultos en Ecuador. Termina tus estudios en aprox. 2.5 años. Mentor IA 24/7, ruta personalizada y cupos limitados 2026. Solicita información hoy.">
+
+  <!-- Open Graph para compartir en redes / WhatsApp -->
+  <meta property="og:title" content="Artesanos AI High School — Gradúate en tiempo récord">
+  <meta property="og:description" content="Bachillerato Acelerado 100% virtual con validez oficial. Ahorra más de la mitad del tiempo. Cupos limitados 2026.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.artesanos.ai/HighSchool">
+  <!-- TODO (dev): agregar og:image con el arte oficial de campaña (1200x630) -->
+
+  <!-- Tipografías: titulares condensados (como en los artes) + texto legible -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       PALETA DE MARCA (tomada de los artes de campaña)
+       ============================================================ */
+    :root {
+      --negro: #14100d;          /* fondo principal */
+      --negro-2: #1e1812;        /* fondo secundario / tarjetas */
+      --crema: #f3e9da;          /* titulares */
+      --blanco: #ffffff;
+      --rojo: #a31226;           /* cintas / acentos institucionales */
+      --rojo-oscuro: #7d0e1d;
+      --lima: #dfff2f;           /* CTA y botones de contacto */
+      --lima-hover: #ecff66;
+      --dorado: #e5b96b;         /* detalles de luz */
+      --gris-texto: #c9bfb2;     /* texto de apoyo sobre fondo oscuro */
+      --borde: rgba(243, 233, 218, 0.16);
+      --radio: 14px;
+      --fuente-titulo: 'Oswald', 'Archivo Narrow', Arial, sans-serif;
+      --fuente-texto: 'Inter', Helvetica, Arial, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--fuente-texto);
+      background: var(--negro);
+      color: var(--crema);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img { max-width: 100%; display: block; }
+    .contenedor { width: min(1120px, 92%); margin: 0 auto; }
+
+    h1, h2, h3 { font-family: var(--fuente-titulo); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ============================================================
+       BARRA DE URGENCIA
+       ============================================================ */
+    .barra-urgencia {
+      background: var(--rojo);
+      color: var(--blanco);
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      letter-spacing: 0.4px;
+    }
+    .barra-urgencia strong { color: var(--lima); }
+
+    /* ============================================================
+       HEADER
+       ============================================================ */
+    header {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--borde);
+      position: sticky;
+      top: 0;
+      background: rgba(20, 16, 13, 0.94);
+      backdrop-filter: blur(8px);
+      z-index: 50;
+    }
+    .header-flex { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    /* TODO (dev): reemplazar por el SVG/PNG oficial del escudo + logotipo ARTESANOS */
+    .logo-escudo {
+      width: 44px; height: 50px;
+      border: 2px solid var(--crema);
+      border-radius: 4px 4px 50% 50%;
+      display: grid; place-items: center;
+      font-family: var(--fuente-titulo);
+      font-size: 1.3rem; font-weight: 700; color: var(--crema);
+      flex-shrink: 0;
+    }
+    .logo-texto { line-height: 1.15; }
+    .logo-texto .nombre {
+      font-family: var(--fuente-titulo);
+      font-size: 1.35rem; font-weight: 700; letter-spacing: 3px;
+      color: var(--blanco); text-transform: uppercase;
+    }
+    .logo-texto .tag {
+      display: inline-block;
+      background: var(--rojo); color: var(--blanco);
+      font-size: 0.58rem; font-weight: 700; letter-spacing: 2px;
+      padding: 2px 8px; text-transform: uppercase;
+    }
+
+    .btn-header {
+      background: var(--lima); color: var(--negro);
+      font-weight: 700; font-size: 0.9rem;
+      padding: 12px 22px; border-radius: 999px;
+      text-decoration: none; white-space: nowrap;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .btn-header:hover { background: var(--lima-hover); transform: translateY(-1px); }
+
+    /* ============================================================
+       HERO
+       ============================================================ */
+    .hero {
+      position: relative;
+      padding: 72px 0 64px;
+      background:
+        radial-gradient(ellipse at 75% 20%, rgba(229, 185, 107, 0.16), transparent 55%),
+        radial-gradient(ellipse at 15% 90%, rgba(163, 18, 38, 0.14), transparent 50%),
+        var(--negro);
+      overflow: hidden;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+      line-height: 1.08;
+      color: var(--crema);
+      margin-bottom: 20px;
+    }
+    .hero h1 .resalte { color: var(--dorado); }
+
+    .cinta {
+      display: inline-block;
+      background: var(--rojo);
+      color: var(--blanco);
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 10px 18px;
+      margin-bottom: 24px;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.35);
+    }
+
+    .hero-puntos { list-style: none; margin-bottom: 32px; }
+    .hero-puntos li {
+      display: flex; align-items: flex-start; gap: 10px;
+      color: var(--gris-texto); font-size: 1rem; margin-bottom: 10px;
+    }
+    .hero-puntos li::before {
+      content: "✓";
+      color: var(--lima); font-weight: 700; flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .hero-puntos li strong { color: var(--crema); }
+
+    .btn-principal {
+      display: inline-block;
+      background: var(--lima); color: var(--negro);
+      font-family: var(--fuente-titulo);
+      font-size: 1.15rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 18px 38px; border-radius: 999px;
+      text-decoration: none; border: none; cursor: pointer;
+      box-shadow: 0 8px 30px rgba(223, 255, 47, 0.25);
+      transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn-principal:hover {
+      background: var(--lima-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 36px rgba(223, 255, 47, 0.35);
+    }
+    .nota-cta { font-size: 0.82rem; color: var(--gris-texto); margin-top: 12px; }
+
+    /* Tarjeta comparativa de tiempo (dato estrella de la campaña) */
+    .tarjeta-tiempo {
+      background: var(--negro-2);
+      border: 1px solid var(--borde);
+      border-radius: var(--radio);
+      padding: 32px 28px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+    }
+    .tarjeta-tiempo h3 {
+      font-size: 0.85rem; letter-spacing: 2px;
+      color: var(--gris-texto); margin-bottom: 20px;
+    }
+    .fila-tiempo { padding: 16px 0; }
+    .fila-tiempo + .fila-tiempo { border-top: 1px dashed var(--borde); }
+    .fila-tiempo .etiqueta { font-size: 0.85rem; color: var(--gris-texto); margin-bottom: 6px; }
+    .fila-tiempo .valor {
+      font-family: var(--fuente-titulo);
+      font-size: 1.9rem; font-weight: 700; line-height: 1.1;
+    }
+    .fila-tiempo .valor.tradicional { color: var(--gris-texto); text-decoration: line-through; text-decoration-color: var(--rojo); text-decoration-thickness: 3px; }
+    .fila-tiempo .valor.artesanos { color: var(--lima); }
+    .badge-ahorro {
+      display: inline-block; margin-top: 14px;
+      background: rgba(223, 255, 47, 0.12);
+      border: 1px solid rgba(223, 255, 47, 0.4);
+      color: var(--lima);
+      font-size: 0.85rem; font-weight: 700;
+      padding: 8px 14px; border-radius: 999px;
+    }
+
+    /* ============================================================
+       BARRA DE CONFIANZA
+       ============================================================ */
+    .confianza {
+      border-top: 1px solid var(--borde);
+      border-bottom: 1px solid var(--borde);
+      background: var(--negro-2);
+      padding: 22px 0;
+    }
+    .confianza .items {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 14px 40px;
+      font-size: 0.85rem; color: var(--gris-texto);
+      text-align: center;
+    }
+    .confianza .items span strong { color: var(--crema); }
+
+    /* ============================================================
+       SECCIONES GENERALES
+       ============================================================ */
+    section { padding: 72px 0; }
+    .titulo-seccion {
+      font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+      text-align: center; color: var(--crema);
+      margin-bottom: 12px;
+    }
+    .subtitulo-seccion {
+      text-align: center; color: var(--gris-texto);
+      max-width: 640px; margin: 0 auto 48px;
+      font-size: 1.05rem;
+    }
+
+    /* ============================================================
+       AUDIENCIAS (¿Es para ti?)
+       ============================================================ */
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .tarjeta {
+      background: var(--negro-2);
+      border: 1px solid var(--borde);
+      border-radius: var(--radio);
+      padding: 30px 26px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .tarjeta:hover { border-color: rgba(223, 255, 47, 0.45); transform: translateY(-4px); }
+    .tarjeta .icono { font-size: 1.9rem; margin-bottom: 14px; }
+    .tarjeta h3 { font-size: 1.15rem; color: var(--crema); margin-bottom: 10px; }
+    .tarjeta p { font-size: 0.94rem; color: var(--gris-texto); }
+    .tarjeta .frase {
+      display: block; margin-top: 14px;
+      font-style: italic; font-size: 0.88rem; color: var(--dorado);
+    }
+
+    /* ============================================================
+       BENEFICIOS
+       ============================================================ */
+    .beneficios { background: var(--negro-2); }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+    .beneficio {
+      border-left: 3px solid var(--lima);
+      padding: 6px 0 6px 18px;
+    }
+    .beneficio h3 { font-size: 1.02rem; color: var(--crema); margin-bottom: 8px; }
+    .beneficio p { font-size: 0.9rem; color: var(--gris-texto); }
+
+    /* ============================================================
+       FORMULARIO DE CAPTURA
+       ============================================================ */
+    .seccion-form {
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(229, 185, 107, 0.12), transparent 60%),
+        var(--negro);
+    }
+    .caja-form {
+      max-width: 720px; margin: 0 auto;
+      background: var(--negro-2);
+      border: 1px solid var(--borde);
+      border-radius: 20px;
+      padding: 44px 40px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    }
+    .caja-form .encabezado { text-align: center; margin-bottom: 34px; }
+    .caja-form .encabezado h2 { font-size: 1.8rem; color: var(--crema); margin-bottom: 10px; }
+    .caja-form .encabezado p { color: var(--gris-texto); font-size: 0.98rem; }
+    .caja-form .encabezado .cupos {
+      display: inline-block; margin-top: 14px;
+      background: var(--rojo); color: var(--blanco);
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 1px;
+      padding: 6px 14px; text-transform: uppercase;
+    }
+
+    .campo { margin-bottom: 22px; }
+    .campo label {
+      display: block; font-weight: 600; font-size: 0.92rem;
+      color: var(--crema); margin-bottom: 8px;
+    }
+    .campo label .req { color: var(--lima); }
+    .campo input[type="text"],
+    .campo input[type="tel"],
+    .campo input[type="email"],
+    .campo select {
+      width: 100%;
+      background: var(--negro);
+      border: 1px solid var(--borde);
+      border-radius: 10px;
+      color: var(--crema);
+      font-family: var(--fuente-texto);
+      font-size: 1rem;
+      padding: 14px 16px;
+      transition: border-color 0.15s ease;
+    }
+    .campo input:focus, .campo select:focus {
+      outline: none;
+      border-color: var(--lima);
+      box-shadow: 0 0 0 3px rgba(223, 255, 47, 0.15);
+    }
+    .campo select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--gris-texto) 50%), linear-gradient(135deg, var(--gris-texto) 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 14px) 50%; background-size: 6px 6px; background-repeat: no-repeat; }
+    .fila-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* --- Chips lima: preferencia de contacto (experiencia de cliente) --- */
+    .grupo-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent;
+      border: 2px solid rgba(223, 255, 47, 0.5);
+      color: var(--lima);
+      font-family: var(--fuente-texto);
+      font-weight: 600; font-size: 0.92rem;
+      padding: 12px 20px; border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .chip:hover { border-color: var(--lima); background: rgba(223, 255, 47, 0.08); }
+    .chip.activo {
+      background: var(--lima);
+      border-color: var(--lima);
+      color: var(--negro);
+      box-shadow: 0 6px 20px rgba(223, 255, 47, 0.3);
+    }
+    .ayuda-chip { font-size: 0.8rem; color: var(--gris-texto); margin-top: 8px; }
+
+    /* Bloques condicionales según la preferencia elegida */
+    .condicional { display: none; margin-top: 18px; animation: aparecer 0.25s ease; }
+    .condicional.visible { display: block; }
+    @keyframes aparecer { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .consentimiento {
+      display: flex; gap: 10px; align-items: flex-start;
+      font-size: 0.8rem; color: var(--gris-texto);
+      margin: 24px 0;
+    }
+    .consentimiento input { margin-top: 3px; accent-color: var(--lima); }
+    .consentimiento a { color: var(--dorado); }
+
+    .btn-enviar {
+      width: 100%;
+      background: var(--lima); color: var(--negro);
+      font-family: var(--fuente-titulo);
+      font-size: 1.2rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.5px;
+      border: none; border-radius: 999px;
+      padding: 18px; cursor: pointer;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+    .btn-enviar:hover { background: var(--lima-hover); transform: translateY(-2px); }
+    .btn-enviar:disabled { opacity: 0.6; cursor: wait; transform: none; }
+    .nota-seguridad { text-align: center; font-size: 0.78rem; color: var(--gris-texto); margin-top: 14px; }
+
+    /* Mensaje de éxito (se muestra tras enviar) */
+    .mensaje-exito {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .mensaje-exito.visible { display: block; }
+    .mensaje-exito .check {
+      width: 72px; height: 72px; margin: 0 auto 20px;
+      border-radius: 50%;
+      background: rgba(223, 255, 47, 0.14);
+      border: 2px solid var(--lima);
+      display: grid; place-items: center;
+      font-size: 2rem; color: var(--lima);
+    }
+    .mensaje-exito h3 { font-size: 1.5rem; color: var(--crema); margin-bottom: 12px; }
+    .mensaje-exito p { color: var(--gris-texto); max-width: 440px; margin: 0 auto; }
+    .mensaje-exito .canal { color: var(--lima); font-weight: 700; }
+
+    /* ============================================================
+       FAQ (manejo de objeciones)
+       ============================================================ */
+    .faq details {
+      background: var(--negro-2);
+      border: 1px solid var(--borde);
+      border-radius: var(--radio);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .faq summary {
+      cursor: pointer;
+      padding: 20px 24px;
+      font-weight: 600;
+      color: var(--crema);
+      list-style: none;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 16px;
+    }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: "+"; color: var(--lima); font-size: 1.4rem; font-weight: 400; flex-shrink: 0; }
+    .faq details[open] summary::after { content: "−"; }
+    .faq .respuesta { padding: 0 24px 20px; color: var(--gris-texto); font-size: 0.94rem; }
+    .faq { max-width: 760px; margin: 0 auto; }
+
+    /* ============================================================
+       CTA FINAL + FOOTER
+       ============================================================ */
+    .cta-final {
+      text-align: center;
+      background: linear-gradient(180deg, var(--negro-2), var(--negro));
+      border-top: 1px solid var(--borde);
+    }
+    .cta-final h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 16px; }
+    .cta-final p { color: var(--gris-texto); margin-bottom: 30px; }
+
+    footer {
+      border-top: 1px solid var(--borde);
+      padding: 36px 0;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--gris-texto);
+    }
+    footer .avales {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 10px 32px; margin-bottom: 18px;
+      font-weight: 600; color: var(--crema); font-size: 0.85rem;
+    }
+    footer a { color: var(--dorado); text-decoration: none; }
+
+    /* ============================================================
+       BOTÓN FLOTANTE DE WHATSAPP
+       ============================================================ */
+    .whatsapp-flotante {
+      position: fixed; right: 22px; bottom: 22px; z-index: 90;
+      display: flex; align-items: center; gap: 10px;
+      background: var(--lima); color: var(--negro);
+      font-weight: 700; font-size: 0.9rem;
+      padding: 14px 20px; border-radius: 999px;
+      text-decoration: none;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transition: transform 0.15s ease;
+    }
+    .whatsapp-flotante:hover { transform: scale(1.05); }
+    .whatsapp-flotante svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .caja-form { padding: 32px 22px; }
+    }
+    @media (max-width: 560px) {
+      .grid-4 { grid-template-columns: 1fr; }
+      .fila-2 { grid-template-columns: 1fr; }
+      .whatsapp-flotante span { display: none; }
+      .whatsapp-flotante { padding: 14px; }
+      .btn-header { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de urgencia -->
+  <div class="barra-urgencia">
+    🎓 Matrículas abiertas · <strong>Cupos limitados 2026</strong> · BGU con validez oficial del Ministerio de Educación
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="contenedor header-flex">
+      <a href="https://www.artesanos.ai" class="logo">
+        <div class="logo-escudo">G</div>
+        <div class="logo-texto">
+          <div class="nombre">Artesanos</div>
+          <span class="tag">AI Smart Education High School</span>
+        </div>
+      </a>
+      <a href="#solicitar" class="btn-header">Solicitar información</a>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="contenedor hero-grid">
+      <div>
+        <h1>El mejor ejemplo para tus hijos <span class="resalte">eres tú, graduándote.</span></h1>
+        <div class="cinta">Bachillerato Acelerado 100% virtual para jóvenes y adultos. Termina tus estudios en tiempo récord.</div>
+        <ul class="hero-puntos">
+          <li><strong>Validez oficial:</strong> BGU avalado por el Ministerio de Educación del Ecuador.</li>
+          <li><strong>Mentor IA 24/7:</strong> apoyo permanente para tareas, dudas y proyectos.</li>
+          <li><strong>Ruta personalizada:</strong> estudia a tu ritmo, desde casa y sin descuidar tu trabajo o entrenamiento.</li>
+          <li><strong>Gradúate en aprox. 2.5 años</strong> en lugar de 6: ahorras más de la mitad del tiempo.</li>
+        </ul>
+        <a href="#solicitar" class="btn-principal">Quiero graduarme →</a>
+        <p class="nota-cta">Sin compromiso. Un asesor académico te contactará por el canal que tú elijas.</p>
+      </div>
+
+      <!-- Comparativa de tiempo: el dato estrella de la campaña -->
+      <div class="tarjeta-tiempo">
+        <h3>¿Cuánto tiempo necesitas para graduarte?</h3>
+        <div class="fila-tiempo">
+          <div class="etiqueta">🏫 Sistema educativo tradicional (básica a bachillerato completo)</div>
+          <div class="valor tradicional">Aprox. 6 años</div>
+        </div>
+        <div class="fila-tiempo">
+          <div class="etiqueta">✨ Artesanos AI High School</div>
+          <div class="valor artesanos">Aprox. 2.5 años</div>
+        </div>
+        <span class="badge-ahorro">¡Ahorras más de la mitad del tiempo!</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BARRA DE CONFIANZA ============ -->
+  <div class="confianza">
+    <div class="contenedor items">
+      <span>🇪🇨 <strong>Ministerio de Educación</strong> · El Nuevo Ecuador</span>
+      <span><strong>Santander</strong> · Educación a Distancia</span>
+      <span>AMIE Costa <strong>09H06679</strong></span>
+      <span>AMIE Sierra <strong>09H06776</strong></span>
+    </div>
+  </div>
+
+  <!-- ============ AUDIENCIAS ============ -->
+  <section>
+    <div class="contenedor">
+      <h2 class="titulo-seccion">¿Es para ti? Sí, si te ves aquí</h2>
+      <p class="subtitulo-seccion">Diseñado para quienes decidieron no esperar a que el sistema cambie.</p>
+      <div class="grid-3">
+        <div class="tarjeta">
+          <div class="icono">💪</div>
+          <h3>Adultos que quieren cumplir su promesa</h3>
+          <p>Dejaste el colegio por trabajo, familia o la vida misma. Hoy puedes retomarlo 100% en línea, a tu ritmo y sin dejar de trabajar.</p>
+          <span class="frase">"La promesa que te hiciste aún está a tiempo."</span>
+        </div>
+        <div class="tarjeta">
+          <div class="icono">⚽</div>
+          <h3>Jóvenes talentos y deportistas</h3>
+          <p>Entrena de día, estudia a tu ritmo y gradúate igual. La ruta flexible para quienes entrenan, compiten y no quieren renunciar a su bachillerato.</p>
+          <span class="frase">"Entrena de día. Estudia a su ritmo. Se gradúa igual."</span>
+        </div>
+        <div class="tarjeta">
+          <div class="icono">🏠</div>
+          <h3>Familias que eligen Colegio en Casa</h3>
+          <p>HomeSchooling con estructura, acompañamiento y propósito: IA, docentes y recursos digitales, con seguimiento y evidencias de avance para los padres.</p>
+          <span class="frase">"Si el futuro no espera, ¿por qué la educación de tus hijos sí?"</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BENEFICIOS ============ -->
+  <section class="beneficios">
+    <div class="contenedor">
+      <h2 class="titulo-seccion">Educación inteligente, resultados reales</h2>
+      <p class="subtitulo-seccion">Un ecosistema educativo guiado por IA, docentes y recursos digitales.</p>
+      <div class="grid-4">
+        <div class="beneficio">
+          <h3>Ruta personalizada</h3>
+          <p>Aprendizaje adaptado al ritmo de cada estudiante, sin horarios rígidos.</p>
+        </div>
+        <div class="beneficio">
+          <h3>Mentor IA 24/7</h3>
+          <p>Apoyo permanente para tareas, dudas y proyectos, a cualquier hora.</p>
+        </div>
+        <div class="beneficio">
+          <h3>Familias activas</h3>
+          <p>Seguimiento para padres y evidencias de avance en tiempo real.</p>
+        </div>
+        <div class="beneficio">
+          <h3>Validez oficial</h3>
+          <p>Título de bachiller BGU reconocido por el Ministerio de Educación.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FORMULARIO DE CAPTURA ============ -->
+  <section class="seccion-form" id="solicitar">
+    <div class="contenedor">
+      <div class="caja-form">
+
+        <!-- Formulario -->
+        <div id="bloque-formulario">
+          <div class="encabezado">
+            <h2>Da el primer paso hoy</h2>
+            <p>Déjanos tus datos y <strong>tú decides cómo y cuándo</strong> te contactamos. Un asesor académico resolverá todas tus dudas.</p>
+            <span class="cupos">Cupos limitados 2026</span>
+          </div>
+
+          <!--
+            NOTA PARA DESARROLLO:
+            - Conectar el action del formulario al endpoint del CRM (POST).
+            - Los campos utm_* y la preferencia de contacto se llenan por JS (inputs hidden).
+            - Disparar evento "generate_lead" en dataLayer/GTM y píxel de Meta en el submit exitoso.
+          -->
+          <form id="form-lead" action="#" method="POST" novalidate>
+
+            <div class="fila-2">
+              <div class="campo">
+                <label for="nombre">Nombre completo <span class="req">*</span></label>
+                <input type="text" id="nombre" name="nombre" placeholder="Ej.: María Fernanda López" required autocomplete="name">
+              </div>
+              <div class="campo">
+                <label for="telefono">Celular / WhatsApp <span class="req">*</span></label>
+                <input type="tel" id="telefono" name="telefono" placeholder="Ej.: 099 123 4567" required autocomplete="tel" inputmode="tel">
+              </div>
+            </div>
+
+            <div class="fila-2">
+              <div class="campo">
+                <label for="correo">Correo electrónico <span class="req">*</span></label>
+                <input type="email" id="correo" name="correo" placeholder="tucorreo@ejemplo.com" required autocomplete="email">
+              </div>
+              <div class="campo">
+                <label for="ciudad">Ciudad / Provincia</label>
+                <input type="text" id="ciudad" name="ciudad" placeholder="Ej.: Guayaquil, Guayas" autocomplete="address-level2">
+              </div>
+            </div>
+
+            <div class="fila-2">
+              <div class="campo">
+                <label for="quien">¿Quién va a estudiar? <span class="req">*</span></label>
+                <select id="quien" name="quien_estudia" required>
+                  <option value="" disabled selected>Selecciona una opción</option>
+                  <option value="yo">Yo (joven o adulto)</option>
+                  <option value="hijo">Mi hijo/a</option>
+                  <option value="familiar">Otro familiar</option>
+                </select>
+              </div>
+              <div class="campo">
+                <label for="programa">Programa de interés <span class="req">*</span></label>
+                <select id="programa" name="programa" required>
+                  <option value="" disabled selected>Selecciona una opción</option>
+                  <option value="bachillerato-acelerado">Bachillerato Acelerado (jóvenes y adultos)</option>
+                  <option value="colegio-en-casa">Colegio en Casa (HomeSchooling)</option>
+                  <option value="no-seguro">Aún no estoy seguro/a</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- ============================================
+                 PREFERENCIA DE CONTACTO (botones lima)
+                 La joya de la experiencia de cliente: el lead
+                 elige el canal, y el formulario se adapta.
+                 ============================================ -->
+            <div class="campo">
+              <label>¿Cómo prefieres que te contactemos? <span class="req">*</span></label>
+              <div class="grupo-chips" id="chips-canal" role="radiogroup" aria-label="Canal de contacto preferido">
+                <button type="button" class="chip" data-canal="whatsapp">💬 WhatsApp</button>
+                <button type="button" class="chip" data-canal="llamada">📞 Llamada telefónica</button>
+                <button type="button" class="chip" data-canal="correo">✉️ Correo electrónico</button>
+                <button type="button" class="chip" data-canal="cita-virtual">🖥️ Cita virtual con la institución</button>
+                <button type="button" class="chip" data-canal="visita">📍 Visitar sus oficinas</button>
+              </div>
+              <p class="ayuda-chip">Respetamos tu tiempo: te contactamos solo por el canal que elijas.</p>
+              <input type="hidden" id="canal-preferido" name="canal_preferido" value="">
+            </div>
+
+            <!-- Condicional: horario para WhatsApp o llamada -->
+            <div class="condicional" id="cond-horario">
+              <div class="campo">
+                <label for="horario">¿En qué horario te queda mejor?</label>
+                <select id="horario" name="horario_preferido">
+                  <option value="" disabled selected>Selecciona un horario</option>
+                  <option value="manana">En la mañana (09h00 – 12h00)</option>
+                  <option value="tarde">En la tarde (12h00 – 17h00)</option>
+                  <option value="noche">En la noche (17h00 – 20h00)</option>
+                  <option value="cualquiera">Cualquier momento está bien</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Condicional: agendamiento de cita virtual -->
+            <div class="condicional" id="cond-cita">
+              <div class="fila-2">
+                <div class="campo">
+                  <label for="fecha-cita">Fecha tentativa para tu cita virtual</label>
+                  <!-- El atributo min se establece por JS a la fecha de mañana -->
+                  <input type="text" id="fecha-cita" name="fecha_cita" placeholder="Ej.: lunes de la próxima semana" >
+                </div>
+                <div class="campo">
+                  <label for="horario-cita">Horario preferido</label>
+                  <select id="horario-cita" name="horario_cita">
+                    <option value="" disabled selected>Selecciona un horario</option>
+                    <option value="manana">En la mañana</option>
+                    <option value="tarde">En la tarde</option>
+                    <option value="noche">En la noche</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Condicional: visita a oficinas -->
+            <div class="condicional" id="cond-visita">
+              <div class="campo">
+                <label for="sede">¿Qué sede te queda más cerca?</label>
+                <select id="sede" name="sede_visita">
+                  <option value="" disabled selected>Selecciona una sede</option>
+                  <!-- TODO (dev): confirmar direcciones exactas de las sedes -->
+                  <option value="costa">Sede Costa (AMIE 09H06679)</option>
+                  <option value="sierra">Sede Sierra (AMIE 09H06776)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Campos ocultos para atribución de campaña (los llena JS) -->
+            <input type="hidden" name="utm_source" id="utm_source">
+            <input type="hidden" name="utm_medium" id="utm_medium">
+            <input type="hidden" name="utm_campaign" id="utm_campaign">
+            <input type="hidden" name="utm_content" id="utm_content">
+            <input type="hidden" name="pagina_origen" value="artesanos.ai/HighSchool">
+
+            <label class="consentimiento">
+              <input type="checkbox" name="consentimiento" required>
+              <span>Autorizo a Artesanos AI High School a contactarme por el canal seleccionado y acepto la <a href="https://www.artesanos.ai/privacidad" target="_blank" rel="noopener">política de privacidad de datos</a>. <span class="req">*</span></span>
+            </label>
+
+            <button type="submit" class="btn-enviar" id="btn-enviar">Quiero que me contacten</button>
+            <p class="nota-seguridad">🔒 Tus datos están protegidos. Nunca los compartiremos con terceros.</p>
+          </form>
+        </div>
+
+        <!-- Mensaje de éxito (reemplaza al formulario tras enviar) -->
+        <div class="mensaje-exito" id="mensaje-exito">
+          <div class="check">✓</div>
+          <h3>¡Listo! Recibimos tu solicitud</h3>
+          <p>Un asesor académico te contactará por <span class="canal" id="canal-confirmado">el canal que elegiste</span> en un máximo de <strong>24 horas hábiles</strong>. Mientras tanto, conoce más en <a href="https://www.artesanos.ai" style="color: var(--dorado);">artesanos.ai</a>.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section>
+    <div class="contenedor">
+      <h2 class="titulo-seccion">Preguntas frecuentes</h2>
+      <p class="subtitulo-seccion">Lo que toda familia responsable pregunta antes de decidir.</p>
+      <div class="faq">
+        <details>
+          <summary>¿El título tiene validez oficial?</summary>
+          <div class="respuesta">Sí. Otorgamos el título de Bachillerato General Unificado (BGU) con validez oficial del Ministerio de Educación del Ecuador. Operamos con códigos AMIE registrados: Costa 09H06679 y Sierra 09H06776.</div>
+        </details>
+        <details>
+          <summary>¿Cuánto tiempo toma graduarse?</summary>
+          <div class="respuesta">Con nuestro Bachillerato Acelerado, completar desde educación básica hasta el bachillerato toma aproximadamente 2.5 años, frente a los 6 años del sistema tradicional. El tiempo exacto depende del nivel en el que ingreses y de tu ritmo de estudio.</div>
+        </details>
+        <details>
+          <summary>¿Cómo se estudia? ¿Necesito asistir a clases presenciales?</summary>
+          <div class="respuesta">El programa es 100% virtual: estudias desde casa con una ruta personalizada, acompañamiento de docentes y un Mentor IA disponible 24/7 para tareas, dudas y proyectos. Tú eliges tus horarios.</div>
+        </details>
+        <details>
+          <summary>¿Pueden estudiar adultos que dejaron el colegio hace años?</summary>
+          <div class="respuesta">Sí, el programa está diseñado para jóvenes y adultos. No importa cuánto tiempo haya pasado: evaluamos tu nivel actual y diseñamos tu ruta para que termines en el menor tiempo posible.</div>
+        </details>
+        <details>
+          <summary>¿Cómo acompañan a las familias en el Colegio en Casa?</summary>
+          <div class="respuesta">Los padres tienen acceso a seguimiento continuo y evidencias de avance de sus hijos. El HomeSchooling combina IA, docentes y recursos digitales con estructura, acompañamiento y propósito.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CTA FINAL ============ -->
+  <section class="cta-final">
+    <div class="contenedor">
+      <h2>La promesa que te hiciste aún está a tiempo</h2>
+      <p>Cupos limitados 2026. Da el primer paso hoy: tú eliges cómo te contactamos.</p>
+      <a href="#solicitar" class="btn-principal">Solicitar información →</a>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <div class="contenedor">
+      <div class="avales">
+        <span>🇪🇨 Ministerio de Educación · El Nuevo Ecuador</span>
+        <span>Santander · Educación a Distancia</span>
+        <span>Artesanos®</span>
+      </div>
+      <p>BGU con validez oficial · AMIE Costa 09H06679 · Sierra 09H06776 · Cupos limitados 2026</p>
+      <p style="margin-top: 8px;">© 2026 Artesanos AI Smart Education High School · <a href="https://www.artesanos.ai">artesanos.ai</a> · <a href="https://www.artesanos.ai/privacidad">Política de privacidad</a></p>
+    </div>
+  </footer>
+
+  <!-- Botón flotante de WhatsApp -->
+  <!-- TODO (dev): reemplazar 593999999999 por el número oficial de WhatsApp Business -->
+  <a class="whatsapp-flotante" href="https://wa.me/593999999999?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20el%20Bachillerato%20Acelerado%20de%20Artesanos%20High%20School" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.074-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    <span>Escríbenos</span>
+  </a>
+
+  <script>
+    // ============================================================
+    // 1. Chips de preferencia de contacto (selección única)
+    //    Muestra campos adicionales según el canal elegido.
+    // ============================================================
+    const chips = document.querySelectorAll('#chips-canal .chip');
+    const inputCanal = document.getElementById('canal-preferido');
+    const condHorario = document.getElementById('cond-horario');
+    const condCita = document.getElementById('cond-cita');
+    const condVisita = document.getElementById('cond-visita');
+
+    const nombresCanal = {
+      'whatsapp': 'WhatsApp',
+      'llamada': 'llamada telefónica',
+      'correo': 'correo electrónico',
+      'cita-virtual': 'videollamada (cita virtual)',
+      'visita': 'tu visita a nuestras oficinas'
+    };
+
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('activo'));
+        chip.classList.add('activo');
+        const canal = chip.dataset.canal;
+        inputCanal.value = canal;
+
+        // Mostrar solo el bloque condicional que corresponde
+        condHorario.classList.toggle('visible', canal === 'whatsapp' || canal === 'llamada');
+        condCita.classList.toggle('visible', canal === 'cita-virtual');
+        condVisita.classList.toggle('visible', canal === 'visita');
+      });
+    });
+
+    // ============================================================
+    // 2. Captura de parámetros UTM para atribución de campaña
+    // ============================================================
+    const params = new URLSearchParams(window.location.search);
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].forEach(k => {
+      const el = document.getElementById(k);
+      if (el && params.get(k)) el.value = params.get(k);
+    });
+
+    // ============================================================
+    // 3. Envío del formulario
+    //    TODO (dev): reemplazar la simulación por el POST real al
+    //    CRM/endpoint y disparar los eventos de conversión:
+    //      - dataLayer.push({ event: 'generate_lead', canal: ... })
+    //      - fbq('track', 'Lead')
+    // ============================================================
+    const form = document.getElementById('form-lead');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Validar que se haya elegido un canal de contacto
+      if (!inputCanal.value) {
+        alert('Por favor, elige cómo prefieres que te contactemos 💬');
+        document.getElementById('chips-canal').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const btn = document.getElementById('btn-enviar');
+      btn.disabled = true;
+      btn.textContent = 'Enviando…';
+
+      // --- SIMULACIÓN de envío (reemplazar por fetch al endpoint real) ---
+      setTimeout(() => {
+        document.getElementById('bloque-formulario').style.display = 'none';
+        const exito = document.getElementById('mensaje-exito');
+        document.getElementById('canal-confirmado').textContent = nombresCanal[inputCanal.value] || 'el canal que elegiste';
+        exito.classList.add('visible');
+        exito.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 900);
+    });
+  </script>
+
+</body>
+</html>
