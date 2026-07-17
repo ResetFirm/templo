@@ -1,72 +1,35 @@
-# Templo Satori · Método Kaizen — Prototipo v4
+# Alborada · Residencia para Mayores
 
-**Satori** (悟り): el despertar súbito del Zen — lo que la Orden llama *recibir la Luz*. **Kaizen** (改善): la mejora continua — el camino diario del cincel. El destino y el camino.
+Una página web narrativa e interactiva para una residencia de adultos mayores.
+No es una página tradicional: es una experiencia diseñada para transmitir
+**seguridad y confianza** desde el primer gesto.
 
-Templo digital de una **logia de Masonería Liberal de vanguardia** (libertad absoluta de conciencia, síntesis del Rito Escocés Antiguo y Aceptado y del Rito Francés), diseñado como un **LMS gamificado con estimulación neuronal** — el **Método Kaizen** de Esteban Castillo, «Kai»: neurociencias + academia + mejora continua. El rito es el plan de estudios; el objetivo, guiar el desarrollo del miembro y conectar a millones de masones debidamente probados en la red fraternal más grande del planeta.
+## La experiencia
 
-## El viaje
+1. **La puerta** — El sitio abre con la puerta de la casa. El visitante debe
+   *tocarla tres veces* (o arrastrarla) para que se abra: la primera
+   interacción es un acto de llegada, con sonido de golpe (Web Audio),
+   la aldaba que se mueve y una luz cálida que se enciende dentro.
+2. **La bienvenida** — Al abrirse la puerta, un mensaje recibe al visitante:
+   *"Pasa. Te estábamos esperando."*
+3. **El mapa** — La residencia se recorre como un plano vivo ilustrado en SVG:
+   se arrastra para pasear, se hace zoom (rueda, pellizco o botones) y cada
+   espacio tiene un punto pulsante que abre su historia — El Umbral, las
+   Habitaciones, La Mesa Grande, el Salón de la Memoria, el Patio de la
+   Fuente, Bienestar y Salud, la Sala de Familias y el Huerto.
 
-1. **El Umbral** — acceso místico y discreto: puerta oculta, tres golpes, y la voz que rechaza a curiosos y buscadores de poder.
-2. **Cámara de Pruebas (Filtro del Aspirante)** — cinco sellos interactivos: ordenar el Caballete (drag & drop), completar frases de masones célebres, unir símbolos, sostener el cincel (constancia) y presentar **La Propuesta** (nadie entra con las manos vacías).
-3. **El Veredicto** — Índice de Compromiso 0–100, sellos Bronce/Plata/Oro y **Expediente del Aspirante** descargable para el Maestro.
-4. **Cámara de Reflexión** — testamento del profano (V.I.T.R.I.O.L.).
-5. **Apertura de los Trabajos** — declaración liberal: el miembro elige su bóveda (*Gran Arquitecto*, *Humanidad y Conciencia*, o ambas). Nadie decide por él.
-6. **El Sendero de los 33 Grados** — el rito como plan de estudios (LMS):
+## Características
 
-   | Cámara | Grados | Enfoque |
-   |---|---|---|
-   | Masonería Azul | 1–3 | Fundación compartida con todos los masones (jugable completa: 9 puertas + 3 ceremonias) |
-   | Logia de Perfección | 4–14 | Enfoque, lealtad, deber y justicia |
-   | Capítulo Rosa Cruz | 15–18 | Tolerancia y amor fraternal |
-   | Consejo Kadosh | 19–30 | Lucha simbólica contra la tiranía y el fanatismo |
-   | Supremo Consejo | 31–33 | Grados administrativos y síntesis filosófica |
+- **Un solo archivo**: `index.html` autocontenido (HTML + CSS + JS, sin dependencias ni build).
+- **Accesible**: navegable por teclado (Enter/Espacio tocan la puerta y abren
+  los espacios), `aria-labels`, `aria-live` y soporte de `prefers-reduced-motion`.
+- **Responsivo**: en móvil el panel de historias sube desde abajo y el mapa
+  soporta gestos táctiles (arrastre y pellizco).
+- **Sin assets externos**: sonidos generados con Web Audio, ilustraciones en
+  SVG inline; solo se cargan las tipografías de Google Fonts.
 
-   Cada cámara es un **módulo LMS**: descripción, objetivos de aprendizaje, nota de neurociencia aplicada, listado de grados y una **lección insignia jugable** (dilema del Preboste, mesa de los contrarios, enigma del fanatismo, síntesis del 33). Completarla otorga insignia y título (Gran Elegido 14°, Príncipe Rosacruz 18°, Caballero Kadosh 30°, Inspector General 33°).
-7. **La Cumbre · 33°** — perfil de miembro (nombre, título, bóveda, insignias, estadísticas) y visión de la **Red Global**.
+## Uso
 
-## Estimulación neuronal (Método Kaizen)
+Abrir `index.html` en cualquier navegador moderno. No requiere servidor.
 
-- **♫ Armonías del Templo** (HUD) — reproductor de audio **generativo** (Web Audio API, sin archivos ni red): Cámara Barroca (arpegios en re mayor a 72 ppm), Órgano Ritual, **ondas binaurales Alfa 10 Hz y Theta 6 Hz** (con audífonos) y Lluvia (ruido rosa). Volumen y canal persistentes; el canal elegido se reanuda con el primer gesto del usuario.
-- **🧠 Gimnasio Neuronal** (HUD) — repaso por *recuperación activa*: series de 3 preguntas sobre símbolos, rito y caballete, con racha registrada. La técnica de aprendizaje con más evidencia en neurociencia cognitiva.
-- **Notas de neurociencia por módulo** — cada cámara explica qué capacidad entrena (memoria episódica, control ejecutivo, empatía cognitiva, metacognición, efecto protegé).
-- **Inmersión experiencial** — velo de puertas doradas entre cámaras, columnas B∴ y J∴ flanqueando las salas, emblema del grado como marca de agua (escuadra y compás, estrella flamígera, ojo de la providencia), glifos por tipo de reto en cada puerta.
-- **🗺 Plano del Templo** (HUD) — tablero navegable al estilo CLUE: todas las cámaras del Templo en un plano, tu ubicación con punto pulsante, cámaras completadas ✓, bloqueadas 🔒 y navegación tocando las iluminadas.
-- **Gamificación estructural** — Luz (XP), insignias por cámara, coleccionables (9 Voces del Oriente), progreso visible por módulo, desbloqueo secuencial.
-
-## Herramientas del miembro
-
-- **☉ Maestro Artesano · 33°** — el mentor de la logia es una **IA conversacional**: chat socrático consciente del progreso del miembro (grado, Luz, insignias, lecturas, voces), con enseñanzas sobre símbolos, obra, miedo, dinero, IA y método. **Prototipo local** con adaptador listo para la API propia de Artesanos® (`MAESTRO_API.endpoint` en `js/app.js`); los controles de voz 🎙 y visión 📷 se activan al conectar la API multimodal. Incluye el puente narrativo al **Taller de los Artesanos** — botón de formación adicional hacia [artesanos.ai](https://www.artesanos.ai): *el Templo forma el alma; el Taller forja el oficio*. Accesible desde el HUD, el Sendero y la Cumbre.
-- **📚 Biblioteca de los Maestros** — documentos de la Orden e historias de la masonería **por país**. Incluye la **Regla de los Doce Puntos** (documento doctrinal de las Grandes Logias Regulares, presentado como material de estudio de la logia liberal) y el estante del Ecuador con *La Masonería en el Ecuador* (de las logias de la independencia a la Revolución Liberal de Eloy Alfaro), más entradas iniciales de México, Venezuela y Argentina, y estantes en documentación (Panamá, Rep. Dominicana). Cada primera lectura sellada otorga +2 de Luz; los miembros pueden proponer los libros de su Oriente. Accesible desde el HUD y desde el Plano del Templo.
-- **△ Tabla de Trazar** — recreación SVG fiel del **Caballete original de Kai** (Esteban Castillo): el triángulo rojo con la IA como infraestructura, el humano y el ADN sobre el mundo, y los tres pilares ME EDUCO / TRABAJO / AYUDO. Firmado «Trazado por Kai ∴».
-- **✎ Diario del Iniciado** — reflexiones y voces coleccionadas.
-- **Expediente completo** — descargable en cualquier momento: métricas del filtro, propuesta, bóveda, grado alcanzado, insignias, diario.
-- **Progreso persistente** en `localStorage`.
-
-## Ejecutar
-
-Sin build ni dependencias:
-
-```bash
-npx serve .        # o
-python3 -m http.server 8080
-```
-
-Compatible con GitHub Pages.
-
-## Estructura
-
-```
-index.html        # shell (HUD, escenas, modales: reto, diario, tabla, gimnasio)
-css/styles.css    # estética noche+oro, sendero LMS, tarjetas de cámara, perfil
-js/data.js        # contenido: umbral, filtro, apertura liberal, 5 cuerpos del rito,
-                  #   lecciones insignia, gimnasio neuronal, voces, grados azules
-js/app.js         # motor: escenas, pruebas, lecciones, scoring, gimnasio, perfil
-```
-
-## Ideas para v5
-
-- Backend: cuentas, recepción de expedientes, panel del Maestro y **Red Global real** (directorio de perfiles verificados, mentorías entre grados, triángulos por ciudad).
-- Repaso espaciado con calendario (algoritmo SM-2) y notificaciones.
-- Mentor IA socrático durante lecciones y reflexiones.
-- Contenido completo por grado (33 lecciones) con rúbricas académicas.
-- Insignias verificables (Open Badges / tokenización, alineado al modelo Artesanos®).
+> Los datos de contacto del sitio son de ejemplo y deben reemplazarse por los reales.
